@@ -1,0 +1,394 @@
+/* Vending Machine - Retro Neon Arcade Style */
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
+  overflow: hidden;
+}
+
+/* Neon grid floor effect */
+.container::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background:
+    linear-gradient(90deg, transparent 49.5%, rgba(0, 255, 255, 0.1) 49.5%, rgba(0, 255, 255, 0.1) 50.5%, transparent 50.5%),
+    linear-gradient(0deg, transparent 49.5%, rgba(0, 255, 255, 0.1) 49.5%, rgba(0, 255, 255, 0.1) 50.5%, transparent 50.5%);
+  background-size: 50px 50px;
+  transform: perspective(500px) rotateX(60deg);
+  transform-origin: center bottom;
+  opacity: 0.5;
+}
+
+/* Canvas container */
+.canvasContainer {
+  position: absolute;
+  inset: 0;
+}
+
+/* HUD Overlay */
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  font-family: 'Courier New', monospace;
+}
+
+/* Title */
+.title {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow:
+    0 0 10px #00ffff,
+    0 0 20px #00ffff,
+    0 0 40px #00ffff;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+/* Credit display */
+.credits {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 20px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid #ff00ff;
+  border-radius: 4px;
+  font-size: 16px;
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+}
+
+/* Product info panel */
+.productInfo {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  text-align: center;
+  pointer-events: auto;
+}
+
+.productName {
+  font-size: 20px;
+  font-weight: bold;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+  margin-bottom: 10px;
+}
+
+.productDescription {
+  font-size: 14px;
+  color: #aaffaa;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.productSlot {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+.dispenseButton {
+  padding: 12px 30px;
+  background: linear-gradient(180deg, #00ff00 0%, #00aa00 100%);
+  border: none;
+  border-radius: 4px;
+  color: #000;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  box-shadow:
+    0 0 10px #00ff00,
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.dispenseButton:hover {
+  transform: scale(1.05);
+  box-shadow:
+    0 0 20px #00ff00,
+    0 0 40px #00ff00,
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.dispenseButton:disabled {
+  background: linear-gradient(180deg, #666 0%, #444 100%);
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Instructions */
+.instructions {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+  opacity: 0.8;
+}
+
+/* Scanlines effect */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+/* Vignette */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+}
+
+/* Dispensing animation overlay */
+.dispensingOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 255, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: flash 0.5s ease-in-out;
+}
+
+@keyframes flash {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.dispensingText {
+  font-size: 32px;
+  font-weight: bold;
+  color: #00ff00;
+  text-shadow:
+    0 0 20px #00ff00,
+    0 0 40px #00ff00;
+  animation: pulse 0.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Keypad styles */
+.keypad {
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #ff00ff;
+  border-radius: 8px;
+  pointer-events: auto;
+}
+
+.keypadKey {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(180deg, #333 0%, #222 100%);
+  border: 2px solid #666;
+  border-radius: 4px;
+  color: #fff;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.keypadKey:hover {
+  background: linear-gradient(180deg, #444 0%, #333 100%);
+  border-color: #ff00ff;
+  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+}
+
+.keypadKey:active {
+  transform: scale(0.95);
+}
+
+.keypadDisplay {
+  grid-column: span 3;
+  padding: 8px;
+  background: #000;
+  border: 2px solid #00ff00;
+  border-radius: 4px;
+  color: #00ff00;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 5px;
+  text-shadow: 0 0 5px #00ff00;
+  min-height: 24px;
+}
+
+/* Slot labels for 2D fallback */
+.slotGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 15px;
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.slot {
+  aspect-ratio: 1;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0a0a1a 100%);
+  border: 3px solid #333;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.slot:hover {
+  border-color: #00ffff;
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.3),
+    inset 0 0 30px rgba(0, 255, 255, 0.1);
+  transform: scale(1.02);
+}
+
+.slot.selected {
+  border-color: #00ff00;
+  box-shadow:
+    0 0 30px rgba(0, 255, 0, 0.5),
+    inset 0 0 30px rgba(0, 255, 0, 0.2);
+}
+
+.slotLabel {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 12px;
+  color: #00ffff;
+  font-weight: bold;
+}
+
+.slotIcon {
+  font-size: 40px;
+  margin-bottom: 10px;
+}
+
+.slotName {
+  font-size: 12px;
+  color: #aaa;
+  text-align: center;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .title {
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+
+  .credits {
+    top: 55px;
+    font-size: 14px;
+    padding: 6px 15px;
+  }
+
+  .keypad {
+    position: fixed;
+    right: 10px;
+    top: auto;
+    bottom: 120px;
+    transform: none;
+  }
+
+  .keypadKey {
+    width: 35px;
+    height: 35px;
+    font-size: 12px;
+  }
+
+  .productInfo {
+    width: 280px;
+    padding: 15px;
+    bottom: 80px;
+  }
+
+  .productName {
+    font-size: 18px;
+  }
+
+  .productDescription {
+    font-size: 12px;
+  }
+
+  .instructions {
+    bottom: 15px;
+    font-size: 12px;
+  }
+
+  .slotGrid {
+    gap: 10px;
+    padding: 15px;
+    max-width: 300px;
+  }
+
+  .slotIcon {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 14px;
+  }
+
+  .keypad {
+    display: none;
+  }
+
+  .productInfo {
+    width: 250px;
+    padding: 12px;
+  }
+}
