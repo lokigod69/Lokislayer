@@ -1,0 +1,44 @@
+/* Entry Lobby Styles */
+
+.lobby {
+  position: relative;
+  overflow: hidden;
+}
+
+.backgroundGlow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.15) 0%,
+    rgba(236, 72, 153, 0.1) 30%,
+    transparent 70%
+  );
+  pointer-events: none;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+/* Grid card hover effect */
+.gridCard {
+  transition: all 0.3s ease;
+}
+
+.gridCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -10px rgba(139, 92, 246, 0.3);
+}

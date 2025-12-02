@@ -1,49 +1,49 @@
 # 🏗️ BUILD PROGRESS
 
-## Current Phase: Phase 0 - Project Setup
-## Current Task: 0.1 — Initialize Vite + React + TS
+## Current Phase: Phase 2 - Neural Map (Default Interface)
+## Current Task: 2.1 — Design node layout
 ## Last Updated: 2025-12-02
 
 ---
 
-## Phase 0: Project Setup
-- [ ] 0.1 — Initialize project with Vite + React + TypeScript
-- [ ] 0.2 — Install core dependencies
-- [ ] 0.3 — Configure Tailwind CSS
-- [ ] 0.4 — Create folder structure
-- [ ] 0.5 — Create config files (projects.ts, interfaces.ts)
-- [ ] 0.6 — Create Zustand store
-- [ ] 0.7 — Create type definitions
-- [ ] 0.8 — Set up basic App.tsx structure
-- [ ] 0.9 — Test development server
-- [ ] 0.10 — Initialize Git repository
+## Phase 0: Project Setup ✅ COMPLETE
+- [x] 0.1 — Initialize project with Vite + React + TypeScript
+- [x] 0.2 — Install core dependencies
+- [x] 0.3 — Configure Tailwind CSS
+- [x] 0.4 — Create folder structure
+- [x] 0.5 — Create config files (projects.ts, interfaces.ts)
+- [x] 0.6 — Create Zustand store
+- [x] 0.7 — Create type definitions
+- [x] 0.8 — Set up basic App.tsx structure
+- [x] 0.9 — Test development server
+- [x] 0.10 — Initialize Git repository
 
-### Phase 0 Verification
-- [ ] `npm run dev` shows blank page without errors
-- [ ] TypeScript compiles without errors
-- [ ] Tailwind classes work (test with colored div)
-- [ ] Zustand store accessible in components
+### Phase 0 Verification ✅
+- [x] `npm run dev` shows page without errors (http://localhost:5174)
+- [x] TypeScript compiles without errors
+- [x] Tailwind classes work
+- [x] Zustand store accessible in components
 
 ---
 
-## Phase 1: Core Infrastructure
-- [ ] 1.1 — Create Loader component
-- [ ] 1.2 — Create TransitionWrapper component
-- [ ] 1.3 — Create BackButton component
-- [ ] 1.4 — Create AudioToggle component
-- [ ] 1.5 — Create EntryLobby component (basic)
-- [ ] 1.6 — Create InterfaceGrid component
-- [ ] 1.7 — Create placeholder Dice component
-- [ ] 1.8 — Wire up App.tsx
-- [ ] 1.9 — Create placeholder interface components
-- [ ] 1.10 — Test interface switching
+## Phase 1: Core Infrastructure ✅ COMPLETE
+- [x] 1.1 — Create Loader component
+- [x] 1.2 — Create TransitionWrapper component
+- [x] 1.3 — Create BackButton component
+- [x] 1.4 — Create AudioToggle component
+- [x] 1.5 — Create EntryLobby component (basic)
+- [x] 1.6 — Create InterfaceGrid component
+- [x] 1.7 — Create placeholder Dice component
+- [x] 1.8 — Wire up App.tsx
+- [x] 1.9 — Create placeholder interface components
+- [x] 1.10 — Test interface switching
 
-### Phase 1 Verification
-- [ ] Can see Entry Lobby with all three options
-- [ ] Clicking interface thumbnail loads that placeholder
-- [ ] Back button returns to lobby
-- [ ] Dice click randomly selects an interface
-- [ ] No console errors
+### Phase 1 Verification ✅
+- [x] Can see Entry Lobby with all three options
+- [x] Clicking interface thumbnail loads that placeholder
+- [x] Back button returns to lobby
+- [x] Dice click randomly selects an interface
+- [x] No console errors
 
 ---
 
@@ -184,9 +184,28 @@
 ---
 
 ## Notes & Blockers
-*(Add any issues encountered here)*
+- Used @react-three/fiber@8 and @react-three/drei@9 for React 18 compatibility (needed --legacy-peer-deps)
+- Dev server running on port 5174 (5173 was in use)
 
 ---
 
 ## Completed Features
-*(Move checked items here as you complete them)*
+### Phase 0 ✅
+- Vite + React + TypeScript scaffolding
+- Full folder structure created
+- Zustand store with persist middleware
+- Config files (projects.ts, interfaces.ts) as source of truth
+- All 6 interface placeholder components
+- Basic App.tsx with lobby/interface switching
+- Framer Motion transitions
+- Git repository initialized
+
+### Phase 1 ✅
+- Loader component with spinner animation
+- TransitionWrapper with Framer Motion variants
+- BackButton fixed-position component
+- AudioToggle with mute/unmute icons
+- EntryLobby with background glow effect
+- InterfaceGrid with staggered animations & visited tracking
+- Dice component with rolling animation
+- Clean App.tsx using all extracted components
