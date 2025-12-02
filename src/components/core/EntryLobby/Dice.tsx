@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
+import styles from './styles.module.css';
 
 export default function Dice() {
   const { rollDice } = useStore();
@@ -41,41 +42,34 @@ export default function Dice() {
     <motion.button
       onClick={handleRoll}
       disabled={isRolling}
-      whileHover={{ scale: isRolling ? 1 : 1.05 }}
-      whileTap={{ scale: isRolling ? 1 : 0.95 }}
-      className={`
-        relative px-6 sm:px-8 py-3 sm:py-4 rounded-xl text-lg sm:text-xl font-bold
-        transition-all overflow-hidden
-        ${isRolling
-          ? 'bg-gradient-to-r from-purple-600 to-pink-600 cursor-wait'
-          : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500'
-        }
-      `}
+      whileHover={{ scale: isRolling ? 1 : 1.02 }}
+      whileTap={{ scale: isRolling ? 1 : 0.98 }}
+      className={styles.diceButton}
     >
       <AnimatePresence mode="wait">
-        <motion.span
+        <motion.div
           key={currentFace}
           initial={{ rotateX: -90, opacity: 0 }}
           animate={{ rotateX: 0, opacity: 1 }}
           exit={{ rotateX: 90, opacity: 0 }}
           transition={{ duration: 0.1 }}
-          className="flex items-center gap-2"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}
         >
-          <span className={`text-2xl ${isRolling ? 'animate-bounce' : ''}`}>
+          <span
+            className={styles.diceIcon}
+            style={{
+              display: 'inline-block',
+              animation: isRolling ? 'bounce 0.3s infinite' : 'none'
+            }}
+          >
             {diceFaces[currentFace - 1]}
           </span>
           <span>{isRolling ? 'Rolling...' : 'Roll the Dice'}</span>
-        </motion.span>
+        </motion.div>
       </AnimatePresence>
 
       {/* Shimmer effect */}
-      {isRolling && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-          animate={{ x: ['-100%', '100%'] }}
-          transition={{ repeat: Infinity, duration: 0.8, ease: 'linear' }}
-        />
-      )}
+      {isRolling && <div className={styles.shimmer} />}
     </motion.button>
   );
 }
