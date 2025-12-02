@@ -1,0 +1,293 @@
+/* Anatomical Map - Da Vinci Style Body Exploration */
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #f4e4c8;
+  background-image:
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4c4a8' fill-opacity='0.3'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Parchment texture overlay */
+.parchmentOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 0%, rgba(139, 90, 43, 0.1) 100%);
+  pointer-events: none;
+}
+
+/* Ink splatter decoration */
+.inkSplatters {
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image:
+    radial-gradient(circle at 10% 20%, #2a1a0a 0%, transparent 3%),
+    radial-gradient(circle at 85% 15%, #2a1a0a 0%, transparent 2%),
+    radial-gradient(circle at 70% 80%, #2a1a0a 0%, transparent 4%),
+    radial-gradient(circle at 20% 70%, #2a1a0a 0%, transparent 2%);
+  pointer-events: none;
+}
+
+/* Title */
+.title {
+  position: absolute;
+  top: 20px;
+  font-family: 'Times New Roman', serif;
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: #5a4a3a;
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+/* Body container */
+.bodyContainer {
+  position: relative;
+  width: 300px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Body figure SVG wrapper */
+.bodySvg {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Hotspot areas */
+.hotspot {
+  position: absolute;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hotspot::before {
+  content: '';
+  position: absolute;
+  inset: -5px;
+  border: 2px dashed transparent;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.hotspot:hover::before {
+  border-color: #8b5a2b;
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  100% { transform: rotate(360deg); }
+}
+
+.hotspotInner {
+  width: 40px;
+  height: 40px;
+  background: rgba(139, 90, 43, 0.1);
+  border: 2px solid #8b5a2b;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.hotspot:hover .hotspotInner {
+  background: rgba(139, 90, 43, 0.3);
+  transform: scale(1.2);
+  box-shadow: 0 0 20px rgba(139, 90, 43, 0.3);
+}
+
+/* Reveal effect */
+.hotspotReveal {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, #2a1a0a 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hotspot:hover .hotspotReveal {
+  opacity: 1;
+}
+
+.hotspotReveal span {
+  color: #ffd700;
+  font-size: 16px;
+  text-shadow: 0 0 10px #ffd700;
+}
+
+/* Body part positions */
+.ear { top: 15%; left: 15%; }
+.brain { top: 8%; left: 50%; transform: translateX(-50%); }
+.mouth { top: 25%; left: 50%; transform: translateX(-50%); }
+.heart { top: 40%; left: 50%; transform: translateX(-50%); }
+.hands { top: 55%; left: 75%; }
+.eye { top: 18%; left: 70%; }
+
+/* Tooltip/Preview */
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 15px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  padding: 15px;
+  background: #f9f3e3;
+  border: 2px solid #8b5a2b;
+  border-radius: 4px;
+  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  font-family: 'Times New Roman', serif;
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-top-color: #8b5a2b;
+}
+
+.tooltipTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #3a2a1a;
+  margin-bottom: 5px;
+  font-style: italic;
+}
+
+.tooltipDescription {
+  font-size: 12px;
+  color: #5a4a3a;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.tooltipBodyPart {
+  font-size: 10px;
+  color: #8b5a2b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.tooltipButton {
+  width: 100%;
+  padding: 8px;
+  background: #8b5a2b;
+  border: none;
+  color: #f9f3e3;
+  font-family: 'Times New Roman', serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tooltipButton:hover {
+  background: #6a4a2b;
+}
+
+.tooltipButton:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+/* Connection lines */
+.connectionLines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.connectionLine {
+  stroke: #8b5a2b;
+  stroke-width: 1;
+  stroke-dasharray: 5, 5;
+  fill: none;
+}
+
+/* Da Vinci style annotations */
+.annotation {
+  position: absolute;
+  font-family: 'Times New Roman', serif;
+  font-size: 10px;
+  color: #8b5a2b;
+  font-style: italic;
+  transform: rotate(-5deg);
+  opacity: 0.6;
+}
+
+.annotation1 { top: 10%; right: 10%; }
+.annotation2 { bottom: 20%; left: 5%; }
+.annotation3 { top: 50%; right: 5%; }
+
+/* Instructions */
+.instructions {
+  position: absolute;
+  bottom: 20px;
+  font-family: 'Times New Roman', serif;
+  font-size: 12px;
+  color: #8b5a2b;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .bodyContainer {
+    width: 250px;
+    height: 420px;
+  }
+
+  .hotspotInner {
+    width: 35px;
+    height: 35px;
+    font-size: 16px;
+  }
+
+  .tooltip {
+    width: 180px;
+    padding: 12px;
+  }
+
+  .annotation {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .bodyContainer {
+    width: 200px;
+    height: 350px;
+  }
+
+  .hotspotInner {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+}
