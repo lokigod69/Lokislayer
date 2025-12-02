@@ -1,8 +1,20 @@
-// Placeholder - Retro OS Interface
+// src/components/interfaces/RetroOS/index.tsx
+
+import { useState, useCallback } from 'react';
+import BootSequence from './BootSequence';
+import Desktop from './Desktop';
+
 export default function RetroOS() {
+  const [booted, setBooted] = useState(false);
+
+  const handleBootComplete = useCallback(() => {
+    setBooted(true);
+  }, []);
+
   return (
-    <div className="w-full h-full flex items-center justify-center bg-teal-700">
-      <h1 className="text-4xl text-white font-bold">Retro OS</h1>
+    <div className="w-full h-full">
+      {!booted && <BootSequence onComplete={handleBootComplete} />}
+      {booted && <Desktop />}
     </div>
   );
 }
