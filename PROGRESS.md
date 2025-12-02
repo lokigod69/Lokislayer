@@ -1,7 +1,7 @@
 # 🏗️ BUILD PROGRESS
 
-## Current Phase: Phase 3B - Pirate Broadcast
-## Current Task: 3B.1 — Create RadioDial component
+## Current Phase: Phase 3C - Control Room
+## Current Task: 3C.1 — Create Panel component
 ## Last Updated: 2025-12-02
 
 ---
@@ -83,16 +83,16 @@
 
 ---
 
-## Phase 3B: Pirate Broadcast
-- [ ] 3B.1 — Create RadioDial component
-- [ ] 3B.2 — Create SignalVisualizer component
-- [ ] 3B.3 — Create frequency-to-project mapping
-- [ ] 3B.4 — Wire up main PirateBroadcast component
-- [ ] 3B.5 — Add audio feedback (optional)
-- [ ] 3B.6 — Style with CSS Module
-- [ ] 3B.7 — Add tuned-in state
-- [ ] 3B.8 — Mobile adaptation
-- [ ] 3B.9 — Test all frequencies
+## Phase 3B: Pirate Broadcast ✅ COMPLETE
+- [x] 3B.1 — Create RadioDial component
+- [x] 3B.2 — Create SignalVisualizer component
+- [x] 3B.3 — Create frequency-to-project mapping
+- [x] 3B.4 — Wire up main PirateBroadcast component
+- [x] 3B.5 — Add audio feedback (skipped for now)
+- [x] 3B.6 — Style with CSS Module
+- [x] 3B.7 — Add tuned-in state
+- [x] 3B.8 — Mobile adaptation
+- [x] 3B.9 — Test all frequencies
 
 ---
 
@@ -229,3 +229,12 @@
 - Taskbar with clock & open windows
 - Full Win95 CSS aesthetic
 - Mobile responsive (full-screen windows)
+
+### Phase 3B ✅
+- Clandestine radio tuner interface
+- Draggable rotary dial for frequency tuning
+- Signal visualizer with static noise effect
+- Frequency-to-project mapping
+- Tuned-in state with project info
+- Scanlines and vignette CRT effects
+- Mobile-responsive design

@@ -1,0 +1,350 @@
+/* Pirate Broadcast - Clandestine Radio Tuner */
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 50%, #000 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+}
+
+/* Scanlines overlay */
+.scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* Vignette effect */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.8) 100%);
+  pointer-events: none;
+  z-index: 99;
+}
+
+/* Title */
+.title {
+  position: absolute;
+  top: 20px;
+  font-size: 12px;
+  letter-spacing: 4px;
+  color: #22c55e;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px #22c55e;
+  z-index: 10;
+}
+
+/* Entry message */
+.entryMessage {
+  position: absolute;
+  top: 60px;
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  max-width: 400px;
+  line-height: 1.6;
+}
+
+/* Main radio unit */
+.radioUnit {
+  position: relative;
+  width: 400px;
+  padding: 30px;
+  background: linear-gradient(145deg, #2a2a3a, #1a1a2a);
+  border: 4px solid #333;
+  border-radius: 20px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Frequency display */
+.frequencyDisplay {
+  background: #000;
+  border: 3px inset #222;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.frequencyValue {
+  font-size: 48px;
+  font-weight: bold;
+  color: #22c55e;
+  text-shadow: 0 0 20px #22c55e;
+  font-family: 'Digital', 'Courier New', monospace;
+}
+
+.frequencyLabel {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+  letter-spacing: 2px;
+}
+
+/* Signal visualizer */
+.visualizer {
+  height: 80px;
+  background: #000;
+  border: 3px inset #222;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.staticNoise {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.3;
+  animation: noiseAnim 0.1s steps(5) infinite;
+}
+
+@keyframes noiseAnim {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(-5%, -5%); }
+  40% { transform: translate(5%, 5%); }
+  60% { transform: translate(-5%, 5%); }
+  80% { transform: translate(5%, -5%); }
+  100% { transform: translate(0, 0); }
+}
+
+.signalBars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+  padding: 10px;
+}
+
+.signalBar {
+  width: 8px;
+  background: linear-gradient(to top, #22c55e, #4ade80);
+  border-radius: 2px;
+  transition: height 0.1s ease;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+}
+
+/* Radio dial */
+.dialContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dial {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(145deg, #444, #222);
+  border-radius: 50%;
+  border: 4px solid #555;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  position: relative;
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.5),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.2s;
+}
+
+.dial:hover {
+  box-shadow:
+    0 5px 20px rgba(34, 197, 94, 0.3),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.dial:active {
+  cursor: grabbing;
+}
+
+.dialKnob {
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at 30% 30%, #666, #333);
+  border-radius: 50%;
+  position: relative;
+}
+
+.dialIndicator {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 20px;
+  background: #22c55e;
+  border-radius: 2px;
+  box-shadow: 0 0 10px #22c55e;
+}
+
+.dialLabel {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Tuned state */
+.tunedInfo {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid #22c55e;
+  border-radius: 8px;
+  padding: 15px;
+  text-align: center;
+  animation: tuneIn 0.3s ease;
+}
+
+@keyframes tuneIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.tunedTitle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #22c55e;
+  margin-bottom: 8px;
+  text-shadow: 0 0 10px #22c55e;
+}
+
+.tunedDescription {
+  font-size: 12px;
+  color: #888;
+  margin-bottom: 15px;
+}
+
+.tunedStatus {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 15px;
+}
+
+.statusLive {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 1px solid #22c55e;
+}
+
+.statusComingSoon {
+  background: rgba(234, 179, 8, 0.2);
+  color: #eab308;
+  border: 1px solid #eab308;
+}
+
+.enterButton {
+  padding: 10px 30px;
+  background: #22c55e;
+  border: none;
+  border-radius: 5px;
+  color: #000;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.enterButton:hover {
+  background: #4ade80;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.5);
+}
+
+.enterButton:disabled {
+  background: #444;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* Untuned state */
+.searchingText {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.searchingText span {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Frequency markers */
+.frequencyMarkers {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  margin-top: 10px;
+}
+
+.frequencyMarker {
+  font-size: 10px;
+  color: #444;
+}
+
+/* Instructions */
+.instructions {
+  position: absolute;
+  bottom: 20px;
+  font-size: 11px;
+  color: #444;
+  text-align: center;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .radioUnit {
+    width: 90%;
+    max-width: 350px;
+    padding: 20px;
+  }
+
+  .frequencyValue {
+    font-size: 36px;
+  }
+
+  .dial {
+    width: 100px;
+    height: 100px;
+  }
+
+  .dialKnob {
+    width: 70px;
+    height: 70px;
+  }
+
+  .entryMessage {
+    font-size: 12px;
+    padding: 0 20px;
+  }
+}
