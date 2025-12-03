@@ -1,4 +1,4 @@
-/* Vending Machine - Retro Neon Arcade Style */
+/* Vending Machine - 2D Neon Arcade Style */
 
 .container {
   position: relative;
@@ -6,6 +6,11 @@
   height: 100%;
   background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
 }
 
 /* Neon grid floor effect */
@@ -15,143 +20,17 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 40%;
+  height: 30%;
   background:
     linear-gradient(90deg, transparent 49.5%, rgba(0, 255, 255, 0.1) 49.5%, rgba(0, 255, 255, 0.1) 50.5%, transparent 50.5%),
     linear-gradient(0deg, transparent 49.5%, rgba(0, 255, 255, 0.1) 49.5%, rgba(0, 255, 255, 0.1) 50.5%, transparent 50.5%);
-  background-size: 50px 50px;
-  transform: perspective(500px) rotateX(60deg);
+  background-size: 40px 40px;
+  transform: perspective(400px) rotateX(60deg);
   transform-origin: center bottom;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
-/* Canvas container */
-.canvasContainer {
-  position: absolute;
-  inset: 0;
-}
-
-/* HUD Overlay */
-.hud {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  font-family: 'Courier New', monospace;
-}
-
-/* Title */
-.title {
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 24px;
-  font-weight: bold;
-  color: #00ffff;
-  text-shadow:
-    0 0 10px #00ffff,
-    0 0 20px #00ffff,
-    0 0 40px #00ffff;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-}
-
-/* Credit display */
-.credits {
-  position: absolute;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 8px 20px;
-  background: rgba(0, 0, 0, 0.8);
-  border: 2px solid #ff00ff;
-  border-radius: 4px;
-  font-size: 16px;
-  color: #ff00ff;
-  text-shadow: 0 0 10px #ff00ff;
-}
-
-/* Product info panel */
-.productInfo {
-  position: absolute;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 300px;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.9);
-  border: 2px solid #00ff00;
-  border-radius: 8px;
-  text-align: center;
-  pointer-events: auto;
-}
-
-.productName {
-  font-size: 20px;
-  font-weight: bold;
-  color: #00ff00;
-  text-shadow: 0 0 10px #00ff00;
-  margin-bottom: 10px;
-}
-
-.productDescription {
-  font-size: 14px;
-  color: #aaffaa;
-  line-height: 1.5;
-  margin-bottom: 15px;
-}
-
-.productSlot {
-  font-size: 12px;
-  color: #666;
-  margin-bottom: 15px;
-}
-
-.dispenseButton {
-  padding: 12px 30px;
-  background: linear-gradient(180deg, #00ff00 0%, #00aa00 100%);
-  border: none;
-  border-radius: 4px;
-  color: #000;
-  font-family: 'Courier New', monospace;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  text-transform: uppercase;
-  transition: all 0.2s;
-  box-shadow:
-    0 0 10px #00ff00,
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.dispenseButton:hover {
-  transform: scale(1.05);
-  box-shadow:
-    0 0 20px #00ff00,
-    0 0 40px #00ff00,
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.dispenseButton:disabled {
-  background: linear-gradient(180deg, #666 0%, #444 100%);
-  color: #888;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Instructions */
-.instructions {
-  position: absolute;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14px;
-  color: #00ffff;
-  text-shadow: 0 0 5px #00ffff;
-  opacity: 0.8;
-}
-
-/* Scanlines effect */
+/* Scanlines */
 .scanlines {
   position: absolute;
   inset: 0;
@@ -164,231 +43,456 @@
   );
   pointer-events: none;
   opacity: 0.3;
+  z-index: 100;
 }
 
-/* Vignette */
-.vignette {
+/* Main machine */
+.machine {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(180deg, #2a2a4a 0%, #1a1a2e 100%);
+  border: 4px solid #3a3a5a;
+  border-radius: 20px;
+  padding: 1rem;
+  box-shadow:
+    0 0 40px rgba(0, 255, 255, 0.2),
+    0 0 80px rgba(255, 0, 255, 0.1),
+    inset 0 0 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Top sign */
+.topSign {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  padding: 10px 30px;
+  background: linear-gradient(180deg, #ff00ff 0%, #aa00aa 100%);
+  border-radius: 10px;
+  box-shadow:
+    0 0 20px #ff00ff,
+    0 0 40px rgba(255, 0, 255, 0.5);
+}
+
+.signText {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 10px white;
+  letter-spacing: 3px;
+}
+
+.signSubtext {
+  display: block;
+  font-family: 'Courier New', monospace;
+  font-size: 0.625rem;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 2px;
+  margin-top: 2px;
+}
+
+/* Digital display */
+.display {
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+}
+
+.displayScreen {
+  background: #000;
+  border: 3px solid #00ff00;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-family: 'Courier New', monospace;
+  text-align: center;
+  box-shadow:
+    inset 0 0 20px rgba(0, 255, 0, 0.2),
+    0 0 10px rgba(0, 255, 0, 0.3);
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.displaySlot {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+}
+
+.displayName {
+  font-size: 1rem;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.displayIdle {
+  font-size: 1rem;
+  color: #666;
+  animation: blink 1s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Product grid */
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 2px solid #3a3a5a;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+/* Product slot */
+.productSlot {
+  position: relative;
+  aspect-ratio: 1;
+  background: linear-gradient(180deg, #1a1a2e 0%, #0a0a1a 100%);
+  border: 3px solid #444;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.productSlot:hover {
+  border-color: #00ffff;
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.3),
+    inset 0 0 30px rgba(0, 255, 255, 0.1);
+}
+
+.productSlot.selected {
+  border-color: #00ff00;
+  box-shadow:
+    0 0 30px rgba(0, 255, 0, 0.5),
+    inset 0 0 40px rgba(0, 255, 0, 0.15);
+}
+
+.productSlot.comingSoon {
+  opacity: 0.6;
+}
+
+.slotLabel {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+
+.productIcon {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+}
+
+.productName {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.comingSoonBadge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.5rem;
+  font-weight: bold;
+  color: #ff6600;
+  background: rgba(255, 102, 0, 0.2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #ff6600;
+}
+
+.selectionGlow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
-  pointer-events: none;
+  border-radius: 10px;
+  background: radial-gradient(circle at center, rgba(0, 255, 0, 0.2) 0%, transparent 70%);
+  animation: pulseGlow 1s ease-in-out infinite;
 }
 
-/* Dispensing animation overlay */
-.dispensingOverlay {
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Control panel */
+.controlPanel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 15px;
+  background: linear-gradient(180deg, #333 0%, #222 100%);
+  border: 2px solid #444;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.coinSlot {
+  flex: 1;
+  text-align: center;
+}
+
+.coinSlotInner {
+  display: inline-block;
+  padding: 8px 15px;
+  background: #000;
+  border: 2px solid #666;
+  border-radius: 8px;
+  position: relative;
+}
+
+.coinSlotInner span {
+  font-family: 'Courier New', monospace;
+  font-size: 0.625rem;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.coinSlotInner::before {
+  content: '';
   position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background: #333;
+  border: 1px solid #555;
+  border-radius: 2px;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 10px;
+}
+
+.vendButton {
+  padding: 12px 25px;
+  background: linear-gradient(180deg, #00ff00 0%, #00aa00 100%);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #000;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow:
+    0 0 15px #00ff00,
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.2s;
+}
+
+.vendButton:hover:not(.disabled) {
+  box-shadow:
+    0 0 25px #00ff00,
+    0 0 50px rgba(0, 255, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+}
+
+.vendButton.disabled {
+  background: linear-gradient(180deg, #555 0%, #333 100%);
+  color: #888;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.clearButton {
+  padding: 12px 15px;
+  background: linear-gradient(180deg, #ff4444 0%, #aa0000 100%);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow:
+    0 0 10px rgba(255, 0, 0, 0.5),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+.clearButton:hover {
+  box-shadow:
+    0 0 20px rgba(255, 0, 0, 0.7),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Dispense tray */
+.dispenseTray {
+  background: #000;
+  border: 3px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.trayOpening {
+  height: 80px;
+  background: linear-gradient(180deg, #111 0%, #000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 2px solid #222;
+}
+
+.dispensedItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.dispensedIcon {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.8));
+}
+
+.dispensedText {
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.trayLabel {
+  padding: 8px;
+  text-align: center;
+  font-family: 'Courier New', monospace;
+  font-size: 0.625rem;
+  color: #00ff00;
+  text-shadow: 0 0 5px #00ff00;
+  letter-spacing: 2px;
+}
+
+/* Frame decorations */
+.frameLeft,
+.frameRight {
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  width: 8px;
+  background: linear-gradient(180deg, #ff00ff 0%, #00ffff 100%);
+  border-radius: 4px;
+  opacity: 0.3;
+}
+
+.frameLeft {
+  left: -4px;
+}
+
+.frameRight {
+  right: -4px;
+}
+
+/* Dispensing overlay */
+.dispensingOverlay {
+  position: fixed;
   inset: 0;
   background: rgba(0, 255, 0, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: flash 0.5s ease-in-out;
-}
-
-@keyframes flash {
-  0%, 100% { opacity: 0; }
-  50% { opacity: 1; }
+  z-index: 50;
 }
 
 .dispensingText {
-  font-size: 32px;
+  font-family: 'Courier New', monospace;
+  font-size: 2.5rem;
   font-weight: bold;
   color: #00ff00;
   text-shadow:
     0 0 20px #00ff00,
-    0 0 40px #00ff00;
-  animation: pulse 0.5s ease-in-out infinite;
+    0 0 40px #00ff00,
+    0 0 60px #00ff00;
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-/* Keypad styles */
-.keypad {
-  position: absolute;
-  right: 30px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  padding: 15px;
-  background: rgba(0, 0, 0, 0.9);
-  border: 2px solid #ff00ff;
-  border-radius: 8px;
-  pointer-events: auto;
-}
-
-.keypadKey {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(180deg, #333 0%, #222 100%);
-  border: 2px solid #666;
-  border-radius: 4px;
-  color: #fff;
+/* Instructions */
+.instructions {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Courier New', monospace;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.1s;
-}
-
-.keypadKey:hover {
-  background: linear-gradient(180deg, #444 0%, #333 100%);
-  border-color: #ff00ff;
-  box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
-}
-
-.keypadKey:active {
-  transform: scale(0.95);
-}
-
-.keypadDisplay {
-  grid-column: span 3;
-  padding: 8px;
-  background: #000;
-  border: 2px solid #00ff00;
-  border-radius: 4px;
-  color: #00ff00;
-  font-family: 'Courier New', monospace;
-  font-size: 18px;
-  text-align: center;
-  margin-bottom: 5px;
-  text-shadow: 0 0 5px #00ff00;
-  min-height: 24px;
-}
-
-/* Slot labels for 2D fallback */
-.slotGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  gap: 15px;
-  padding: 20px;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.slot {
-  aspect-ratio: 1;
-  background: linear-gradient(180deg, #1a1a2e 0%, #0a0a1a 100%);
-  border: 3px solid #333;
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s;
-  position: relative;
-  overflow: hidden;
-}
-
-.slot:hover {
-  border-color: #00ffff;
-  box-shadow:
-    0 0 20px rgba(0, 255, 255, 0.3),
-    inset 0 0 30px rgba(0, 255, 255, 0.1);
-  transform: scale(1.02);
-}
-
-.slot.selected {
-  border-color: #00ff00;
-  box-shadow:
-    0 0 30px rgba(0, 255, 0, 0.5),
-    inset 0 0 30px rgba(0, 255, 0, 0.2);
-}
-
-.slotLabel {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  font-size: 12px;
+  font-size: 0.875rem;
   color: #00ffff;
-  font-weight: bold;
+  text-shadow: 0 0 10px #00ffff;
+  opacity: 0.8;
+  z-index: 10;
 }
 
-.slotIcon {
-  font-size: 40px;
-  margin-bottom: 10px;
-}
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .machine {
+    max-width: 340px;
+    padding: 0.75rem;
+  }
 
-.slotName {
-  font-size: 12px;
-  color: #aaa;
-  text-align: center;
-}
+  .topSign {
+    top: -40px;
+    padding: 8px 20px;
+  }
 
-/* Mobile styles */
-@media (max-width: 768px) {
-  .title {
-    font-size: 18px;
+  .signText {
+    font-size: 1rem;
     letter-spacing: 2px;
   }
 
-  .credits {
-    top: 55px;
-    font-size: 14px;
-    padding: 6px 15px;
+  .productGrid {
+    gap: 8px;
+    padding: 10px;
   }
 
-  .keypad {
-    position: fixed;
-    right: 10px;
-    top: auto;
-    bottom: 120px;
-    transform: none;
-  }
-
-  .keypadKey {
-    width: 35px;
-    height: 35px;
-    font-size: 12px;
-  }
-
-  .productInfo {
-    width: 280px;
-    padding: 15px;
-    bottom: 80px;
+  .productIcon {
+    font-size: 2rem;
   }
 
   .productName {
-    font-size: 18px;
+    font-size: 0.625rem;
   }
 
-  .productDescription {
-    font-size: 12px;
+  .controlPanel {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .vendButton {
+    padding: 10px 20px;
+    font-size: 0.875rem;
   }
 
   .instructions {
-    bottom: 15px;
-    font-size: 12px;
-  }
-
-  .slotGrid {
-    gap: 10px;
-    padding: 15px;
-    max-width: 300px;
-  }
-
-  .slotIcon {
-    font-size: 30px;
-  }
-}
-
-@media (max-width: 480px) {
-  .title {
-    font-size: 14px;
-  }
-
-  .keypad {
-    display: none;
-  }
-
-  .productInfo {
-    width: 250px;
-    padding: 12px;
+    font-size: 0.75rem;
+    bottom: 10px;
   }
 }

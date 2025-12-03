@@ -1,181 +1,239 @@
 // src/components/interfaces/VendingMachine/index.tsx
+// Redesigned as 2D CSS vending machine
 
-import { useState, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Environment, PerspectiveCamera } from '@react-three/drei';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects, Project } from '../../../config/projects';
-import Machine from './Machine';
-import Keypad from './Keypad';
 import styles from './styles.module.css';
 
-// Product type to emoji mapping
-const productEmojis: Record<string, string> = {
-  cassette: '📼',
-  'pill-bottle': '💊',
-  spellbook: '📖',
-  coin: '🪙',
-  viewmaster: '🔭',
-  vhs: '📹',
+// Product icons for each project
+const projectIcons: Record<string, string> = {
+  lokitunes: '🎵',
+  matrixarena: '💊',
+  vocapp: '📚',
+  bountyhunter: '🎯',
+  crym: '🖼️',
+  podcast: '🎧',
 };
+
+// Slot codes in order
+const slotCodes = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 export default function VendingMachine() {
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDispensing, setIsDispensing] = useState(false);
+  const [dispensedProject, setDispensedProject] = useState<Project | null>(null);
 
-  const handleSlotSelect = (slot: string, project: Project) => {
-    setSelectedSlot(slot);
-    setSelectedProject(project);
-  };
+  const getProjectForSlot = useCallback((slot: string): Project | undefined => {
+    return projects.find((p) => p.mappings.vendingMachine.slot === slot);
+  }, []);
 
-  const handleKeypadSelect = (code: string) => {
-    const project = projects.find((p) => p.mappings.vendingMachine.slot === code);
+  const handleSlotClick = useCallback((slot: string) => {
+    const project = getProjectForSlot(slot);
     if (project) {
-      handleSlotSelect(code, project);
+      setSelectedSlot(slot);
+      setSelectedProject(project);
     }
-  };
+  }, [getProjectForSlot]);
 
-  const handleDispense = () => {
-    if (!selectedProject) return;
+  const handleInsertCoin = useCallback(() => {
+    if (!selectedProject || isDispensing) return;
 
     setIsDispensing(true);
 
-    // Simulate dispensing animation
+    // Dispense animation
     setTimeout(() => {
+      setDispensedProject(selectedProject);
       setIsDispensing(false);
-      if (selectedProject.status === 'live') {
-        window.open(selectedProject.url, '_blank', 'noopener,noreferrer');
-      }
-      setSelectedSlot(null);
-      setSelectedProject(null);
+
+      // Navigate after showing dispensed item
+      setTimeout(() => {
+        if (selectedProject.status === 'live') {
+          window.open(selectedProject.url, '_blank', 'noopener,noreferrer');
+        }
+        setSelectedSlot(null);
+        setSelectedProject(null);
+        setDispensedProject(null);
+      }, 2000);
     }, 1500);
-  };
+  }, [selectedProject, isDispensing]);
+
+  const handleClear = useCallback(() => {
+    setSelectedSlot(null);
+    setSelectedProject(null);
+  }, []);
 
   return (
     <div className={styles.container}>
-      {/* Scanlines */}
+      {/* Scanlines overlay */}
       <div className={styles.scanlines} />
 
-      {/* Vignette */}
-      <div className={styles.vignette} />
+      {/* Main vending machine */}
+      <motion.div
+        className={styles.machine}
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* Top sign */}
+        <div className={styles.topSign}>
+          <span className={styles.signText}>VEND-O-MATIC</span>
+          <span className={styles.signSubtext}>SELECT YOUR DESTINATION</span>
+        </div>
 
-      {/* 3D Canvas */}
-      <div className={styles.canvasContainer}>
-        <Canvas shadows>
-          <PerspectiveCamera makeDefault position={[0, 0, 4]} fov={50} />
-          <OrbitControls
-            enablePan={false}
-            enableZoom={false}
-            minPolarAngle={Math.PI / 3}
-            maxPolarAngle={Math.PI / 2}
-            minAzimuthAngle={-Math.PI / 6}
-            maxAzimuthAngle={Math.PI / 6}
-          />
-
-          {/* Lighting */}
-          <ambientLight intensity={0.2} />
-          <spotLight
-            position={[0, 5, 5]}
-            angle={0.3}
-            penumbra={1}
-            intensity={1}
-            castShadow
-          />
-          <pointLight position={[-3, 2, 2]} color="#00ffff" intensity={0.5} />
-          <pointLight position={[3, 2, 2]} color="#ff00ff" intensity={0.5} />
-
-          <Suspense fallback={null}>
-            <Machine
-              selectedSlot={selectedSlot}
-              onSlotClick={handleSlotSelect}
-            />
-            <Environment preset="night" />
-          </Suspense>
-        </Canvas>
-      </div>
-
-      {/* HUD */}
-      <div className={styles.hud}>
-        {/* Title */}
-        <motion.div
-          className={styles.title}
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          Vending Machine
-        </motion.div>
-
-        {/* Credits */}
-        <motion.div
-          className={styles.credits}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-        >
-          INSERT COIN ▶ FREE PLAY
-        </motion.div>
-
-        {/* Keypad */}
-        <Keypad onSelect={handleKeypadSelect} />
-
-        {/* Product Info */}
-        <AnimatePresence>
-          {selectedProject && (
-            <motion.div
-              className={styles.productInfo}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-            >
-              <div className={styles.productSlot}>
-                {productEmojis[selectedProject.mappings.vendingMachine.productType]}{' '}
-                SLOT {selectedProject.mappings.vendingMachine.slot}
-              </div>
-              <div className={styles.productName}>{selectedProject.name}</div>
-              <div className={styles.productDescription}>
-                {selectedProject.description}
-              </div>
-              <button
-                className={styles.dispenseButton}
-                onClick={handleDispense}
-                disabled={isDispensing || selectedProject.status !== 'live'}
+        {/* Digital display */}
+        <div className={styles.display}>
+          <div className={styles.displayScreen}>
+            {isDispensing ? (
+              <motion.span
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ repeat: Infinity, duration: 0.3 }}
               >
-                {isDispensing
-                  ? 'DISPENSING...'
-                  : selectedProject.status === 'live'
-                  ? 'DISPENSE'
-                  : 'COMING SOON'}
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                DISPENSING...
+              </motion.span>
+            ) : selectedProject ? (
+              <>
+                <span className={styles.displaySlot}>{selectedSlot}</span>
+                <span className={styles.displayName}>{selectedProject.name}</span>
+              </>
+            ) : (
+              <span className={styles.displayIdle}>SELECT ITEM</span>
+            )}
+          </div>
+        </div>
 
-        {/* Dispensing overlay */}
-        <AnimatePresence>
-          {isDispensing && (
-            <motion.div
-              className={styles.dispensingOverlay}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+        {/* Product grid */}
+        <div className={styles.productGrid}>
+          {slotCodes.map((slot) => {
+            const project = getProjectForSlot(slot);
+            if (!project) return null;
+
+            const isSelected = selectedSlot === slot;
+            const icon = projectIcons[project.id] || '📦';
+
+            return (
+              <motion.button
+                key={slot}
+                className={`${styles.productSlot} ${isSelected ? styles.selected : ''} ${
+                  project.status === 'coming-soon' ? styles.comingSoon : ''
+                }`}
+                onClick={() => handleSlotClick(slot)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {/* Slot label */}
+                <div className={styles.slotLabel}>{slot}</div>
+
+                {/* Product icon */}
+                <div className={styles.productIcon}>{icon}</div>
+
+                {/* Product name */}
+                <div className={styles.productName}>{project.name}</div>
+
+                {/* Status badge */}
+                {project.status === 'coming-soon' && (
+                  <div className={styles.comingSoonBadge}>SOON</div>
+                )}
+
+                {/* Selection glow */}
+                {isSelected && <div className={styles.selectionGlow} />}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        {/* Control panel */}
+        <div className={styles.controlPanel}>
+          {/* Coin slot */}
+          <div className={styles.coinSlot}>
+            <div className={styles.coinSlotInner}>
+              <span>INSERT COIN</span>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className={styles.actionButtons}>
+            <motion.button
+              className={`${styles.vendButton} ${!selectedProject || isDispensing ? styles.disabled : ''}`}
+              onClick={handleInsertCoin}
+              disabled={!selectedProject || isDispensing || selectedProject?.status === 'coming-soon'}
+              whileHover={selectedProject && !isDispensing ? { scale: 1.05 } : {}}
+              whileTap={selectedProject && !isDispensing ? { scale: 0.95 } : {}}
             >
-              <div className={styles.dispensingText}>★ VENDING ★</div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              {isDispensing ? 'VENDING...' : 'VEND'}
+            </motion.button>
 
-        {/* Instructions */}
-        <motion.div
-          className={styles.instructions}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-        >
-          Click products or use keypad • Drag to rotate view
-        </motion.div>
-      </div>
+            <motion.button
+              className={styles.clearButton}
+              onClick={handleClear}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              CLR
+            </motion.button>
+          </div>
+        </div>
+
+        {/* Dispense tray */}
+        <div className={styles.dispenseTray}>
+          <div className={styles.trayOpening}>
+            <AnimatePresence>
+              {dispensedProject && (
+                <motion.div
+                  className={styles.dispensedItem}
+                  initial={{ y: -100, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 50, opacity: 0 }}
+                  transition={{ type: 'spring', damping: 15 }}
+                >
+                  <span className={styles.dispensedIcon}>
+                    {projectIcons[dispensedProject.id] || '📦'}
+                  </span>
+                  <span className={styles.dispensedText}>
+                    {dispensedProject.name}
+                  </span>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          <div className={styles.trayLabel}>▼ COLLECT HERE ▼</div>
+        </div>
+
+        {/* Machine frame decorations */}
+        <div className={styles.frameLeft} />
+        <div className={styles.frameRight} />
+      </motion.div>
+
+      {/* Dispensing overlay */}
+      <AnimatePresence>
+        {isDispensing && (
+          <motion.div
+            className={styles.dispensingOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className={styles.dispensingText}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ repeat: Infinity, duration: 0.5 }}
+            >
+              ★ VENDING ★
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Instructions */}
+      <motion.div
+        className={styles.instructions}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1 }}
+      >
+        Click a product to select • Press VEND to dispense
+      </motion.div>
     </div>
   );
 }
