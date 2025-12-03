@@ -1,4 +1,4 @@
-/* Anatomical Map - Da Vinci Style Body Exploration */
+/* Anatomical Map - Da Vinci Vitruvian Man Style */
 
 .container {
   position: relative;
@@ -19,7 +19,7 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse at center, transparent 0%, rgba(139, 90, 43, 0.1) 100%);
+    radial-gradient(ellipse at center, transparent 0%, rgba(139, 90, 43, 0.15) 100%);
   pointer-events: none;
 }
 
@@ -27,40 +27,37 @@
 .inkSplatters {
   position: absolute;
   inset: 0;
-  opacity: 0.05;
+  opacity: 0.04;
   background-image:
     radial-gradient(circle at 10% 20%, #2a1a0a 0%, transparent 3%),
     radial-gradient(circle at 85% 15%, #2a1a0a 0%, transparent 2%),
     radial-gradient(circle at 70% 80%, #2a1a0a 0%, transparent 4%),
-    radial-gradient(circle at 20% 70%, #2a1a0a 0%, transparent 2%);
+    radial-gradient(circle at 20% 70%, #2a1a0a 0%, transparent 2%),
+    radial-gradient(circle at 50% 90%, #2a1a0a 0%, transparent 3%);
   pointer-events: none;
 }
 
-/* Title */
-.title {
-  position: absolute;
-  top: 20px;
-  font-family: 'Times New Roman', serif;
-  font-size: 14px;
-  letter-spacing: 4px;
-  color: #5a4a3a;
-  text-transform: uppercase;
-  font-style: italic;
+/* Figure wrapper - makes the figure large and centered */
+.figureWrapper {
+  position: relative;
+  z-index: 10;
 }
 
-/* Body container */
+/* Body container - much larger */
 .bodyContainer {
   position: relative;
-  width: 300px;
-  height: 500px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 80vmin;
+  height: 90vmin;
+  max-width: 600px;
+  max-height: 750px;
+  min-width: 320px;
+  min-height: 400px;
 }
 
 /* Body figure SVG wrapper */
 .bodySvg {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
 }
@@ -74,12 +71,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transform: translate(-50%, -50%);
+  z-index: 20;
 }
 
 .hotspot::before {
   content: '';
   position: absolute;
-  inset: -5px;
+  inset: -8px;
   border: 2px dashed transparent;
   border-radius: 50%;
   transition: all 0.3s ease;
@@ -87,76 +86,80 @@
 
 .hotspot:hover::before {
   border-color: #8b5a2b;
-  animation: rotate 10s linear infinite;
+  animation: rotate 8s linear infinite;
+}
+
+.hotspotSelected::before {
+  border-color: #c45c5c;
+  border-style: solid;
+  animation: pulse 1.5s ease-in-out infinite;
 }
 
 @keyframes rotate {
   100% { transform: rotate(360deg); }
 }
 
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+}
+
 .hotspotInner {
-  width: 40px;
-  height: 40px;
-  background: rgba(139, 90, 43, 0.1);
+  width: 44px;
+  height: 44px;
+  background: rgba(244, 228, 200, 0.9);
   border: 2px solid #8b5a2b;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 22px;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(139, 90, 43, 0.3);
 }
 
 .hotspot:hover .hotspotInner {
-  background: rgba(139, 90, 43, 0.3);
-  transform: scale(1.2);
-  box-shadow: 0 0 20px rgba(139, 90, 43, 0.3);
+  background: rgba(139, 90, 43, 0.2);
+  transform: scale(1.15);
+  box-shadow: 0 4px 20px rgba(139, 90, 43, 0.4);
 }
 
-/* Reveal effect */
-.hotspotReveal {
+.hotspotSelected .hotspotInner {
+  background: rgba(196, 92, 92, 0.2);
+  border-color: #c45c5c;
+}
+
+/* Hotspot label on hover */
+.hotspotLabel {
   position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, #2a1a0a 0%, transparent 70%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  background: rgba(139, 90, 43, 0.9);
+  color: #f4e4c8;
+  font-family: 'Times New Roman', serif;
+  font-size: 11px;
+  font-style: italic;
+  white-space: nowrap;
+  border-radius: 4px;
+  pointer-events: none;
 }
-
-.hotspot:hover .hotspotReveal {
-  opacity: 1;
-}
-
-.hotspotReveal span {
-  color: #ffd700;
-  font-size: 16px;
-  text-shadow: 0 0 10px #ffd700;
-}
-
-/* Body part positions */
-.ear { top: 15%; left: 15%; }
-.brain { top: 8%; left: 50%; transform: translateX(-50%); }
-.mouth { top: 25%; left: 50%; transform: translateX(-50%); }
-.heart { top: 40%; left: 50%; transform: translateX(-50%); }
-.hands { top: 55%; left: 75%; }
-.eye { top: 18%; left: 70%; }
 
 /* Tooltip/Preview */
 .tooltip {
   position: absolute;
-  bottom: calc(100% + 15px);
+  bottom: calc(100% + 20px);
   left: 50%;
   transform: translateX(-50%);
-  width: 200px;
-  padding: 15px;
+  width: 220px;
+  padding: 16px;
   background: #f9f3e3;
   border: 2px solid #8b5a2b;
-  border-radius: 4px;
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  box-shadow:
+    4px 4px 0 rgba(0, 0, 0, 0.1),
+    0 10px 30px rgba(139, 90, 43, 0.2);
   z-index: 100;
   font-family: 'Times New Roman', serif;
 }
@@ -164,130 +167,149 @@
 .tooltip::before {
   content: '';
   position: absolute;
-  bottom: -10px;
+  bottom: -12px;
   left: 50%;
   transform: translateX(-50%);
-  border: 10px solid transparent;
+  border: 12px solid transparent;
   border-top-color: #8b5a2b;
 }
 
+.tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-top-color: #f9f3e3;
+}
+
+.tooltipBodyPart {
+  font-size: 11px;
+  color: #8b5a2b;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
 .tooltipTitle {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: bold;
   color: #3a2a1a;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-style: italic;
 }
 
 .tooltipDescription {
-  font-size: 12px;
+  font-size: 13px;
   color: #5a4a3a;
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
-
-.tooltipBodyPart {
-  font-size: 10px;
-  color: #8b5a2b;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 10px;
+  line-height: 1.5;
+  margin-bottom: 12px;
 }
 
 .tooltipButton {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   background: #8b5a2b;
   border: none;
   color: #f9f3e3;
   font-family: 'Times New Roman', serif;
-  font-size: 12px;
+  font-size: 13px;
+  font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
+  border-radius: 4px;
 }
 
 .tooltipButton:hover {
   background: #6a4a2b;
+  transform: translateY(-1px);
 }
 
 .tooltipButton:disabled {
   background: #aaa;
   cursor: not-allowed;
+  transform: none;
 }
-
-/* Connection lines */
-.connectionLines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.3;
-}
-
-.connectionLine {
-  stroke: #8b5a2b;
-  stroke-width: 1;
-  stroke-dasharray: 5, 5;
-  fill: none;
-}
-
-/* Da Vinci style annotations */
-.annotation {
-  position: absolute;
-  font-family: 'Times New Roman', serif;
-  font-size: 10px;
-  color: #8b5a2b;
-  font-style: italic;
-  transform: rotate(-5deg);
-  opacity: 0.6;
-}
-
-.annotation1 { top: 10%; right: 10%; }
-.annotation2 { bottom: 20%; left: 5%; }
-.annotation3 { top: 50%; right: 5%; }
 
 /* Instructions */
 .instructions {
   position: absolute;
-  bottom: 20px;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   font-family: 'Times New Roman', serif;
-  font-size: 12px;
+  font-size: 14px;
   color: #8b5a2b;
   font-style: italic;
   text-align: center;
+  opacity: 0.8;
 }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
   .bodyContainer {
-    width: 250px;
-    height: 420px;
+    width: 85vmin;
+    height: 95vmin;
+    min-width: 280px;
+    min-height: 350px;
   }
 
   .hotspotInner {
-    width: 35px;
-    height: 35px;
-    font-size: 16px;
+    width: 38px;
+    height: 38px;
+    font-size: 18px;
   }
 
   .tooltip {
-    width: 180px;
-    padding: 12px;
+    width: 200px;
+    padding: 14px;
   }
 
-  .annotation {
-    display: none;
+  .tooltipTitle {
+    font-size: 16px;
+  }
+
+  .tooltipDescription {
+    font-size: 12px;
+  }
+
+  .instructions {
+    font-size: 12px;
+    bottom: 16px;
   }
 }
 
 @media (max-width: 480px) {
   .bodyContainer {
-    width: 200px;
-    height: 350px;
+    width: 90vmin;
+    height: 100vmin;
+    min-width: 260px;
+    min-height: 320px;
   }
 
   .hotspotInner {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
+  }
+
+  .tooltip {
+    width: 180px;
+    padding: 12px;
+    bottom: calc(100% + 15px);
+  }
+
+  .tooltipTitle {
     font-size: 14px;
+  }
+
+  .tooltipDescription {
+    font-size: 11px;
+  }
+
+  .hotspotLabel {
+    font-size: 10px;
   }
 }

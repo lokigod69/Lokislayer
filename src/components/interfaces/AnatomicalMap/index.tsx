@@ -1,4 +1,5 @@
 // src/components/interfaces/AnatomicalMap/index.tsx
+// Da Vinci Vitruvian Man style interface
 
 import { motion } from 'framer-motion';
 import BodySVG from './BodySVG';
@@ -13,21 +14,12 @@ export default function AnatomicalMap() {
       {/* Ink splatters decoration */}
       <div className={styles.inkSplatters} />
 
-      {/* Title */}
-      <motion.div
-        className={styles.title}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-      >
-        Anatomical Map — Homo Digitalis
-      </motion.div>
-
       {/* Body Figure */}
       <motion.div
+        className={styles.figureWrapper}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
       >
         <BodySVG onSelectProject={() => {}} />
       </motion.div>
@@ -37,9 +29,9 @@ export default function AnatomicalMap() {
         className={styles.instructions}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
+        transition={{ delay: 0.8 }}
       >
-        Click on body parts to explore projects • Each organ represents a creation
+        Click on the body to explore projects
       </motion.div>
     </div>
   );
