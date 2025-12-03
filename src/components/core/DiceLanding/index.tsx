@@ -1,0 +1,281 @@
+// src/components/core/DiceLanding/index.tsx
+
+import { useState, useCallback, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useStore } from '../../../store/useStore';
+import { getRandomInterfaceId, getInterfaceById } from '../../../config/interfaces';
+import styles from './styles.module.css';
+
+// Dice face dot patterns
+const dotPatterns: Record<number, number[][]> = {
+  1: [[1, 1]],
+  2: [[0, 0], [2, 2]],
+  3: [[0, 0], [1, 1], [2, 2]],
+  4: [[0, 0], [0, 2], [2, 0], [2, 2]],
+  5: [[0, 0], [0, 2], [1, 1], [2, 0], [2, 2]],
+  6: [[0, 0], [0, 2], [1, 0], [1, 2], [2, 0], [2, 2]],
+};
+
+// 3D rotation for each face to be front-facing
+const faceRotations: Record<number, { rotateX: number; rotateY: number }> = {
+  1: { rotateX: 0, rotateY: 0 },
+  2: { rotateX: 0, rotateY: 90 },
+  3: { rotateX: -90, rotateY: 0 },
+  4: { rotateX: 90, rotateY: 0 },
+  5: { rotateX: 0, rotateY: -90 },
+  6: { rotateX: 180, rotateY: 0 },
+};
+
+function DiceFace({ value }: { value: number }) {
+  const dots = dotPatterns[value];
+  return (
+    <div className={styles.diceFace}>
+      <div className={styles.dotGrid}>
+        {dots.map((pos, i) => (
+          <div
+            key={i}
+            className={styles.dot}
+            style={{
+              gridRow: pos[0] + 1,
+              gridColumn: pos[1] + 1,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Generate random particles
+function Particles() {
+  const particles = useMemo(() => {
+    return Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      delay: Math.random() * 15,
+      duration: 15 + Math.random() * 10,
+      size: 2 + Math.random() * 3,
+    }));
+  }, []);
+
+  return (
+    <div className={styles.particles}>
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className={styles.particle}
+          style={{
+            left: p.left,
+            width: p.size,
+            height: p.size,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default function DiceLanding() {
+  const { setInterface } = useStore();
+  const [isRolling, setIsRolling] = useState(false);
+  const [currentFace, setCurrentFace] = useState(1);
+  const [rolledNumber, setRolledNumber] = useState<number | null>(null);
+  const [showResult, setShowResult] = useState(false);
+
+  const handleRoll = useCallback(() => {
+    if (isRolling) return;
+
+    setIsRolling(true);
+    setShowResult(false);
+    setRolledNumber(null);
+
+    // Animate through random faces
+    let rollCount = 0;
+    const maxRolls = 15;
+    const interval = setInterval(() => {
+      setCurrentFace(Math.floor(Math.random() * 6) + 1);
+      rollCount++;
+
+      if (rollCount >= maxRolls) {
+        clearInterval(interval);
+        const finalNumber = getRandomInterfaceId();
+        setCurrentFace(finalNumber);
+        setRolledNumber(finalNumber);
+        setIsRolling(false);
+        setShowResult(true);
+
+        // Navigate after showing result
+        setTimeout(() => {
+          setInterface(finalNumber);
+        }, 1500);
+      }
+    }, 100);
+  }, [isRolling, setInterface]);
+
+  const handleSkip = useCallback(() => {
+    // Navigate to interface selection (we'll use a special value)
+    setInterface(-1); // -1 will mean "show selection"
+  }, [setInterface]);
+
+  const handleDevSelect = useCallback((num: number) => {
+    setInterface(num);
+  }, [setInterface]);
+
+  const rotation = faceRotations[currentFace];
+  const resultInterface = rolledNumber ? getInterfaceById(rolledNumber) : null;
+
+  return (
+    <div className={styles.container}>
+      {/* Background */}
+      <div className={styles.backgroundGradient} />
+      <div className={`${styles.orb} ${styles.orb1}`} />
+      <div className={`${styles.orb} ${styles.orb2}`} />
+      <div className={styles.gridPattern} />
+      <div className={styles.noise} />
+      <Particles />
+
+      {/* Content */}
+      <div className={styles.content}>
+        {/* Title */}
+        <motion.h1
+          className={styles.title}
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        >
+          Roll Your Fate
+        </motion.h1>
+
+        <motion.p
+          className={styles.subtitle}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          Click the dice to enter a random reality
+        </motion.p>
+
+        {/* 3D Dice */}
+        <motion.div
+          className={styles.diceContainer}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.3, type: 'spring' }}
+        >
+          <motion.button
+            className={styles.diceWrapper}
+            onClick={handleRoll}
+            disabled={isRolling}
+            whileHover={!isRolling ? { scale: 1.05 } : {}}
+            whileTap={!isRolling ? { scale: 0.95 } : {}}
+          >
+            <motion.div
+              className={styles.dice}
+              animate={{
+                rotateX: isRolling ? [0, 360, 720, 1080] : rotation.rotateX,
+                rotateY: isRolling ? [0, 360, 720, 1080] : rotation.rotateY,
+              }}
+              transition={{
+                duration: isRolling ? 1.5 : 0.5,
+                ease: isRolling ? 'easeOut' : [0.16, 1, 0.3, 1],
+              }}
+            >
+              {/* Front - 1 */}
+              <div className={`${styles.face} ${styles.front}`}>
+                <DiceFace value={1} />
+              </div>
+              {/* Back - 6 */}
+              <div className={`${styles.face} ${styles.back}`}>
+                <DiceFace value={6} />
+              </div>
+              {/* Right - 2 */}
+              <div className={`${styles.face} ${styles.right}`}>
+                <DiceFace value={2} />
+              </div>
+              {/* Left - 5 */}
+              <div className={`${styles.face} ${styles.left}`}>
+                <DiceFace value={5} />
+              </div>
+              {/* Top - 3 */}
+              <div className={`${styles.face} ${styles.top}`}>
+                <DiceFace value={3} />
+              </div>
+              {/* Bottom - 4 */}
+              <div className={`${styles.face} ${styles.bottom}`}>
+                <DiceFace value={4} />
+              </div>
+            </motion.div>
+
+            {/* Glow effect */}
+            <div className={styles.diceGlow} />
+          </motion.button>
+
+          {/* Rolling indicator */}
+          <AnimatePresence>
+            {isRolling && (
+              <motion.div
+                className={styles.rollingText}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                Rolling...
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Result display */}
+          <AnimatePresence>
+            {showResult && resultInterface && (
+              <motion.div
+                className={styles.result}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
+                <div className={styles.resultNumber}>{rolledNumber}</div>
+                <div className={styles.resultName}>{resultInterface.name}</div>
+                <div className={styles.resultEntering}>Entering...</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        {/* Skip button */}
+        <motion.button
+          className={styles.skipButton}
+          onClick={handleSkip}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          whileHover={{ scale: 1.02 }}
+        >
+          Skip → Choose Your Reality
+        </motion.button>
+
+        {/* Dev mode buttons */}
+        <motion.div
+          className={styles.devMode}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <span className={styles.devLabel}>Dev Mode:</span>
+          <div className={styles.devButtons}>
+            {[1, 2, 3, 4, 5, 6].map((num) => (
+              <button
+                key={num}
+                className={styles.devButton}
+                onClick={() => handleDevSelect(num)}
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </div>
+  );
+}

@@ -1,10 +1,10 @@
 // src/components/core/EntryLobby/index.tsx
+// Interface Selection Screen (after skipping dice)
 
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
 import InterfaceGrid from './InterfaceGrid';
-import Dice from './Dice';
 import styles from './styles.module.css';
 
 // Generate random particles
@@ -41,6 +41,10 @@ function Particles() {
 export default function EntryLobby() {
   const { setInterface } = useStore();
 
+  const handleBackToDice = () => {
+    setInterface(null);
+  };
+
   return (
     <div className={styles.lobby}>
       {/* Background layers */}
@@ -70,36 +74,29 @@ export default function EntryLobby() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          Six interfaces. One universe. Roll the dice to discover your gateway,
-          or choose your own path through the digital realm.
+          Six unique interfaces. Choose your reality.
         </motion.p>
-
-        {/* Main Actions */}
-        <motion.div
-          className={styles.actions}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <Dice />
-          <button
-            onClick={() => setInterface(1)}
-            className={styles.quickEnter}
-          >
-            <span>🧠</span>
-            <span>Enter Neural Map</span>
-          </button>
-        </motion.div>
 
         {/* Interface Grid */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
         >
           <h2 className={styles.sectionTitle}>Choose Your Reality</h2>
           <InterfaceGrid />
         </motion.div>
+
+        {/* Back to dice button */}
+        <motion.button
+          className={styles.backToDice}
+          onClick={handleBackToDice}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          Back to Dice Roll
+        </motion.button>
       </div>
 
       {/* Footer */}
