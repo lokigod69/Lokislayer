@@ -1,5 +1,5 @@
 // src/components/core/EntryLobby/index.tsx
-// Portal - Interface Selection with floating cards and connecting lines
+// Portal - Elegant Black & White Interface Selection
 
 import { useMemo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
@@ -7,15 +7,15 @@ import { useStore } from '../../../store/useStore';
 import { interfaces } from '../../../config/interfaces';
 import styles from './styles.module.css';
 
-// Generate random particles
+// Generate subtle particles
 function Particles() {
   const particles = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => ({
+    return Array.from({ length: 12 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
-      delay: Math.random() * 15,
-      duration: 15 + Math.random() * 10,
-      size: 2 + Math.random() * 3,
+      delay: Math.random() * 20,
+      duration: 20 + Math.random() * 15,
+      size: 1.5 + Math.random() * 2,
     }));
   }, []);
 
@@ -38,80 +38,55 @@ function Particles() {
   );
 }
 
-// SVG Connecting Lines between cards
+// Elegant connecting lines in monochrome
 function ConnectingLines() {
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPhase((p) => (p + 0.02) % (Math.PI * 2));
+      setPhase((p) => (p + 0.015) % (Math.PI * 2));
     }, 50);
     return () => clearInterval(interval);
   }, []);
 
-  // Card positions (approximate center points based on 3x2 grid)
-  // Row 1: cards at positions 0, 1, 2
-  // Row 2: cards at positions 3, 4, 5
   const cardPositions = [
-    { x: 16.67, y: 35 },  // Card 0 (top-left)
-    { x: 50, y: 35 },     // Card 1 (top-center)
-    { x: 83.33, y: 35 },  // Card 2 (top-right)
-    { x: 16.67, y: 70 },  // Card 3 (bottom-left)
-    { x: 50, y: 70 },     // Card 4 (bottom-center)
-    { x: 83.33, y: 70 },  // Card 5 (bottom-right)
+    { x: 16.67, y: 35 },
+    { x: 50, y: 35 },
+    { x: 83.33, y: 35 },
+    { x: 16.67, y: 70 },
+    { x: 50, y: 70 },
+    { x: 83.33, y: 70 },
   ];
 
-  // Define connections between cards
   const connections = [
-    [0, 1], [1, 2],         // Top row horizontal
-    [3, 4], [4, 5],         // Bottom row horizontal
-    [0, 3], [1, 4], [2, 5], // Vertical connections
-    [0, 4], [1, 3],         // Diagonal left
-    [1, 5], [2, 4],         // Diagonal right
+    [0, 1], [1, 2],
+    [3, 4], [4, 5],
+    [0, 3], [1, 4], [2, 5],
+    [0, 4], [1, 5],
   ];
-
-  // Calculate oscillating offset
-  const oscillate = (index: number) => {
-    return Math.sin(phase + index * 0.5) * 3;
-  };
 
   return (
     <svg className={styles.connectingLines} viewBox="0 0 100 100" preserveAspectRatio="none">
       <defs>
-        <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#8b5cf6">
-            <animate attributeName="stop-color" values="#8b5cf6;#3b82f6;#ec4899;#8b5cf6" dur="4s" repeatCount="indefinite" />
-          </stop>
-          <stop offset="50%" stopColor="#3b82f6">
-            <animate attributeName="stop-color" values="#3b82f6;#ec4899;#8b5cf6;#3b82f6" dur="4s" repeatCount="indefinite" />
-          </stop>
-          <stop offset="100%" stopColor="#ec4899">
-            <animate attributeName="stop-color" values="#ec4899;#8b5cf6;#3b82f6;#ec4899" dur="4s" repeatCount="indefinite" />
-          </stop>
+        <linearGradient id="monoLineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="rgba(255,255,255,0.15)" />
+          <stop offset="50%" stopColor="rgba(255,255,255,0.05)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0.15)" />
         </linearGradient>
-        <filter id="lineGlow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="0.5" result="blur" />
-          <feMerge>
-            <feMergeNode in="blur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
       </defs>
       {connections.map(([from, to], index) => {
         const fromPos = cardPositions[from];
         const toPos = cardPositions[to];
-        const midX = (fromPos.x + toPos.x) / 2;
-        const midY = (fromPos.y + toPos.y) / 2 + oscillate(index);
+        const midY = (fromPos.y + toPos.y) / 2 + Math.sin(phase + index) * 2;
 
         return (
           <path
             key={index}
-            d={`M ${fromPos.x} ${fromPos.y} Q ${midX} ${midY} ${toPos.x} ${toPos.y}`}
-            stroke="url(#lineGradient)"
-            strokeWidth="0.15"
+            d={`M ${fromPos.x} ${fromPos.y} Q ${(fromPos.x + toPos.x) / 2} ${midY} ${toPos.x} ${toPos.y}`}
+            stroke="url(#monoLineGradient)"
+            strokeWidth="0.1"
             fill="none"
-            opacity={0.4 + Math.sin(phase + index) * 0.2}
-            filter="url(#lineGlow)"
+            opacity={0.3 + Math.sin(phase + index * 0.5) * 0.15}
           />
         );
       })}
@@ -119,46 +94,64 @@ function ConnectingLines() {
   );
 }
 
-// Thumbnail backgrounds
+// B&W thumbnail styles for each interface
 const thumbnailStyles: Record<string, React.CSSProperties> = {
   'neural-map': {
     background: `
-      radial-gradient(circle at 30% 40%, rgba(139, 92, 246, 0.8) 0%, transparent 25%),
-      radial-gradient(circle at 70% 30%, rgba(34, 197, 94, 0.8) 0%, transparent 25%),
-      radial-gradient(circle at 50% 70%, rgba(59, 130, 246, 0.8) 0%, transparent 25%),
-      linear-gradient(135deg, #0c0118 0%, #1a0a2e 100%)
+      radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 20%),
+      radial-gradient(circle at 70% 30%, rgba(255,255,255,0.1) 0%, transparent 20%),
+      radial-gradient(circle at 50% 70%, rgba(255,255,255,0.12) 0%, transparent 20%),
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 40%),
+      linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%)
     `,
   },
   'anatomical-map': {
     background: `
-      radial-gradient(ellipse at 50% 30%, rgba(139, 90, 43, 0.3) 0%, transparent 50%),
-      linear-gradient(135deg, #f4e4c8 0%, #d4c4a8 50%, #c4b498 100%)
+      radial-gradient(ellipse 30% 50% at 50% 45%, rgba(255,255,255,0.08) 0%, transparent 100%),
+      linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 50%),
+      linear-gradient(135deg, #141414 0%, #0a0a0a 100%)
     `,
   },
   'retro-os': {
-    background: `linear-gradient(180deg, #000080 0%, #000080 8%, #008080 8%, #008080 100%)`,
+    background: `
+      linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.08) 12%, transparent 12%, transparent 100%),
+      repeating-linear-gradient(0deg, transparent 0px, transparent 8px, rgba(255,255,255,0.02) 8px, rgba(255,255,255,0.02) 9px),
+      linear-gradient(135deg, #121212 0%, #0d0d0d 100%)
+    `,
   },
   'broadcast': {
     background: `
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.3) 2px, transparent 2px, transparent 4px),
-      radial-gradient(circle at 50% 50%, rgba(34, 197, 94, 0.2) 0%, transparent 50%),
-      linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%)
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 30%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 4px),
+      linear-gradient(135deg, #0f0f0f 0%, #181818 100%)
     `,
   },
   'control-room': {
     background: `
-      radial-gradient(circle at 30% 30%, rgba(59, 130, 246, 0.2) 0%, transparent 30%),
-      radial-gradient(circle at 70% 70%, rgba(239, 68, 68, 0.15) 0%, transparent 30%),
-      linear-gradient(135deg, #0a1628 0%, #162033 100%)
+      radial-gradient(circle at 25% 35%, rgba(255,255,255,0.06) 0%, transparent 25%),
+      radial-gradient(circle at 75% 65%, rgba(255,255,255,0.04) 0%, transparent 25%),
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 40%),
+      linear-gradient(135deg, #101010 0%, #1a1a1a 100%)
     `,
   },
   'vending-machine': {
     background: `
-      radial-gradient(circle at 50% 0%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 50% 100%, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
-      linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%)
+      linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 20%),
+      repeating-linear-gradient(90deg, transparent 0px, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 31px),
+      repeating-linear-gradient(0deg, transparent 0px, transparent 25px, rgba(255,255,255,0.015) 25px, rgba(255,255,255,0.015) 26px),
+      linear-gradient(135deg, #0d0d0d 0%, #151515 100%)
     `,
   },
+};
+
+// Interface icons in monochrome style
+const interfaceIcons: Record<string, string> = {
+  'neural-map': '◉',
+  'anatomical-map': '⬡',
+  'retro-os': '▢',
+  'broadcast': '◎',
+  'control-room': '▣',
+  'vending-machine': '▤',
 };
 
 export default function EntryLobby() {
@@ -187,7 +180,7 @@ export default function EntryLobby() {
           className={styles.title}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
         >
           The Portal
         </motion.h1>
@@ -196,17 +189,17 @@ export default function EntryLobby() {
           className={styles.subtitle}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 1, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
-          Choose Your Reality
+          Select Your Reality
         </motion.p>
 
         {/* Interface Grid */}
         <motion.div
           className={styles.grid}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
         >
           {interfaces.map((iface, index) => {
             const isVisited = visitedInterfaces.includes(iface.id);
@@ -217,24 +210,33 @@ export default function EntryLobby() {
                 className={`${styles.card} ${isVisited ? styles.cardVisited : ''}`}
                 onClick={() => setInterface(iface.id)}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{
-                  opacity: 1,
-                  y: [0, -8, 0],
-                }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  opacity: { duration: 0.5, delay: index * 0.1 },
-                  y: {
-                    duration: 3 + index * 0.3,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                    delay: index * 0.2,
-                  },
+                  duration: 0.6,
+                  delay: 0.4 + index * 0.1,
+                  ease: [0.16, 1, 0.3, 1],
                 }}
-                whileHover={{ scale: 1.05, y: -15 }}
+                whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {/* Thumbnail preview */}
-                <div className={styles.cardThumbnail} style={thumbnailStyles[iface.slug]} />
+                {/* Thumbnail preview - B&W */}
+                <div className={styles.cardThumbnail} style={thumbnailStyles[iface.slug]}>
+                  {/* Centered icon */}
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '2rem',
+                      color: 'rgba(255,255,255,0.15)',
+                      fontFamily: 'system-ui',
+                    }}
+                  >
+                    {interfaceIcons[iface.slug] || '○'}
+                  </div>
+                </div>
 
                 {/* Content */}
                 <div className={styles.cardContent}>
@@ -254,10 +256,10 @@ export default function EntryLobby() {
           onClick={handleBackToDice}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 1 }}
           whileHover={{ scale: 1.02 }}
         >
-          ← Roll the Dice
+          ← Roll Again
         </motion.button>
       </div>
     </div>

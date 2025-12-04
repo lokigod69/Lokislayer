@@ -1,25 +1,398 @@
 // src/components/interfaces/RetroOS/Desktop.tsx
+// Windows XP Style Desktop with draggable icons and modal
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { projects } from '../../../config/projects';
-import Icon from './Icon';
-import Window from './Window';
+import { projects, Project } from '../../../config/projects';
+import { useStore } from '../../../store/useStore';
 import StartMenu from './StartMenu';
 import styles from './styles.module.css';
 
-interface OpenWindow {
-  projectId: string;
-  isMinimized: boolean;
-  zIndex: number;
+// XP-style emoji icons for each project type
+const iconEmojis: Record<string, string> = {
+  'media-player': '🎵',
+  terminal: '💻',
+  folder: '📁',
+  sticky: '📝',
+  screensaver: '🖼️',
+  hidden: '🗑️',
+};
+
+interface IconPosition {
+  x: number;
+  y: number;
+}
+
+interface DraggableIconProps {
+  project: Project;
+  position: IconPosition;
+  iconSize: number;
+  isSelected: boolean;
+  onSelect: () => void;
+  onClick: () => void;
+  onPositionChange: (id: string, pos: IconPosition) => void;
+}
+
+// Draggable Icon Component
+function DraggableIcon({
+  project,
+  position,
+  iconSize,
+  isSelected,
+  onSelect,
+  onClick,
+  onPositionChange,
+}: DraggableIconProps) {
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [clickTime, setClickTime] = useState(0);
+  const iconRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onSelect();
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y,
+    });
+    setClickTime(Date.now());
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const newX = Math.max(0, e.clientX - dragStart.x);
+      const newY = Math.max(0, e.clientY - dragStart.y);
+      onPositionChange(project.id, { x: newX, y: newY });
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+      // If it was a quick click (not a drag), trigger onClick
+      if (Date.now() - clickTime < 200) {
+        onClick();
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragStart, project.id, onPositionChange, onClick, clickTime]);
+
+  // Touch support
+  const handleTouchStart = (e: React.TouchEvent) => {
+    onSelect();
+    const touch = e.touches[0];
+    setDragStart({
+      x: touch.clientX - position.x,
+      y: touch.clientY - position.y,
+    });
+    setClickTime(Date.now());
+    setIsDragging(true);
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const newX = Math.max(0, touch.clientX - dragStart.x);
+      const newY = Math.max(0, touch.clientY - dragStart.y);
+      onPositionChange(project.id, { x: newX, y: newY });
+    };
+
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      if (Date.now() - clickTime < 200) {
+        onClick();
+      }
+    };
+
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, dragStart, project.id, onPositionChange, onClick, clickTime]);
+
+  const sizeMultiplier = iconSize / 48;
+
+  return (
+    <div
+      ref={iconRef}
+      className={`${styles.icon} ${isSelected ? styles.iconSelected : ''} ${isDragging ? styles.iconDragging : ''}`}
+      style={{
+        left: position.x,
+        top: position.y,
+        width: 75 * sizeMultiplier,
+      }}
+      onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+    >
+      <div
+        className={styles.iconImage}
+        style={{
+          width: iconSize,
+          height: iconSize,
+          fontSize: iconSize * 0.83,
+        }}
+      >
+        {iconEmojis[project.mappings.retroOS.iconType] || '📄'}
+      </div>
+      <div className={styles.iconLabel}>
+        {project.mappings.retroOS.filename}
+      </div>
+    </div>
+  );
+}
+
+// Project Modal Component
+function ProjectModal({
+  project,
+  onClose,
+}: {
+  project: Project;
+  onClose: () => void;
+}) {
+  const handleVisit = () => {
+    if (project.status === 'live') {
+      window.open(project.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  return (
+    <motion.div
+      className={styles.modalOverlay}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className={styles.modal}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.modalTitleBar}>
+          <span className={styles.modalIcon}>
+            {iconEmojis[project.mappings.retroOS.iconType] || '📄'}
+          </span>
+          <span className={styles.modalTitle}>{project.name}</span>
+          <div className={styles.modalControls}>
+            <button
+              className={`${styles.modalButton} ${styles.modalButtonClose}`}
+              onClick={onClose}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div className={styles.modalContent}>
+          <div className={styles.modalProjectIcon}>
+            {iconEmojis[project.mappings.retroOS.iconType] || '📄'}
+          </div>
+          <h2 className={styles.modalProjectName}>{project.name}</h2>
+          <p className={styles.modalProjectDescription}>{project.description}</p>
+          <div
+            className={`${styles.modalStatus} ${
+              project.status === 'live' ? styles.statusLive : styles.statusComingSoon
+            }`}
+          >
+            {project.status === 'live' ? '● Online' : '○ Coming Soon'}
+          </div>
+          <div className={styles.modalActions}>
+            <button className={styles.xpButton} onClick={onClose}>
+              Cancel
+            </button>
+            <button
+              className={`${styles.xpButton} ${styles.xpButtonPrimary}`}
+              onClick={handleVisit}
+              disabled={project.status !== 'live'}
+            >
+              {project.status === 'live' ? 'Open Website' : 'Not Available'}
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Settings Modal Component
+function SettingsModal({
+  iconSize,
+  onIconSizeChange,
+  onClose,
+}: {
+  iconSize: number;
+  onIconSizeChange: (size: number) => void;
+  onClose: () => void;
+}) {
+  const [tempSize, setTempSize] = useState(iconSize);
+
+  const handleApply = () => {
+    onIconSizeChange(tempSize);
+    onClose();
+  };
+
+  return (
+    <motion.div
+      className={styles.modalOverlay}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className={styles.modal}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.modalTitleBar}>
+          <span className={styles.modalIcon}>⚙️</span>
+          <span className={styles.modalTitle}>Display Properties</span>
+          <div className={styles.modalControls}>
+            <button
+              className={`${styles.modalButton} ${styles.modalButtonClose}`}
+              onClick={onClose}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div className={styles.settingsContent}>
+          <div className={styles.settingsTitle}>
+            <span>🖥️</span> Appearance Settings
+          </div>
+          <div className={styles.settingsGroup}>
+            <label className={styles.settingsLabel}>
+              Icon Size: {tempSize}px
+            </label>
+            <input
+              type="range"
+              min="32"
+              max="72"
+              value={tempSize}
+              onChange={(e) => setTempSize(Number(e.target.value))}
+              className={styles.iconSizeSlider}
+            />
+            <div className={styles.iconSizePreview}>
+              <span style={{ fontSize: tempSize * 0.83 }}>🎵</span>
+              <span style={{ fontSize: 11 }}>Preview</span>
+            </div>
+          </div>
+          <div className={styles.settingsActions}>
+            <button className={styles.xpButton} onClick={onClose}>
+              Cancel
+            </button>
+            <button
+              className={`${styles.xpButton} ${styles.xpButtonPrimary}`}
+              onClick={handleApply}
+            >
+              Apply
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// Help Modal Component
+function HelpModal({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      className={styles.modalOverlay}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className={styles.modal}
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.modalTitleBar}>
+          <span className={styles.modalIcon}>❓</span>
+          <span className={styles.modalTitle}>Windows XP Help</span>
+          <div className={styles.modalControls}>
+            <button
+              className={`${styles.modalButton} ${styles.modalButtonClose}`}
+              onClick={onClose}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        <div className={styles.helpContent}>
+          <div className={styles.helpTitle}>
+            <span>📖</span> How to Use
+          </div>
+          <div className={styles.helpText}>
+            <p>Welcome to the Poly-Interface Portal!</p>
+            <ul className={styles.helpList}>
+              <li><strong>Click an icon</strong> to open a program and visit the website</li>
+              <li><strong>Drag icons</strong> anywhere on the desktop to rearrange them</li>
+              <li><strong>Start Menu → Settings</strong> to change icon size</li>
+              <li><strong>Start Menu → Shut Down</strong> to return to the interface selector</li>
+            </ul>
+            <p>Each icon represents a different project. Click to learn more and visit the live website!</p>
+          </div>
+          <div className={styles.settingsActions}>
+            <button
+              className={`${styles.xpButton} ${styles.xpButtonPrimary}`}
+              onClick={onClose}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
 }
 
 export default function Desktop() {
+  const { setInterface } = useStore();
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
-  const [openWindows, setOpenWindows] = useState<OpenWindow[]>([]);
   const [showStartMenu, setShowStartMenu] = useState(false);
-  const [maxZIndex, setMaxZIndex] = useState(10);
   const [currentTime, setCurrentTime] = useState('');
+  const [iconSize, setIconSize] = useState(48);
+
+  // Modal states
+  const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
+  // Icon positions - stored per project
+  const [iconPositions, setIconPositions] = useState<Record<string, IconPosition>>(() => {
+    // Initialize positions in a grid on the left side
+    const positions: Record<string, IconPosition> = {};
+    projects.forEach((project, index) => {
+      const col = Math.floor(index / 4);
+      const row = index % 4;
+      positions[project.id] = {
+        x: 20 + col * 90,
+        y: 20 + row * 95,
+      };
+    });
+    return positions;
+  });
 
   // Update clock
   useEffect(() => {
@@ -38,101 +411,60 @@ export default function Desktop() {
     return () => clearInterval(interval);
   }, []);
 
-  const openWindow = (projectId: string) => {
-    const existing = openWindows.find((w) => w.projectId === projectId);
-    if (existing) {
-      // Bring to front and restore if minimized
-      focusWindow(projectId);
-      if (existing.isMinimized) {
-        setOpenWindows((prev) =>
-          prev.map((w) =>
-            w.projectId === projectId ? { ...w, isMinimized: false } : w
-          )
-        );
-      }
-    } else {
-      // Open new window
-      setMaxZIndex((prev) => prev + 1);
-      setOpenWindows((prev) => [
-        ...prev,
-        { projectId, isMinimized: false, zIndex: maxZIndex + 1 },
-      ]);
-    }
-  };
-
-  const closeWindow = (projectId: string) => {
-    setOpenWindows((prev) => prev.filter((w) => w.projectId !== projectId));
-  };
-
-  const minimizeWindow = (projectId: string) => {
-    setOpenWindows((prev) =>
-      prev.map((w) =>
-        w.projectId === projectId ? { ...w, isMinimized: true } : w
-      )
-    );
-  };
-
-  const focusWindow = (projectId: string) => {
-    setMaxZIndex((prev) => prev + 1);
-    setOpenWindows((prev) =>
-      prev.map((w) =>
-        w.projectId === projectId
-          ? { ...w, zIndex: maxZIndex + 1, isMinimized: false }
-          : w
-      )
-    );
-  };
-
   const handleDesktopClick = () => {
     setSelectedIcon(null);
     setShowStartMenu(false);
   };
 
+  const handleIconClick = useCallback((project: Project) => {
+    setActiveProject(project);
+  }, []);
+
+  const handlePositionChange = useCallback((id: string, pos: IconPosition) => {
+    setIconPositions((prev) => ({
+      ...prev,
+      [id]: pos,
+    }));
+  }, []);
+
+  const handleShutDown = useCallback(() => {
+    setInterface(-1);
+  }, [setInterface]);
+
   return (
     <div className={styles.desktop} onClick={handleDesktopClick}>
-      {/* Desktop Icons */}
-      <div className={styles.desktopIcons}>
+      {/* Desktop Icons Area */}
+      <div className={styles.desktopArea}>
         {projects.map((project) => (
-          <Icon
+          <DraggableIcon
             key={project.id}
             project={project}
+            position={iconPositions[project.id]}
+            iconSize={iconSize}
             isSelected={selectedIcon === project.id}
             onSelect={() => setSelectedIcon(project.id)}
-            onDoubleClick={() => openWindow(project.id)}
+            onClick={() => handleIconClick(project)}
+            onPositionChange={handlePositionChange}
           />
         ))}
       </div>
 
-      {/* Open Windows */}
+      {/* Modals */}
       <AnimatePresence>
-        {openWindows
-          .filter((w) => !w.isMinimized)
-          .map((window) => {
-            const project = projects.find((p) => p.id === window.projectId);
-            if (!project) return null;
-            const isActive =
-              window.zIndex ===
-              Math.max(...openWindows.map((w) => w.zIndex));
-
-            return (
-              <motion.div
-                key={window.projectId}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.15 }}
-              >
-                <Window
-                  project={project}
-                  isActive={isActive}
-                  zIndex={window.zIndex}
-                  onClose={() => closeWindow(window.projectId)}
-                  onFocus={() => focusWindow(window.projectId)}
-                  onMinimize={() => minimizeWindow(window.projectId)}
-                />
-              </motion.div>
-            );
-          })}
+        {activeProject && (
+          <ProjectModal
+            project={activeProject}
+            onClose={() => setActiveProject(null)}
+          />
+        )}
+        {showSettings && (
+          <SettingsModal
+            iconSize={iconSize}
+            onIconSizeChange={setIconSize}
+            onClose={() => setShowSettings(false)}
+          />
+        )}
+        {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
       </AnimatePresence>
 
       {/* Start Menu */}
@@ -145,7 +477,18 @@ export default function Desktop() {
             transition={{ duration: 0.15 }}
           >
             <StartMenu
-              onSelectProject={openWindow}
+              onSettings={() => {
+                setShowStartMenu(false);
+                setShowSettings(true);
+              }}
+              onHelp={() => {
+                setShowStartMenu(false);
+                setShowHelp(true);
+              }}
+              onShutDown={() => {
+                setShowStartMenu(false);
+                handleShutDown();
+              }}
               onClose={() => setShowStartMenu(false)}
             />
           </motion.div>
@@ -159,32 +502,26 @@ export default function Desktop() {
           onClick={() => setShowStartMenu((prev) => !prev)}
         >
           <span className={styles.startLogo}>🪟</span>
-          Start
+          start
         </button>
 
         <div className={styles.taskbarDivider} />
 
         <div className={styles.openWindows}>
-          {openWindows.map((window) => {
-            const project = projects.find((p) => p.id === window.projectId);
-            if (!project) return null;
-            const isActive =
-              !window.isMinimized &&
-              window.zIndex === Math.max(...openWindows.map((w) => w.zIndex));
-
-            return (
-              <button
-                key={window.projectId}
-                className={`${styles.taskbarWindow} ${isActive ? styles.taskbarWindowActive : ''}`}
-                onClick={() => focusWindow(window.projectId)}
-              >
-                {project.name}
-              </button>
-            );
-          })}
+          {/* Active window in taskbar */}
+          {activeProject && (
+            <button
+              className={`${styles.taskbarWindow} ${styles.taskbarWindowActive}`}
+              onClick={() => setActiveProject(activeProject)}
+            >
+              {iconEmojis[activeProject.mappings.retroOS.iconType]} {activeProject.name}
+            </button>
+          )}
         </div>
 
-        <div className={styles.clock}>{currentTime}</div>
+        <div className={styles.systemTray}>
+          <span className={styles.clock}>{currentTime}</span>
+        </div>
       </div>
     </div>
   );

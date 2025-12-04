@@ -1,76 +1,101 @@
 // src/components/interfaces/RetroOS/StartMenu.tsx
+// Windows XP Style Start Menu - Simplified with Settings, Help, Shut Down
 
-import { projects } from '../../../config/projects';
 import styles from './styles.module.css';
 
 interface StartMenuProps {
-  onSelectProject: (projectId: string) => void;
+  onSettings: () => void;
+  onHelp: () => void;
+  onShutDown: () => void;
   onClose: () => void;
 }
 
-// Icons for start menu items
-const iconEmojis: Record<string, string> = {
-  'media-player': '🎵',
-  terminal: '💻',
-  folder: '📁',
-  sticky: '📝',
-  screensaver: '🖼️',
-  hidden: '🗑️',
-};
-
-export default function StartMenu({ onSelectProject, onClose }: StartMenuProps) {
+export default function StartMenu({ onSettings, onHelp, onShutDown, onClose }: StartMenuProps) {
   return (
     <div className={styles.startMenu} onClick={(e) => e.stopPropagation()}>
-      {/* Sidebar */}
-      <div className={styles.startMenuSidebar}>
-        <span className={styles.startMenuTitle}>Poly95</span>
+      {/* Header with user info */}
+      <div className={styles.startMenuHeader}>
+        <div className={styles.userAvatar}>👤</div>
+        <span className={styles.userName}>User</span>
       </div>
 
-      {/* Menu Items */}
-      <div className={styles.startMenuItems}>
-        <div className={styles.startMenuItem}>
-          <span>📂</span>
-          <span>Programs</span>
-          <span style={{ marginLeft: 'auto' }}>▶</span>
+      {/* Menu Body */}
+      <div className={styles.startMenuBody}>
+        {/* Left side - empty since we removed programs list */}
+        <div className={styles.startMenuLeft}>
+          <div className={styles.startMenuItem} style={{ opacity: 0.5, cursor: 'default' }}>
+            <span className={styles.startMenuItemIcon}>📂</span>
+            <span>All Programs</span>
+          </div>
+          <div className={styles.startMenuDivider} />
+          <div style={{ padding: '20px', textAlign: 'center', color: '#888', fontSize: 11 }}>
+            Click icons on the desktop<br />to open programs
+          </div>
         </div>
 
-        <div className={styles.startMenuDivider} />
-
-        {projects.map((project) => (
+        {/* Right side - Settings, Help, etc. */}
+        <div className={styles.startMenuRight}>
           <div
-            key={project.id}
             className={styles.startMenuItem}
             onClick={() => {
-              onSelectProject(project.id);
+              onSettings();
               onClose();
             }}
           >
-            <span>{iconEmojis[project.mappings.retroOS.iconType] || '📄'}</span>
-            <span>{project.name}</span>
+            <span className={styles.startMenuItemIcon}>⚙️</span>
+            <span>Settings</span>
           </div>
-        ))}
 
-        <div className={styles.startMenuDivider} />
+          <div className={styles.startMenuDivider} />
 
-        <div className={styles.startMenuItem}>
-          <span>⚙️</span>
-          <span>Settings</span>
-        </div>
-        <div className={styles.startMenuItem}>
-          <span>📄</span>
-          <span>Documents</span>
-        </div>
-        <div className={styles.startMenuItem}>
-          <span>❓</span>
-          <span>Help</span>
-        </div>
+          <div
+            className={styles.startMenuItem}
+            onClick={() => {
+              onHelp();
+              onClose();
+            }}
+          >
+            <span className={styles.startMenuItemIcon}>❓</span>
+            <span>Help and Support</span>
+          </div>
 
-        <div className={styles.startMenuDivider} />
+          <div className={styles.startMenuDivider} />
 
-        <div className={styles.startMenuItem}>
-          <span>🔌</span>
-          <span>Shut Down...</span>
+          <div
+            className={styles.startMenuItem}
+            onClick={() => {
+              onShutDown();
+              onClose();
+            }}
+          >
+            <span className={styles.startMenuItemIcon}>🔴</span>
+            <span>Shut Down</span>
+          </div>
         </div>
+      </div>
+
+      {/* Footer with Log Off and Shut Down buttons */}
+      <div className={styles.startMenuFooter}>
+        <button
+          className={styles.footerButton}
+          onClick={() => {
+            onShutDown();
+            onClose();
+          }}
+        >
+          <span className={styles.footerButtonIcon}>🚪</span>
+          Log Off
+        </button>
+        <button
+          className={styles.footerButton}
+          onClick={() => {
+            onShutDown();
+            onClose();
+          }}
+        >
+          <span className={styles.footerButtonIcon}>⏻</span>
+          Shut Down
+        </button>
       </div>
     </div>
   );

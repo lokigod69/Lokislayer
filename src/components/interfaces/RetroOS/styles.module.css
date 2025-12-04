@@ -1,398 +1,827 @@
-/* RetroOS - Windows 95 Aesthetic */
+/* RetroOS - Windows XP Luna Theme */
 
-/* ========== Boot Sequence ========== */
+/* ========== Boot Screen ========== */
 .bootScreen {
   position: fixed;
   inset: 0;
   background: #000;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  font-family: 'Courier New', monospace;
-  color: #c0c0c0;
-  font-size: 14px;
-  line-height: 1.4;
-  overflow: hidden;
+  align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
-.bootText {
-  white-space: pre-wrap;
-}
-
-.cursor {
-  display: inline-block;
-  width: 8px;
-  height: 14px;
-  background: #c0c0c0;
-  animation: blink 0.5s step-end infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0; }
-}
-
-.bootLogo {
+.xpLogo {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  flex: 1;
+  margin-bottom: 60px;
 }
 
-.bootLogoText {
+.xpLogoFlag {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.xpLogoText {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.xpMicrosoft {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: #fff;
+  font-style: italic;
+}
+
+.xpWindows {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   font-size: 48px;
   font-weight: bold;
-  color: #008080;
-  text-shadow: 2px 2px #000080;
-  animation: bootPulse 1s ease-in-out infinite;
+  color: #fff;
 }
 
-@keyframes bootPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+.xpXP {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 48px;
+  font-weight: bold;
+  background: linear-gradient(180deg, #ff6b35 0%, #f7931a 50%, #ffcc00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* ========== Desktop ========== */
+.bootProgress {
+  width: 200px;
+  height: 24px;
+  background: #000;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 3px;
+  overflow: hidden;
+}
+
+.bootProgressBar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(
+    90deg,
+    #2563eb 0%,
+    #60a5fa 50%,
+    #2563eb 100%
+  );
+  border-radius: 8px;
+  animation: bootLoading 2.5s ease-out forwards;
+}
+
+@keyframes bootLoading {
+  0% { width: 0; }
+  20% { width: 15%; }
+  40% { width: 35%; }
+  60% { width: 55%; }
+  80% { width: 85%; }
+  100% { width: 100%; }
+}
+
+.bootCopyright {
+  position: absolute;
+  bottom: 40px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 11px;
+  color: #666;
+}
+
+/* ========== Desktop - Windows XP Bliss Wallpaper ========== */
 .desktop {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #008080;
-  background-image:
-    linear-gradient(135deg, #008080 25%, transparent 25%),
-    linear-gradient(225deg, #008080 25%, transparent 25%),
-    linear-gradient(45deg, #006666 25%, transparent 25%),
-    linear-gradient(315deg, #006666 25%, #008080 25%);
-  background-size: 20px 20px;
+  /* XP Bliss-inspired gradient - green hills and blue sky */
+  background: linear-gradient(
+    180deg,
+    #4a90d9 0%,
+    #87ceeb 15%,
+    #a8e4a0 55%,
+    #6db33f 70%,
+    #4a9f3f 85%,
+    #3d8b34 100%
+  );
   overflow: hidden;
 }
 
-.desktopIcons {
+/* Add some cloud-like effects */
+.desktop::before {
+  content: '';
   position: absolute;
-  top: 10px;
-  left: 10px;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 80px);
-  grid-auto-rows: 90px;
-  gap: 10px;
-  max-width: 180px;
+  top: 5%;
+  left: 10%;
+  width: 120px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 40px;
+  filter: blur(8px);
 }
 
-/* ========== Icons ========== */
+.desktop::after {
+  content: '';
+  position: absolute;
+  top: 8%;
+  right: 15%;
+  width: 180px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50px;
+  filter: blur(10px);
+}
+
+/* ========== Desktop Icons Area ========== */
+.desktopArea {
+  position: absolute;
+  inset: 10px 10px 42px 10px;
+}
+
+/* ========== Icons - XP Style ========== */
 .icon {
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 75px;
   padding: 4px;
   cursor: pointer;
   user-select: none;
-  border: 1px dotted transparent;
+  border-radius: 4px;
+  transition: background-color 0.1s;
 }
 
 .icon:hover {
-  border-color: #fff;
+  background: rgba(49, 106, 197, 0.3);
 }
 
 .iconSelected {
-  background: #000080;
+  background: rgba(49, 106, 197, 0.5);
+}
+
+.iconDragging {
+  opacity: 0.8;
+  cursor: grabbing;
+  z-index: 1000;
 }
 
 .iconImage {
-  width: 32px;
-  height: 32px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28px;
+  font-size: 40px;
   margin-bottom: 4px;
+  filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.3));
 }
 
 .iconLabel {
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   font-size: 11px;
   color: #fff;
   text-align: center;
-  text-shadow: 1px 1px #000;
+  text-shadow:
+    1px 1px 2px rgba(0, 0, 0, 0.8),
+    -1px -1px 2px rgba(0, 0, 0, 0.8),
+    1px -1px 2px rgba(0, 0, 0, 0.8),
+    -1px 1px 2px rgba(0, 0, 0, 0.8);
   word-break: break-word;
-  max-width: 72px;
+  max-width: 70px;
+  line-height: 1.2;
 }
 
 .iconSelected .iconLabel {
-  background: #000080;
-  color: #fff;
+  background: rgba(49, 106, 197, 0.8);
+  padding: 1px 4px;
+  border-radius: 2px;
 }
 
-/* ========== Taskbar ========== */
+/* ========== Taskbar - XP Luna Blue ========== */
 .taskbar {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 28px;
-  background: #c0c0c0;
-  border-top: 2px solid #dfdfdf;
+  height: 30px;
+  background: linear-gradient(
+    180deg,
+    #245edb 0%,
+    #3c8cf4 8%,
+    #1c4cc4 20%,
+    #1542a8 50%,
+    #0f3b94 80%,
+    #0a2d70 100%
+  );
   display: flex;
   align-items: center;
-  padding: 2px;
+  padding: 0 2px;
   z-index: 100;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
 }
 
+/* ========== Start Button - XP Green ========== */
 .startButton {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 6px;
-  margin-right: 4px;
-  background: #c0c0c0;
-  border: 2px outset #dfdfdf;
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
-  font-size: 11px;
+  padding: 0 12px;
+  height: 28px;
+  background: linear-gradient(
+    180deg,
+    #54d954 0%,
+    #3cb43c 15%,
+    #2a9a2a 50%,
+    #1f7a1f 85%,
+    #156b15 100%
+  );
+  border: none;
+  border-radius: 0 8px 8px 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
   font-weight: bold;
+  font-style: italic;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   cursor: pointer;
-  height: 22px;
+  box-shadow:
+    inset 1px 1px 1px rgba(255, 255, 255, 0.4),
+    1px 1px 3px rgba(0, 0, 0, 0.3);
+  transition: filter 0.1s;
+}
+
+.startButton:hover {
+  filter: brightness(1.1);
 }
 
 .startButton:active,
 .startButtonActive {
-  border-style: inset;
+  filter: brightness(0.95);
 }
 
 .startLogo {
-  width: 16px;
-  height: 16px;
-  font-size: 14px;
+  font-size: 18px;
 }
 
+/* ========== Taskbar Items ========== */
 .taskbarDivider {
-  width: 2px;
-  height: 20px;
-  background: linear-gradient(to right, #808080, #fff);
-  margin: 0 4px;
+  width: 1px;
+  height: 22px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  margin: 0 6px;
 }
 
 .openWindows {
   flex: 1;
   display: flex;
-  gap: 2px;
+  gap: 3px;
+  padding: 0 4px;
   overflow: hidden;
 }
 
 .taskbarWindow {
   min-width: 120px;
-  max-width: 160px;
-  padding: 2px 8px;
-  background: #c0c0c0;
-  border: 2px outset #dfdfdf;
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  max-width: 180px;
+  height: 22px;
+  padding: 0 10px;
+  background: linear-gradient(
+    180deg,
+    #3c8cf4 0%,
+    #1c6cd4 50%,
+    #1454b4 100%
+  );
+  border: none;
+  border-radius: 3px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   font-size: 11px;
+  color: #fff;
   text-align: left;
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  box-shadow:
+    inset 1px 1px 1px rgba(255, 255, 255, 0.3),
+    inset -1px -1px 1px rgba(0, 0, 0, 0.2);
 }
 
 .taskbarWindowActive {
-  border-style: inset;
-  background: #e0e0e0;
+  background: linear-gradient(
+    180deg,
+    #5cacf4 0%,
+    #3c9cf4 50%,
+    #2484d4 100%
+  );
+  box-shadow:
+    inset -1px -1px 2px rgba(0, 0, 0, 0.3),
+    inset 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== System Tray / Clock ========== */
+.systemTray {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #1454b4 0%,
+    #0f4094 50%,
+    #0a2d70 100%
+  );
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .clock {
-  padding: 2px 8px;
-  border: 1px inset #808080;
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   font-size: 11px;
-  margin-left: auto;
+  color: #fff;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
 }
 
-/* ========== Start Menu ========== */
+/* ========== Start Menu - XP Style ========== */
 .startMenu {
   position: absolute;
-  bottom: 28px;
+  bottom: 30px;
   left: 0;
-  width: 200px;
-  background: #c0c0c0;
-  border: 2px outset #dfdfdf;
+  width: 380px;
+  background: #fff;
+  border-radius: 6px 6px 0 0;
+  box-shadow:
+    2px 0 8px rgba(0, 0, 0, 0.4),
+    0 -2px 8px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
   z-index: 200;
 }
 
-.startMenuSidebar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 24px;
-  background: linear-gradient(to top, #000080, #0000c0);
+.startMenuHeader {
   display: flex;
-  align-items: flex-end;
-  padding: 4px 2px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(
+    180deg,
+    #245edb 0%,
+    #1c4cc4 100%
+  );
+  color: #fff;
 }
 
-.startMenuTitle {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  color: #c0c0c0;
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
-  font-size: 18px;
+.userAvatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #f0f0f0 0%, #d0d0d0 100%);
+  border: 2px solid #fff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.userName {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 14px;
   font-weight: bold;
-  letter-spacing: 2px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.startMenuItems {
-  margin-left: 24px;
-  padding: 2px 0;
+.startMenuBody {
+  display: flex;
+  min-height: 300px;
+}
+
+.startMenuLeft {
+  flex: 1;
+  background: #fff;
+  padding: 8px 0;
+}
+
+.startMenuRight {
+  width: 190px;
+  background: linear-gradient(
+    180deg,
+    #4b9cd8 0%,
+    #3a88c4 100%
+  );
+  padding: 8px 0;
 }
 
 .startMenuItem {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 8px;
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  gap: 10px;
+  padding: 8px 12px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   font-size: 11px;
   cursor: pointer;
+  transition: background-color 0.1s;
 }
 
 .startMenuItem:hover {
-  background: #000080;
+  background: #316ac5;
   color: #fff;
+}
+
+.startMenuItemIcon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.startMenuRight .startMenuItem {
+  color: #fff;
+}
+
+.startMenuRight .startMenuItem:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .startMenuDivider {
   height: 1px;
-  margin: 2px 4px 2px 28px;
-  background: #808080;
-  border-bottom: 1px solid #fff;
+  margin: 4px 8px;
+  background: #d0d0d0;
 }
 
-/* ========== Window ========== */
-.window {
-  position: absolute;
-  background: #c0c0c0;
-  border: 2px outset #dfdfdf;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-  min-width: 200px;
-  min-height: 150px;
+.startMenuRight .startMenuDivider {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.windowTitleBar {
+.startMenuFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 8px 12px;
+  background: linear-gradient(
+    180deg,
+    #3a88c4 0%,
+    #2a78b4 100%
+  );
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.footerButton {
   display: flex;
   align-items: center;
-  padding: 2px;
-  background: linear-gradient(to right, #000080, #0000c0);
-  color: #fff;
-  cursor: move;
-}
-
-.windowInactive .windowTitleBar {
-  background: linear-gradient(to right, #808080, #a0a0a0);
-}
-
-.windowIcon {
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
-  font-size: 12px;
-}
-
-.windowTitle {
-  flex: 1;
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+  gap: 6px;
+  padding: 4px 12px;
+  background: linear-gradient(
+    180deg,
+    #5cacf4 0%,
+    #3c8cf4 50%,
+    #2474d4 100%
+  );
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   font-size: 11px;
-  font-weight: bold;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #fff;
+  cursor: pointer;
+  transition: filter 0.1s;
 }
 
-.windowControls {
+.footerButton:hover {
+  filter: brightness(1.1);
+}
+
+.footerButtonIcon {
+  font-size: 14px;
+}
+
+/* ========== Modal - XP Window Style ========== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+}
+
+.modal {
+  width: 450px;
+  max-width: 90%;
+  background: #ece9d8;
+  border-radius: 8px 8px 0 0;
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+}
+
+.modalTitleBar {
+  display: flex;
+  align-items: center;
+  padding: 4px 6px;
+  background: linear-gradient(
+    180deg,
+    #0a246a 0%,
+    #0f3b94 8%,
+    #1454b4 20%,
+    #1c6cd4 60%,
+    #1454b4 80%,
+    #0a246a 100%
+  );
+  cursor: default;
+}
+
+.modalIcon {
+  font-size: 16px;
+  margin-right: 6px;
+}
+
+.modalTitle {
+  flex: 1;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.modalControls {
   display: flex;
   gap: 2px;
 }
 
-.windowButton {
-  width: 16px;
-  height: 14px;
-  background: #c0c0c0;
-  border: 1px outset #dfdfdf;
-  font-family: 'Marlett', sans-serif;
-  font-size: 8px;
+.modalButton {
+  width: 21px;
+  height: 21px;
+  background: linear-gradient(
+    180deg,
+    #3c8cf4 0%,
+    #1c6cd4 50%,
+    #1454b4 100%
+  );
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-}
-
-.windowButton:active {
-  border-style: inset;
-}
-
-.windowContent {
-  padding: 8px;
-  background: #fff;
-  border: 2px inset #808080;
-  margin: 2px;
-  overflow: auto;
-}
-
-.windowContentPreview {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 16px;
-}
-
-.windowContentPreview h2 {
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
-  font-size: 14px;
+  font-size: 10px;
+  color: #fff;
   font-weight: bold;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 1px 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+.modalButton:hover {
+  filter: brightness(1.1);
+}
+
+.modalButtonClose {
+  background: linear-gradient(
+    180deg,
+    #dc6442 0%,
+    #c44f2f 50%,
+    #a83e22 100%
+  );
+}
+
+.modalContent {
+  padding: 24px;
+  text-align: center;
+}
+
+.modalProjectIcon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.modalProjectName {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: #003399;
   margin-bottom: 8px;
 }
 
-.windowContentPreview p {
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
-  font-size: 11px;
+.modalProjectDescription {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
   color: #333;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.modalStatus {
+  display: inline-block;
+  padding: 4px 12px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.statusLive {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.statusComingSoon {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.xpButton {
+  padding: 6px 24px;
+  background: linear-gradient(
+    180deg,
+    #fff 0%,
+    #ece9d8 50%,
+    #d4d0c4 100%
+  );
+  border: 1px solid #7a7a7a;
+  border-radius: 3px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+  box-shadow:
+    inset 1px 1px 0 #fff,
+    inset -1px -1px 0 #aaa;
+  transition: filter 0.1s;
+}
+
+.xpButton:hover {
+  filter: brightness(1.02);
+}
+
+.xpButton:active {
+  box-shadow:
+    inset 1px 1px 2px rgba(0, 0, 0, 0.2),
+    inset -1px -1px 0 #fff;
+}
+
+.xpButtonPrimary {
+  background: linear-gradient(
+    180deg,
+    #a5cffa 0%,
+    #7ab9f4 50%,
+    #5ba4ef 100%
+  );
+  color: #000;
+  border-color: #3c7fb1;
+}
+
+.xpButton:disabled {
+  background: #ece9d8;
+  color: #808080;
+  cursor: not-allowed;
+}
+
+/* ========== Settings Modal ========== */
+.settingsContent {
+  padding: 20px;
+}
+
+.settingsTitle {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #003399;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settingsGroup {
   margin-bottom: 16px;
 }
 
-.windowButton95 {
-  padding: 4px 20px;
-  background: #c0c0c0;
-  border: 2px outset #dfdfdf;
-  font-family: 'MS Sans Serif', Tahoma, sans-serif;
+.settingsLabel {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   font-size: 11px;
+  color: #333;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.iconSizeSlider {
+  width: 100%;
+  height: 20px;
   cursor: pointer;
 }
 
-.windowButton95:active {
-  border-style: inset;
+.iconSizePreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  padding: 16px;
+  background: #f5f5f5;
+  border: 1px inset #808080;
 }
 
-/* ========== Mobile ========== */
+.settingsActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #d0d0d0;
+}
+
+/* ========== Help Modal ========== */
+.helpContent {
+  padding: 20px;
+  text-align: left;
+}
+
+.helpTitle {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #003399;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.helpText {
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 12px;
+  color: #333;
+  line-height: 1.6;
+}
+
+.helpList {
+  margin: 12px 0;
+  padding-left: 24px;
+}
+
+.helpList li {
+  margin-bottom: 8px;
+}
+
+/* ========== Mobile Adjustments ========== */
 @media (max-width: 768px) {
-  .desktopIcons {
-    grid-template-columns: repeat(3, 80px);
-    max-width: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    top: 20px;
+  .desktop::before,
+  .desktop::after {
+    display: none;
   }
 
-  .window {
-    position: fixed !important;
-    left: 5% !important;
-    top: 10% !important;
-    width: 90% !important;
-    max-height: 70% !important;
+  .icon {
+    width: 65px;
+  }
+
+  .iconImage {
+    width: 40px;
+    height: 40px;
+    font-size: 32px;
+  }
+
+  .iconLabel {
+    font-size: 10px;
   }
 
   .startMenu {
-    width: 250px;
+    width: 100%;
+    border-radius: 0;
   }
 
-  .taskbarWindow {
-    min-width: 60px;
+  .startMenuBody {
+    flex-direction: column;
+  }
+
+  .startMenuRight {
+    width: 100%;
+  }
+
+  .modal {
+    width: 95%;
+    max-height: 80vh;
+    overflow-y: auto;
   }
 }
