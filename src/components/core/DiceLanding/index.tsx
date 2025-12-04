@@ -5,7 +5,6 @@ import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
 import { getRandomInterfaceId, getInterfaceById } from '../../../config/interfaces';
-import GravitationalLens from '../../effects/GravitationalLens';
 import styles from './styles.module.css';
 
 // Dice face dot patterns (1-6)
@@ -129,9 +128,6 @@ export default function DiceLanding() {
 
   return (
     <div className={styles.container}>
-      {/* Gravitational lens effect */}
-      <GravitationalLens intensity={0.5} size={180} />
-
       {/* Background */}
       <div className={styles.backgroundGradient} />
       <div className={`${styles.orb} ${styles.orb1}`} />

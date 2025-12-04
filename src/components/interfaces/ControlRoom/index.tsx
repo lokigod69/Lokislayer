@@ -430,25 +430,28 @@ function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
 
   return (
     <div className={styles.tapeRecorder}>
-      {/* Left reel */}
-      <div
-        className={styles.reel}
-        style={{ transform: `rotate(${rotation}deg)` }}
-      >
-        <div className={styles.reelCenter} />
-        <div className={styles.reelSpoke} />
-        <div className={styles.reelSpoke} style={{ transform: 'rotate(120deg)' }} />
-        <div className={styles.reelSpoke} style={{ transform: 'rotate(240deg)' }} />
-      </div>
-      {/* Right reel */}
-      <div
-        className={styles.reel}
-        style={{ transform: `rotate(${-rotation}deg)` }}
-      >
-        <div className={styles.reelCenter} />
-        <div className={styles.reelSpoke} />
-        <div className={styles.reelSpoke} style={{ transform: 'rotate(120deg)' }} />
-        <div className={styles.reelSpoke} style={{ transform: 'rotate(240deg)' }} />
+      {/* Reels container */}
+      <div className={styles.reelsContainer}>
+        {/* Left reel */}
+        <div
+          className={styles.reel}
+          style={{ transform: `rotate(${rotation}deg)` }}
+        >
+          <div className={styles.reelCenter} />
+          <div className={styles.reelSpoke} />
+          <div className={styles.reelSpoke} style={{ transform: 'rotate(120deg)' }} />
+          <div className={styles.reelSpoke} style={{ transform: 'rotate(240deg)' }} />
+        </div>
+        {/* Right reel */}
+        <div
+          className={styles.reel}
+          style={{ transform: `rotate(${-rotation}deg)` }}
+        >
+          <div className={styles.reelCenter} />
+          <div className={styles.reelSpoke} />
+          <div className={styles.reelSpoke} style={{ transform: 'rotate(120deg)' }} />
+          <div className={styles.reelSpoke} style={{ transform: 'rotate(240deg)' }} />
+        </div>
       </div>
       {/* VU meter */}
       <div className={styles.tapeVu}>
