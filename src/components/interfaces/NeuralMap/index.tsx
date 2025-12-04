@@ -15,7 +15,7 @@ const projectIcons: Record<string, string> = {
   vocapp: '📚',
   bountyhunter: '🎯',
   crym: '🖼️',
-  podcast: '🎧',
+  crymera: '🎨',
 };
 
 interface Position {
