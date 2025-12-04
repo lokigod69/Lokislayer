@@ -101,7 +101,7 @@
   width: 100%;
   height: 100%;
   /* Use the actual Windows XP Bliss wallpaper if available */
-  background: url('/WindowsxP.jpg') center center / cover no-repeat,
+  background: url('/windowsxp.jpg') center center / cover no-repeat,
     /* Fallback gradient if image doesn't load */
     linear-gradient(
       180deg,
