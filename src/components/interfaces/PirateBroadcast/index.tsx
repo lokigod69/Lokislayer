@@ -40,9 +40,10 @@ export default function Broadcast() {
     return null;
   }, [frequency, projectFrequencyMap]);
 
-  // Convert frequency to dial rotation (0-270 degrees)
+  // Convert frequency to dial rotation
+  // Dial range: -135deg (left/88MHz) to +135deg (right/108MHz) = 270 degree arc
   const freqToRotation = (freq: number) => {
-    return ((freq - MIN_FREQ) / (MAX_FREQ - MIN_FREQ)) * 270;
+    return -135 + ((freq - MIN_FREQ) / (MAX_FREQ - MIN_FREQ)) * 270;
   };
 
   // Handle dial interaction
@@ -121,7 +122,8 @@ export default function Broadcast() {
   const tickMarks = useMemo(() => {
     const marks = [];
     for (let freq = MIN_FREQ; freq <= MAX_FREQ; freq += 2) {
-      const angle = freqToRotation(freq) - 135; // Offset to start from left
+      // Tick marks positioned in arc from -135 to +135 degrees
+      const angle = freqToRotation(freq);
       const isStation = PROJECT_FREQUENCIES.includes(freq);
       const isTuned = tunedProject && Math.abs(frequency - freq) <= SNAP_THRESHOLD;
       marks.push({ freq, angle, isStation, isTuned });
@@ -217,72 +219,75 @@ export default function Broadcast() {
           />
         </div>
 
-        {/* Content area */}
-        <AnimatePresence mode="wait">
-          {tunedProject ? (
-            <motion.div
-              key={tunedProject.id}
-              className={styles.stationCard}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            >
-              <div className={styles.signalIndicator}>
-                <span>●</span> SIGNAL LOCKED
-              </div>
-              <h2 className={styles.stationName}>{tunedProject.name}</h2>
-              <p className={styles.stationDescription}>{tunedProject.description}</p>
-              <div className={styles.stationMeta}>
-                <span
-                  className={`${styles.statusBadge} ${
-                    tunedProject.status === 'live' ? styles.live : styles.comingSoon
-                  }`}
-                >
-                  {tunedProject.status === 'live' ? 'LIVE' : 'COMING SOON'}
-                </span>
-              </div>
-              <motion.button
-                className={styles.enterButton}
-                onClick={handleVisit}
-                disabled={tunedProject.status !== 'live'}
-                whileHover={{ scale: tunedProject.status === 'live' ? 1.05 : 1 }}
-                whileTap={{ scale: tunedProject.status === 'live' ? 0.95 : 1 }}
+        {/* Content area - fixed height container */}
+        <div className={styles.contentArea}>
+          <AnimatePresence mode="wait">
+            {tunedProject ? (
+              <motion.div
+                key={tunedProject.id}
+                className={styles.stationCard}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                {tunedProject.status === 'live' ? 'ENTER TRANSMISSION' : 'STANDBY'}
-              </motion.button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="searching"
-              className={styles.searchingState}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <div className={styles.staticBars}>
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className={styles.staticBar}
-                    animate={{
-                      height: [20, 60, 30, 50, 20],
-                    }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 0.5,
-                      delay: i * 0.05,
-                      ease: 'easeInOut',
-                    }}
-                  />
-                ))}
-              </div>
-              <p className={styles.searchingText}>
-                Scanning frequencies<span className={styles.dots}>...</span>
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                <div className={styles.signalIndicator}>
+                  <span>●</span> SIGNAL LOCKED
+                </div>
+                <h2 className={styles.stationName}>{tunedProject.name}</h2>
+                <p className={styles.stationDescription}>{tunedProject.description}</p>
+                <div className={styles.stationMeta}>
+                  <span
+                    className={`${styles.statusBadge} ${
+                      tunedProject.status === 'live' ? styles.live : styles.comingSoon
+                    }`}
+                  >
+                    {tunedProject.status === 'live' ? 'LIVE' : 'COMING SOON'}
+                  </span>
+                </div>
+                <motion.button
+                  className={styles.enterButton}
+                  onClick={handleVisit}
+                  disabled={tunedProject.status !== 'live'}
+                  whileHover={{ scale: tunedProject.status === 'live' ? 1.05 : 1 }}
+                  whileTap={{ scale: tunedProject.status === 'live' ? 0.95 : 1 }}
+                >
+                  {tunedProject.status === 'live' ? 'ENTER TRANSMISSION' : 'STANDBY'}
+                </motion.button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="searching"
+                className={styles.searchingState}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <div className={styles.staticBars}>
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className={styles.staticBar}
+                      animate={{
+                        height: [20, 60, 30, 50, 20],
+                      }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 0.5,
+                        delay: i * 0.05,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                  ))}
+                </div>
+                <p className={styles.searchingText}>
+                  Scanning frequencies<span className={styles.dots}>...</span>
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       {/* Station list hint */}

@@ -222,6 +222,13 @@
   transition: all 0.3s ease;
 }
 
+/* Content area - fixed height container */
+.contentArea {
+  width: 100%;
+  height: 220px;
+  position: relative;
+}
+
 /* Station card when tuned */
 .stationCard {
   background: rgba(34, 197, 94, 0.1);
@@ -230,6 +237,12 @@
   padding: 20px;
   text-align: center;
   width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .signalIndicator {
@@ -322,9 +335,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 16px;
   padding: 20px;
   width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  background: rgba(50, 50, 60, 0.3);
+  border: 1px solid #333;
+  border-radius: 16px;
 }
 
 .staticBars {

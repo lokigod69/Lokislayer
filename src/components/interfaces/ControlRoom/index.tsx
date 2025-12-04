@@ -146,11 +146,16 @@ export default function ControlRoom() {
   );
 }
 
-// Radar display - spinning sonar with blips
+// Radar display - spinning sonar with blips that appear when sweep passes
 function RadarDisplay({ isActive }: { isActive: boolean }) {
   const [rotation, setRotation] = useState(0);
-  const [blips, setBlips] = useState<{ x: number; y: number; opacity: number }[]>([]);
+  // Hidden targets - angle and distance, not yet revealed
+  const [targets, setTargets] = useState<{ angle: number; distance: number; id: number }[]>([]);
+  // Visible blips - revealed when sweep passes
+  const [blips, setBlips] = useState<{ x: number; y: number; opacity: number; id: number }[]>([]);
+  const [nextId, setNextId] = useState(0);
 
+  // Rotate the sweep
   useEffect(() => {
     if (!isActive) return;
     const interval = setInterval(() => {
@@ -159,33 +164,71 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
     return () => clearInterval(interval);
   }, [isActive]);
 
+  // Spawn new hidden targets periodically
   useEffect(() => {
     if (!isActive) {
+      setTargets([]);
       setBlips([]);
       return;
     }
-    // Generate random blips
     const interval = setInterval(() => {
-      const angle = Math.random() * 2 * Math.PI;
-      const distance = 20 + Math.random() * 25;
-      setBlips((prev) => [
-        ...prev.slice(-5),
-        {
-          x: 50 + Math.cos(angle) * distance,
-          y: 50 + Math.sin(angle) * distance,
-          opacity: 1,
-        },
-      ]);
-    }, 800);
+      // Add a new hidden target at random angle
+      const angle = Math.random() * 360;
+      const distance = 15 + Math.random() * 30;
+      setTargets((prev) => {
+        // Keep max 6 targets
+        const updated = [...prev.slice(-5), { angle, distance, id: nextId }];
+        return updated;
+      });
+      setNextId((id) => id + 1);
+    }, 1500);
     return () => clearInterval(interval);
-  }, [isActive]);
+  }, [isActive, nextId]);
 
-  // Fade blips
+  // Check if sweep passes any hidden targets - reveal them as blips
+  useEffect(() => {
+    if (!isActive || targets.length === 0) return;
+
+    const toReveal: typeof targets = [];
+    const remaining: typeof targets = [];
+
+    targets.forEach((target) => {
+      // Check if sweep angle is close to target angle (within 10 degrees)
+      const sweepAngle = rotation;
+      let diff = Math.abs(sweepAngle - target.angle);
+      if (diff > 180) diff = 360 - diff;
+
+      if (diff < 10) {
+        toReveal.push(target);
+      } else {
+        remaining.push(target);
+      }
+    });
+
+    if (toReveal.length > 0) {
+      // Convert revealed targets to visible blips
+      const newBlips = toReveal.map((t) => {
+        const rad = (t.angle * Math.PI) / 180;
+        return {
+          x: 50 + Math.cos(rad) * t.distance,
+          y: 50 + Math.sin(rad) * t.distance,
+          opacity: 1,
+          id: t.id,
+        };
+      });
+      setBlips((prev) => [...prev, ...newBlips]);
+      setTargets(remaining);
+    }
+  }, [rotation, targets, isActive]);
+
+  // Fade blips over time
   useEffect(() => {
     if (!isActive) return;
     const interval = setInterval(() => {
       setBlips((prev) =>
-        prev.map((b) => ({ ...b, opacity: b.opacity * 0.95 })).filter((b) => b.opacity > 0.1)
+        prev
+          .map((b) => ({ ...b, opacity: b.opacity * 0.97 }))
+          .filter((b) => b.opacity > 0.05)
       );
     }, 100);
     return () => clearInterval(interval);
@@ -200,15 +243,15 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
         <div className={styles.radarCircle} style={{ width: '90%', height: '90%' }} />
         <div className={styles.radarCrosshair} />
       </div>
-      {/* Sweep line */}
+      {/* Sweep line with trailing glow */}
       <div
         className={styles.radarSweep}
         style={{ transform: `rotate(${rotation}deg)` }}
       />
-      {/* Blips */}
-      {blips.map((blip, i) => (
+      {/* Blips - only visible after sweep discovers them */}
+      {blips.map((blip) => (
         <div
-          key={i}
+          key={blip.id}
           className={styles.radarBlip}
           style={{
             left: `${blip.x}%`,
@@ -223,10 +266,12 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
   );
 }
 
-// Oscilloscope display - animated waveform
+// Oscilloscope display - animated waveform with selectable wave types
+type WaveType = 'sine' | 'saw' | 'square' | 'triangle';
+
 function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
   const [phase, setPhase] = useState(0);
-  const [waveType, setWaveType] = useState<'sine' | 'saw'>('sine');
+  const [waveType, setWaveType] = useState<WaveType>('sine');
 
   useEffect(() => {
     if (!isActive) return;
@@ -236,31 +281,48 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
     return () => clearInterval(interval);
   }, [isActive]);
 
-  // Cycle wave types
-  useEffect(() => {
-    if (!isActive) return;
-    const interval = setInterval(() => {
-      setWaveType((t) => (t === 'sine' ? 'saw' : 'sine'));
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [isActive]);
-
   const generatePath = useMemo(() => {
-    const points = [];
+    const points: string[] = [];
+    const amplitude = isActive ? 35 : 5;
+
     for (let i = 0; i <= 100; i++) {
       const x = i;
-      let y;
-      if (waveType === 'sine') {
-        y = 50 + Math.sin((i / 15) + phase) * (isActive ? 35 : 5);
-      } else {
-        // Sawtooth
-        const sawPos = ((i / 25) + phase / 2) % 1;
-        y = 50 + (sawPos * 2 - 1) * (isActive ? 35 : 5);
+      let y: number;
+
+      switch (waveType) {
+        case 'sine':
+          y = 50 + Math.sin((i / 15) + phase) * amplitude;
+          break;
+        case 'saw':
+          // Sawtooth wave
+          const sawPos = ((i / 25) + phase / 2) % 1;
+          y = 50 + (sawPos * 2 - 1) * amplitude;
+          break;
+        case 'square':
+          // Square wave
+          const squareVal = Math.sin((i / 15) + phase) >= 0 ? 1 : -1;
+          y = 50 + squareVal * amplitude;
+          break;
+        case 'triangle':
+          // Triangle wave
+          const triPos = ((i / 25) + phase / 2) % 1;
+          const triVal = triPos < 0.5 ? (triPos * 4 - 1) : (3 - triPos * 4);
+          y = 50 + triVal * amplitude;
+          break;
+        default:
+          y = 50;
       }
       points.push(`${i === 0 ? 'M' : 'L'} ${x} ${y}`);
     }
     return points.join(' ');
   }, [phase, waveType, isActive]);
+
+  const handleWaveSelect = useCallback((e: React.MouseEvent, type: WaveType) => {
+    e.stopPropagation(); // Prevent panel click
+    setWaveType(type);
+  }, []);
+
+  const waveTypes: WaveType[] = ['sine', 'saw', 'square', 'triangle'];
 
   return (
     <div className={styles.oscilloscope}>
@@ -281,7 +343,18 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
           style={{ opacity: isActive ? 1 : 0.3 }}
         />
       </svg>
-      <div className={styles.oscLabel}>{waveType.toUpperCase()}</div>
+      {/* Wave type buttons */}
+      <div className={styles.oscButtons}>
+        {waveTypes.map((type) => (
+          <button
+            key={type}
+            className={`${styles.oscBtn} ${waveType === type ? styles.oscBtnActive : ''}`}
+            onClick={(e) => handleWaveSelect(e, type)}
+          >
+            {type === 'sine' ? '∿' : type === 'saw' ? '⊿' : type === 'square' ? '⊓' : '△'}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
