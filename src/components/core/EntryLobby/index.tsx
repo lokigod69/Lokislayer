@@ -5,6 +5,7 @@ import { useMemo, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
 import { interfaces } from '../../../config/interfaces';
+import GravitationalLens from '../../effects/GravitationalLens';
 import styles from './styles.module.css';
 
 // Generate subtle particles
@@ -163,6 +164,9 @@ export default function EntryLobby() {
 
   return (
     <div className={styles.portal}>
+      {/* Gravitational lens effect */}
+      <GravitationalLens intensity={0.5} size={180} />
+
       {/* Background layers */}
       <div className={styles.backgroundGradient} />
       <div className={`${styles.orb} ${styles.orb1}`} />
