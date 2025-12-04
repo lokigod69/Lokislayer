@@ -292,19 +292,23 @@ function InterfacePreview({ slug, isHovered }: { slug: string; isHovered: boolea
     case 'vending-machine':
       return (
         <div className={styles.previewVending}>
-          {/* Display screen */}
-          <div className={styles.vendingScreen} />
-          {/* Product grid */}
-          <div className={styles.vendingGrid}>
-            {[...Array(9)].map((_, i) => (
-              <div key={i} className={styles.vendingSlot} />
-            ))}
-          </div>
-          {/* Keypad */}
-          <div className={styles.vendingKeypad}>
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className={styles.vendingKey} />
-            ))}
+          {/* Centered vending machine cabinet */}
+          <div className={styles.vendingCabinet}>
+            {/* Glass display with products */}
+            <div className={styles.vendingDisplay}>
+              <div className={styles.vendingRow}>
+                <div className={styles.vendingItem} />
+                <div className={styles.vendingItem} />
+                <div className={styles.vendingItem} />
+              </div>
+              <div className={styles.vendingRow}>
+                <div className={styles.vendingItem} />
+                <div className={styles.vendingItem} />
+                <div className={styles.vendingItem} />
+              </div>
+            </div>
+            {/* Dispensing slot */}
+            <div className={styles.vendingSlotArea} />
           </div>
         </div>
       );

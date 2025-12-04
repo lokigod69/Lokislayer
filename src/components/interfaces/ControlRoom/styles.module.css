@@ -1,4 +1,4 @@
-/* Control Room - Full Page 1970s Sci-Fi Console */
+/* Control Room - 1970s Sci-Fi Console with Proper Spacing */
 
 .container {
   position: relative;
@@ -8,14 +8,14 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding: 0;
+  padding: 20px 40px;
 }
 
 /* Ambient glow */
 .ambientGlow {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 30%, rgba(255, 100, 50, 0.08) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 50% 30%, rgba(255, 100, 50, 0.06) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -23,167 +23,167 @@
 .title {
   position: relative;
   text-align: center;
-  padding: 40px 0 30px;
+  padding: 20px 0;
   font-family: 'Courier New', monospace;
-  font-size: 28px;
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: 12px;
+  letter-spacing: 10px;
   color: #ff6b35;
-  text-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+  text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
   margin: 0;
   flex-shrink: 0;
 }
 
-/* Main console - now full width */
+/* Main console */
 .console {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 0 40px 20px;
   min-height: 0;
+  gap: 16px;
 }
 
-/* Panel grid - fills available space */
+/* Panel grid - proper spacing */
 .panelGrid {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  gap: 24px;
+  gap: 16px;
   min-height: 0;
 }
 
-/* Individual panel - much bigger */
+/* Individual panel */
 .panel {
-  background: linear-gradient(145deg, #222, #1a1a1a);
-  border: 2px solid #333;
-  border-radius: 12px;
-  padding: 20px;
+  background: linear-gradient(145deg, #1e1e1e, #161616);
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 }
 
 .panel:hover {
-  border-color: #444;
-  box-shadow: 0 0 25px rgba(255, 107, 53, 0.15);
+  border-color: #3a3a3a;
+  box-shadow: 0 0 20px rgba(255, 107, 53, 0.1);
 }
 
 .panelActive {
   border-color: #ff6b35;
-  box-shadow: 0 0 30px rgba(255, 107, 53, 0.25);
+  box-shadow: 0 0 25px rgba(255, 107, 53, 0.2);
 }
 
-/* Panel header */
+/* Panel header - compact */
 .panelHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #333;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #2a2a2a;
   flex-shrink: 0;
 }
 
 .panelLabel {
   font-family: 'Courier New', monospace;
-  font-size: 12px;
-  letter-spacing: 2px;
-  color: #666;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: #555;
   text-transform: uppercase;
 }
 
 .led {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-  background: #333;
+  background: #2a2a2a;
   transition: all 0.2s;
 }
 
 .ledOn {
   background: #22c55e;
-  box-shadow: 0 0 12px #22c55e;
+  box-shadow: 0 0 10px #22c55e;
 }
 
-/* Instrument area - fills space */
+/* Instrument area - fills all available space */
 .instrumentArea {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: stretch;
   min-height: 0;
+  overflow: hidden;
 }
 
-/* Project info */
+/* Project info - compact */
 .projectInfo {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #333;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #2a2a2a;
   text-align: center;
-  overflow: hidden;
   flex-shrink: 0;
 }
 
 .projectName {
   font-family: 'Courier New', monospace;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   color: #ff6b35;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .launchBtn {
-  padding: 10px 24px;
-  background: linear-gradient(180deg, #444, #222);
-  border: 1px solid #555;
-  border-radius: 6px;
+  padding: 6px 16px;
+  background: linear-gradient(180deg, #333, #1a1a1a);
+  border: 1px solid #444;
+  border-radius: 4px;
   color: #ff6b35;
   font-family: 'Courier New', monospace;
-  font-size: 11px;
-  letter-spacing: 2px;
+  font-size: 10px;
+  letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .launchBtn:hover:not(:disabled) {
   border-color: #ff6b35;
-  box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+  box-shadow: 0 0 12px rgba(255, 107, 53, 0.3);
 }
 
 .launchBtn:disabled {
-  color: #444;
+  color: #3a3a3a;
   cursor: not-allowed;
 }
 
-/* Status bar */
+/* Status bar - compact */
 .statusBar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
-  margin-top: 20px;
-  border-top: 2px solid #333;
+  padding: 10px 0 0;
+  border-top: 1px solid #2a2a2a;
   font-family: 'Courier New', monospace;
-  font-size: 12px;
-  color: #666;
+  font-size: 10px;
+  color: #555;
   flex-shrink: 0;
 }
 
 .statusItem {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .statusLed {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #22c55e;
-  box-shadow: 0 0 8px #22c55e;
+  box-shadow: 0 0 6px #22c55e;
   animation: blink 2s ease-in-out infinite;
 }
 
@@ -193,34 +193,28 @@
 }
 
 .version {
-  color: #444;
+  color: #3a3a3a;
 }
 
 .clock {
-  color: #888;
+  color: #666;
 }
 
-/* Instructions */
+/* Instructions - hidden on desktop, too cluttered */
 .instructions {
-  position: absolute;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14px;
-  color: #444;
-  font-family: 'Courier New', monospace;
+  display: none;
 }
 
-/* ============ INSTRUMENT DISPLAYS ============ */
+/* ============ INSTRUMENT DISPLAYS - FILL CONTAINERS ============ */
 
-/* Radar - bigger */
+/* Radar - fills container while staying circular */
 .radar {
   position: relative;
-  width: 140px;
-  height: 140px;
-  background: #001a00;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, #001a00 0%, #000d00 100%);
   border-radius: 50%;
-  border: 3px solid #333;
+  border: 2px solid #2a2a2a;
   overflow: hidden;
 }
 
@@ -234,7 +228,7 @@
 
 .radarCircle {
   position: absolute;
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  border: 1px solid rgba(34, 197, 94, 0.25);
   border-radius: 50%;
 }
 
@@ -247,7 +241,7 @@
 .radarCrosshair::after {
   content: '';
   position: absolute;
-  background: rgba(34, 197, 94, 0.3);
+  background: rgba(34, 197, 94, 0.25);
 }
 
 .radarCrosshair::before {
@@ -270,38 +264,37 @@
   height: 2px;
   background: linear-gradient(to right, #22c55e, transparent);
   transform-origin: left center;
-  box-shadow: 0 0 15px #22c55e;
+  box-shadow: 0 0 12px #22c55e;
 }
 
 .radarBlip {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #22c55e;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 12px #22c55e;
+  box-shadow: 0 0 10px #22c55e;
 }
 
 .radarCenter {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   background: #22c55e;
   border-radius: 50%;
   transform: translate(-50%, -50%);
 }
 
-/* Oscilloscope - bigger */
+/* Oscilloscope - fills container */
 .oscilloscope {
   width: 100%;
   height: 100%;
-  max-height: 160px;
-  background: #001a00;
-  border: 3px solid #333;
-  border-radius: 8px;
+  background: linear-gradient(180deg, #001800 0%, #001200 100%);
+  border: 2px solid #2a2a2a;
+  border-radius: 6px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -313,46 +306,44 @@
 }
 
 .oscGrid line {
-  stroke: rgba(34, 197, 94, 0.2);
+  stroke: rgba(34, 197, 94, 0.15);
   stroke-width: 0.5;
 }
 
 .oscWave {
   fill: none;
   stroke: #22c55e;
-  stroke-width: 2.5;
-  filter: drop-shadow(0 0 5px #22c55e);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 4px #22c55e);
 }
 
-/* Oscilloscope label */
 .oscLabel {
   position: absolute;
-  bottom: 8px;
-  right: 12px;
+  bottom: 6px;
+  right: 8px;
   font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-size: 10px;
   color: #22c55e;
-  opacity: 0.8;
+  opacity: 0.7;
   pointer-events: none;
 }
 
-/* Monitor - bigger */
+/* Monitor - fills container */
 .monitor {
   width: 100%;
   height: 100%;
-  max-height: 160px;
   background: #000;
-  border: 3px solid #333;
-  border-radius: 8px;
+  border: 2px solid #2a2a2a;
+  border-radius: 6px;
   position: relative;
   overflow: hidden;
 }
 
 .monitorScreen {
   position: absolute;
-  inset: 5px;
-  background: #001a00;
-  border-radius: 4px;
+  inset: 4px;
+  background: #001200;
+  border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -360,8 +351,8 @@
 
 .monitorOff {
   font-family: 'Courier New', monospace;
-  font-size: 14px;
-  color: #333;
+  font-size: 12px;
+  color: #2a2a2a;
 }
 
 .pixelGrid {
@@ -370,17 +361,17 @@
   gap: 2px;
   width: 100%;
   height: 100%;
-  padding: 8px;
+  padding: 6px;
 }
 
 .pixel {
-  background: #001a00;
-  border-radius: 2px;
+  background: #001200;
+  border-radius: 1px;
 }
 
 .pixelOn {
   background: #22c55e;
-  box-shadow: 0 0 4px #22c55e;
+  box-shadow: 0 0 3px #22c55e;
 }
 
 .monitorScanlines {
@@ -388,30 +379,33 @@
   inset: 0;
   background: repeating-linear-gradient(
     0deg,
-    rgba(0, 0, 0, 0.2),
-    rgba(0, 0, 0, 0.2) 1px,
+    rgba(0, 0, 0, 0.15),
+    rgba(0, 0, 0, 0.15) 1px,
     transparent 1px,
-    transparent 3px
+    transparent 2px
   );
   pointer-events: none;
 }
 
-/* Typewriter - bigger */
+/* Typewriter - fills container */
 .typewriter {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+  border: 2px solid #2a2a2a;
+  border-radius: 6px;
 }
 
 .typewriterPaper {
-  background: #f5f5dc;
-  padding: 20px 30px;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  min-width: 140px;
-  min-height: 60px;
+  background: linear-gradient(180deg, #f8f8e8 0%, #f0f0d8 100%);
+  padding: 16px 28px;
+  border-radius: 3px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  max-width: 85%;
+  min-height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -420,8 +414,8 @@
 .typewriterText {
   font-family: 'Courier New', monospace;
   font-size: 16px;
-  color: #333;
-  font-weight: 700;
+  color: #2a2a2a;
+  font-weight: 600;
 }
 
 .cursor {
@@ -432,7 +426,7 @@
   50% { opacity: 0; }
 }
 
-/* Tape Recorder - bigger */
+/* Tape Recorder - fills container */
 .tapeRecorder {
   width: 100%;
   height: 100%;
@@ -440,20 +434,26 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 10px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
+  border: 2px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 10px;
 }
 
 .reelsContainer {
   display: flex;
-  gap: 30px;
+  gap: 20px;
+  flex: 1;
+  align-items: center;
 }
 
 .reel {
-  width: 60px;
-  height: 60px;
-  background: #333;
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
   border-radius: 50%;
-  border: 3px solid #444;
+  border: 2px solid #3a3a3a;
   position: relative;
   display: flex;
   align-items: center;
@@ -461,27 +461,28 @@
 }
 
 .reelCenter {
-  width: 16px;
-  height: 16px;
-  background: #222;
+  width: 12px;
+  height: 12px;
+  background: #1a1a1a;
   border-radius: 50%;
-  border: 2px solid #555;
+  border: 2px solid #444;
 }
 
 .reelSpoke {
   position: absolute;
-  width: 3px;
+  width: 2px;
   height: 100%;
-  background: #444;
+  background: #3a3a3a;
   transform-origin: center;
 }
 
 .tapeVu {
-  width: 120px;
+  width: 100%;
+  max-width: 140px;
   height: 14px;
-  background: #222;
-  border: 2px solid #444;
-  border-radius: 4px;
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 3px;
   overflow: hidden;
 }
 
@@ -491,44 +492,54 @@
   transition: width 0.1s ease;
 }
 
-/* Clipboard - bigger */
+/* Clipboard - fills container */
 .clipboard {
-  width: 100px;
-  height: 130px;
-  background: #8b4513;
-  border-radius: 6px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clipboard > div:first-child {
+  width: 80%;
+  max-width: 120px;
+  height: 90%;
+  max-height: 160px;
+  background: linear-gradient(180deg, #8b5a2b 0%, #6b4423 100%);
+  border-radius: 4px;
   padding: 8px;
   position: relative;
 }
 
 .clipboardClip {
   position: absolute;
-  top: -6px;
+  top: -5px;
   left: 50%;
   transform: translateX(-50%);
-  width: 30px;
-  height: 12px;
-  background: #666;
-  border-radius: 3px 3px 0 0;
+  width: 24px;
+  height: 10px;
+  background: linear-gradient(180deg, #666, #444);
+  border-radius: 2px 2px 0 0;
 }
 
 .clipboardPaper {
-  background: #f5f5dc;
+  background: linear-gradient(180deg, #f8f8e8 0%, #f0f0d8 100%);
   height: 100%;
-  border-radius: 4px;
-  padding: 12px 8px;
+  border-radius: 3px;
+  padding: 8px 6px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .checkItem {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   font-family: 'Courier New', monospace;
-  font-size: 12px;
-  color: #666;
+  font-size: 10px;
+  color: #555;
 }
 
 .checkItem.checked {
@@ -536,135 +547,91 @@
 }
 
 .checkbox {
-  font-size: 14px;
+  font-size: 12px;
 }
 
 /* Mobile adjustments */
 @media (max-width: 1024px) {
-  .title {
-    font-size: 22px;
-    padding: 30px 0 20px;
-    letter-spacing: 8px;
+  .container {
+    padding: 16px 24px;
   }
 
-  .console {
-    padding: 0 24px 16px;
-  }
-
-  .panelGrid {
-    gap: 16px;
-  }
-
-  .panel {
-    padding: 16px;
-    border-radius: 10px;
-  }
-
-  .radar {
-    width: 100px;
-    height: 100px;
-  }
-
-  .oscilloscope,
-  .monitor {
-    max-height: 120px;
-  }
-}
-
-@media (max-width: 768px) {
   .title {
     font-size: 18px;
-    padding: 24px 0 16px;
+    padding: 16px 0;
     letter-spacing: 6px;
   }
 
-  .console {
-    padding: 0 16px 12px;
-  }
-
   .panelGrid {
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
     gap: 12px;
-  }
-
-  .panel {
-    padding: 12px;
-    border-radius: 8px;
-  }
-
-  .panelHeader {
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-  }
-
-  .panelLabel {
-    font-size: 10px;
-    letter-spacing: 1px;
-  }
-
-  .radar {
-    width: 80px;
-    height: 80px;
-  }
-
-  .oscilloscope,
-  .monitor {
-    max-height: 90px;
-  }
-
-  .reel {
-    width: 45px;
-    height: 45px;
-  }
-
-  .tapeVu {
-    width: 90px;
-    height: 10px;
-  }
-
-  .clipboard {
-    width: 80px;
-    height: 100px;
-  }
-
-  .typewriterPaper {
-    padding: 14px 20px;
-    min-width: 100px;
-  }
-
-  .typewriterText {
-    font-size: 14px;
-  }
-
-  .instructions {
-    font-size: 11px;
-    bottom: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .title {
-    font-size: 14px;
-    letter-spacing: 4px;
-    padding: 20px 0 12px;
-  }
-
-  .panelGrid {
-    gap: 10px;
   }
 
   .panel {
     padding: 10px;
   }
+}
 
-  .radar {
-    width: 60px;
-    height: 60px;
+@media (max-width: 768px) {
+  .container {
+    padding: 12px 16px;
   }
 
-  .oscilloscope,
-  .monitor {
-    max-height: 70px;
+  .title {
+    font-size: 14px;
+    padding: 12px 0;
+    letter-spacing: 4px;
+  }
+
+  .panelGrid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .panel {
+    padding: 8px;
+  }
+
+  .panelHeader {
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+  }
+
+  .panelLabel {
+    font-size: 8px;
+  }
+
+  .reel {
+    width: 50px;
+    height: 50px;
+  }
+
+  .reelsContainer {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px 12px;
+  }
+
+  .title {
+    font-size: 12px;
+    letter-spacing: 3px;
+    padding: 10px 0;
+  }
+
+  .panelGrid {
+    gap: 8px;
+  }
+
+  .panel {
+    padding: 6px;
+  }
+
+  .reel {
+    width: 40px;
+    height: 40px;
   }
 }

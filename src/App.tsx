@@ -9,7 +9,6 @@ import EntryLobby from './components/core/EntryLobby';
 import Loader from './components/core/Loader';
 import TransitionWrapper from './components/core/TransitionWrapper';
 import BackButton from './components/core/BackButton';
-import AudioToggle from './components/core/AudioToggle';
 
 function App() {
   const { currentInterface } = useStore();
@@ -28,7 +27,6 @@ function App() {
   return (
     <div className="w-screen h-screen overflow-hidden bg-black">
       {/* Global UI */}
-      <AudioToggle />
       {showInterface && <BackButton />}
 
       {/* Main Content */}

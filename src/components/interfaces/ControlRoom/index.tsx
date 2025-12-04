@@ -155,11 +155,11 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
   const [blips, setBlips] = useState<{ x: number; y: number; opacity: number; id: number }[]>([]);
   const [nextId, setNextId] = useState(0);
 
-  // Rotate the sweep
+  // Rotate the sweep - always animate, faster when active
   useEffect(() => {
-    if (!isActive) return;
+    const speed = isActive ? 3 : 1;
     const interval = setInterval(() => {
-      setRotation((r) => (r + 3) % 360);
+      setRotation((r) => (r + speed) % 360);
     }, 50);
     return () => clearInterval(interval);
   }, [isActive]);
@@ -274,17 +274,18 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
   const [phase, setPhase] = useState(0);
   const [waveType, setWaveType] = useState<WaveType>('sine');
 
+  // Always animate - faster when active
   useEffect(() => {
-    if (!isActive) return;
+    const speed = isActive ? 0.15 : 0.05;
     const interval = setInterval(() => {
-      setPhase((p) => (p + 0.15) % (Math.PI * 2));
+      setPhase((p) => (p + speed) % (Math.PI * 2));
     }, 50);
     return () => clearInterval(interval);
   }, [isActive]);
 
   const generatePath = useMemo(() => {
     const points: string[] = [];
-    const amplitude = isActive ? 35 : 5;
+    const amplitude = isActive ? 35 : 20; // Always visible, stronger when active
 
     for (let i = 0; i <= 100; i++) {
       const x = i;
@@ -340,7 +341,7 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
         <path
           d={generatePath}
           className={styles.oscWave}
-          style={{ opacity: isActive ? 1 : 0.3 }}
+          style={{ opacity: isActive ? 1 : 0.7 }}
         />
       </svg>
       {/* Wave type label */}
@@ -468,19 +469,21 @@ function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
 function ClipboardDisplay({ isActive }: { isActive: boolean }) {
   return (
     <div className={styles.clipboard}>
-      <div className={styles.clipboardClip} />
-      <div className={styles.clipboardPaper}>
-        <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
-          <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
-          <span>INIT</span>
-        </div>
-        <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
-          <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
-          <span>LOAD</span>
-        </div>
-        <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
-          <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
-          <span>READY</span>
+      <div>
+        <div className={styles.clipboardClip} />
+        <div className={styles.clipboardPaper}>
+          <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
+            <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
+            <span>INIT</span>
+          </div>
+          <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
+            <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
+            <span>LOAD</span>
+          </div>
+          <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
+            <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
+            <span>READY</span>
+          </div>
         </div>
       </div>
     </div>
