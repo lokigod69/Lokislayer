@@ -120,8 +120,8 @@
 
 .hotspot:hover .hotspotInner {
   background: rgba(139, 90, 43, 0.2);
-  transform: scale(1.15);
   box-shadow: 0 4px 20px rgba(139, 90, 43, 0.4);
+  /* No scale transform - controlled by framer-motion */
 }
 
 .hotspotSelected .hotspotInner {

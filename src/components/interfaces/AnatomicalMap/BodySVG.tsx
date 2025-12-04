@@ -1,7 +1,7 @@
 // src/components/interfaces/AnatomicalMap/BodySVG.tsx
-// Da Vinci Vitruvian Man style illustration
+// Da Vinci Vitruvian Man style illustration with larger head
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects, Project } from '../../../config/projects';
 import styles from './styles.module.css';
@@ -28,31 +28,52 @@ export default function BodySVG(_props: BodySVGProps) {
     return projects.find((p) => p.mappings.anatomicalMap.bodyPart === bodyPart);
   };
 
-  const handleClick = (bodyPart: string) => {
+  const handleClick = (bodyPart: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     const project = getProjectForBodyPart(bodyPart);
     if (project) {
       setSelectedProject(selectedProject?.id === project.id ? null : project);
     }
   };
 
-  const handleVisit = () => {
+  // Close modal when clicking outside
+  const handleBackgroundClick = useCallback(() => {
+    if (selectedProject) {
+      setSelectedProject(null);
+    }
+  }, [selectedProject]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedProject) {
+        setSelectedProject(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedProject]);
+
+  const handleVisit = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (selectedProject && selectedProject.status === 'live') {
       window.open(selectedProject.url, '_blank', 'noopener,noreferrer');
     }
   };
 
-  // Hotspot positions (relative to SVG viewBox 0 0 400 500)
+  // Hotspot positions - adjusted for larger head (SVG viewBox 0 0 400 500)
+  // Head is now larger: ellipse at cy="85" with rx="40" ry="50" (goes from y=35 to y=135)
   const hotspots = [
-    { id: 'brain', x: 200, y: 55, label: 'Brain' },
-    { id: 'eye', x: 225, y: 75, label: 'Eye' },
-    { id: 'ear', x: 165, y: 80, label: 'Ear' },
-    { id: 'mouth', x: 200, y: 105, label: 'Mouth' },
-    { id: 'heart', x: 185, y: 195, label: 'Heart' },
-    { id: 'hands', x: 355, y: 220, label: 'Hands' },
+    { id: 'brain', x: 200, y: 50, label: 'Brain', isHead: true },      // Top of larger head
+    { id: 'eye', x: 230, y: 80, label: 'Eye', isHead: true },          // Right eye area
+    { id: 'ear', x: 155, y: 90, label: 'Ear', isHead: true },          // Left ear area
+    { id: 'mouth', x: 200, y: 115, label: 'Mouth', isHead: true },     // Mouth area
+    { id: 'heart', x: 180, y: 230, label: 'Heart', isHead: false },    // Heart in chest
+    { id: 'hands', x: 355, y: 250, label: 'Hands', isHead: false },    // Right hand
   ];
 
   return (
-    <div className={styles.bodyContainer}>
+    <div className={styles.bodyContainer} onClick={handleBackgroundClick}>
       <svg
         className={styles.bodySvg}
         viewBox="0 0 400 500"
@@ -62,7 +83,7 @@ export default function BodySVG(_props: BodySVGProps) {
         {/* Vitruvian Circle */}
         <circle
           cx="200"
-          cy="250"
+          cy="270"
           r="175"
           stroke="#8b5a2b"
           strokeWidth="1"
@@ -73,7 +94,7 @@ export default function BodySVG(_props: BodySVGProps) {
         {/* Vitruvian Square */}
         <rect
           x="50"
-          y="75"
+          y="95"
           width="300"
           height="375"
           stroke="#8b5a2b"
@@ -83,111 +104,122 @@ export default function BodySVG(_props: BodySVGProps) {
         />
 
         {/* Grid lines (subtle) */}
-        <line x1="200" y1="75" x2="200" y2="450" stroke="#8b5a2b" strokeWidth="0.3" opacity="0.2" />
-        <line x1="50" y1="250" x2="350" y2="250" stroke="#8b5a2b" strokeWidth="0.3" opacity="0.2" />
+        <line x1="200" y1="35" x2="200" y2="470" stroke="#8b5a2b" strokeWidth="0.3" opacity="0.2" />
+        <line x1="50" y1="270" x2="350" y2="270" stroke="#8b5a2b" strokeWidth="0.3" opacity="0.2" />
 
-        {/* === MAIN FIGURE (arms out, legs together) === */}
+        {/* === MAIN FIGURE with LARGER HEAD === */}
 
-        {/* Head */}
-        <ellipse cx="200" cy="70" rx="28" ry="35" stroke="#8b5a2b" strokeWidth="1.5" fill="none" />
+        {/* Head - MUCH LARGER (proportionally bigger) */}
+        <ellipse cx="200" cy="85" rx="40" ry="50" stroke="#8b5a2b" strokeWidth="1.5" fill="none" />
 
-        {/* Face details */}
-        {/* Eyes */}
-        <ellipse cx="188" cy="68" rx="5" ry="3" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
-        <ellipse cx="212" cy="68" rx="5" ry="3" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
-        {/* Nose */}
-        <path d="M200 72 L197 82 L203 82" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
-        {/* Mouth */}
-        <path d="M192 92 Q200 98 208 92" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
-        {/* Ears */}
-        <ellipse cx="170" cy="72" rx="4" ry="8" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
-        <ellipse cx="230" cy="72" rx="4" ry="8" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
-        {/* Hair hint */}
-        <path d="M175 45 Q200 30 225 45" stroke="#8b5a2b" strokeWidth="0.5" fill="none" />
+        {/* Face details - scaled up */}
+        {/* Eyes - wider apart and larger */}
+        <ellipse cx="182" cy="80" rx="7" ry="4" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+        <ellipse cx="218" cy="80" rx="7" ry="4" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+        {/* Pupils */}
+        <circle cx="182" cy="80" r="2" fill="#8b5a2b" opacity="0.4" />
+        <circle cx="218" cy="80" r="2" fill="#8b5a2b" opacity="0.4" />
 
-        {/* Neck */}
-        <path d="M188 105 L188 125 M212 105 L212 125" stroke="#8b5a2b" strokeWidth="1.2" />
+        {/* Eyebrows */}
+        <path d="M174 73 Q182 70 190 73" stroke="#8b5a2b" strokeWidth="0.6" fill="none" />
+        <path d="M210 73 Q218 70 226 73" stroke="#8b5a2b" strokeWidth="0.6" fill="none" />
+
+        {/* Nose - larger */}
+        <path d="M200 85 L196 100 L204 100" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+
+        {/* Mouth - larger and lower */}
+        <path d="M188 115 Q200 122 212 115" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+
+        {/* Ears - larger and on the sides */}
+        <ellipse cx="158" cy="90" rx="6" ry="12" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+        <ellipse cx="242" cy="90" rx="6" ry="12" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+
+        {/* Hair hint - larger arc */}
+        <path d="M165 50 Q200 30 235 50" stroke="#8b5a2b" strokeWidth="0.5" fill="none" />
+
+        {/* Neck - connects larger head to body */}
+        <path d="M185 135 L185 160 M215 135 L215 160" stroke="#8b5a2b" strokeWidth="1.2" />
 
         {/* Shoulders and upper torso */}
-        <path d="M188 125 Q170 130 145 140" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
-        <path d="M212 125 Q230 130 255 140" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
+        <path d="M185 160 Q165 165 140 175" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
+        <path d="M215 160 Q235 165 260 175" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
 
         {/* Chest/Ribcage */}
-        <path d="M175 140 L170 200 M225 140 L230 200" stroke="#8b5a2b" strokeWidth="1.2" />
-        <ellipse cx="200" cy="175" rx="35" ry="45" stroke="#8b5a2b" strokeWidth="0.5" fill="none" opacity="0.4" />
+        <path d="M170 175 L165 235 M230 175 L235 235" stroke="#8b5a2b" strokeWidth="1.2" />
+        <ellipse cx="200" cy="210" rx="35" ry="45" stroke="#8b5a2b" strokeWidth="0.5" fill="none" opacity="0.4" />
 
         {/* Heart area (subtle circle) */}
-        <circle cx="185" cy="185" r="12" stroke="#c45c5c" strokeWidth="0.8" fill="none" opacity="0.6" />
+        <circle cx="180" cy="220" r="12" stroke="#c45c5c" strokeWidth="0.8" fill="none" opacity="0.6" />
 
         {/* Arms extended horizontally */}
         {/* Left arm */}
-        <path d="M145 140 L80 180 L45 210" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
+        <path d="M140 175 L75 215 L40 245" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
         {/* Left forearm detail */}
-        <path d="M80 180 L75 182" stroke="#8b5a2b" strokeWidth="0.8" />
+        <path d="M75 215 L70 217" stroke="#8b5a2b" strokeWidth="0.8" />
         {/* Left hand */}
-        <path d="M45 210 L38 215 M45 210 L40 220 M45 210 L45 225 M45 210 L50 220 M45 210 L52 215" stroke="#8b5a2b" strokeWidth="0.8" />
+        <path d="M40 245 L33 250 M40 245 L35 255 M40 245 L40 260 M40 245 L45 255 M40 245 L47 250" stroke="#8b5a2b" strokeWidth="0.8" />
 
         {/* Right arm */}
-        <path d="M255 140 L320 180 L355 210" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
+        <path d="M260 175 L325 215 L360 245" stroke="#8b5a2b" strokeWidth="1.2" fill="none" />
         {/* Right forearm detail */}
-        <path d="M320 180 L325 182" stroke="#8b5a2b" strokeWidth="0.8" />
+        <path d="M325 215 L330 217" stroke="#8b5a2b" strokeWidth="0.8" />
         {/* Right hand */}
-        <path d="M355 210 L362 215 M355 210 L360 220 M355 210 L355 225 M355 210 L350 220 M355 210 L348 215" stroke="#8b5a2b" strokeWidth="0.8" />
+        <path d="M360 245 L367 250 M360 245 L365 255 M360 245 L360 260 M360 245 L355 255 M360 245 L353 250" stroke="#8b5a2b" strokeWidth="0.8" />
 
         {/* Waist/Hips */}
-        <path d="M170 200 L165 270 M230 200 L235 270" stroke="#8b5a2b" strokeWidth="1.2" />
-        <ellipse cx="200" cy="265" rx="40" ry="18" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+        <path d="M165 235 L160 300 M235 235 L240 300" stroke="#8b5a2b" strokeWidth="1.2" />
+        <ellipse cx="200" cy="295" rx="40" ry="18" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
 
         {/* Navel */}
-        <circle cx="200" cy="235" r="3" stroke="#8b5a2b" strokeWidth="0.5" fill="none" />
+        <circle cx="200" cy="265" r="3" stroke="#8b5a2b" strokeWidth="0.5" fill="none" />
 
         {/* Legs (together) */}
         {/* Left leg */}
-        <path d="M175 280 L165 380 L160 440" stroke="#8b5a2b" strokeWidth="1.2" />
-        <path d="M160 440 L155 450 L170 450" stroke="#8b5a2b" strokeWidth="1" fill="none" />
+        <path d="M175 310 L165 400 L160 460" stroke="#8b5a2b" strokeWidth="1.2" />
+        <path d="M160 460 L155 470 L170 470" stroke="#8b5a2b" strokeWidth="1" fill="none" />
 
         {/* Right leg */}
-        <path d="M225 280 L235 380 L240 440" stroke="#8b5a2b" strokeWidth="1.2" />
-        <path d="M240 440 L245 450 L230 450" stroke="#8b5a2b" strokeWidth="1" fill="none" />
+        <path d="M225 310 L235 400 L240 460" stroke="#8b5a2b" strokeWidth="1.2" />
+        <path d="M240 460 L245 470 L230 470" stroke="#8b5a2b" strokeWidth="1" fill="none" />
 
         {/* Inner leg lines */}
-        <path d="M190 280 L185 380 L180 440" stroke="#8b5a2b" strokeWidth="0.6" opacity="0.5" />
-        <path d="M210 280 L215 380 L220 440" stroke="#8b5a2b" strokeWidth="0.6" opacity="0.5" />
+        <path d="M190 310 L185 400 L180 460" stroke="#8b5a2b" strokeWidth="0.6" opacity="0.5" />
+        <path d="M210 310 L215 400 L220 460" stroke="#8b5a2b" strokeWidth="0.6" opacity="0.5" />
 
         {/* Knee details */}
-        <circle cx="170" cy="360" r="8" stroke="#8b5a2b" strokeWidth="0.5" fill="none" opacity="0.4" />
-        <circle cx="230" cy="360" r="8" stroke="#8b5a2b" strokeWidth="0.5" fill="none" opacity="0.4" />
+        <circle cx="170" cy="385" r="8" stroke="#8b5a2b" strokeWidth="0.5" fill="none" opacity="0.4" />
+        <circle cx="230" cy="385" r="8" stroke="#8b5a2b" strokeWidth="0.5" fill="none" opacity="0.4" />
 
         {/* === OVERLAY FIGURE (legs apart - faded) === */}
         <g opacity="0.25">
           {/* Left leg spread */}
-          <path d="M175 280 L100 400 L85 450" stroke="#8b5a2b" strokeWidth="1" />
-          <path d="M85 450 L75 460 L95 460" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+          <path d="M175 310 L100 420 L85 470" stroke="#8b5a2b" strokeWidth="1" />
+          <path d="M85 470 L75 480 L95 480" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
 
           {/* Right leg spread */}
-          <path d="M225 280 L300 400 L315 450" stroke="#8b5a2b" strokeWidth="1" />
-          <path d="M315 450 L325 460 L305 460" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
+          <path d="M225 310 L300 420 L315 470" stroke="#8b5a2b" strokeWidth="1" />
+          <path d="M315 470 L325 480 L305 480" stroke="#8b5a2b" strokeWidth="0.8" fill="none" />
         </g>
 
         {/* === OVERLAY ARMS (raised - faded) === */}
         <g opacity="0.25">
           {/* Left arm raised */}
-          <path d="M145 140 L100 100 L70 55" stroke="#8b5a2b" strokeWidth="1" fill="none" />
-          <path d="M70 55 L65 48 M70 55 L60 52 M70 55 L58 58" stroke="#8b5a2b" strokeWidth="0.6" />
+          <path d="M140 175 L95 130 L65 75" stroke="#8b5a2b" strokeWidth="1" fill="none" />
+          <path d="M65 75 L60 68 M65 75 L55 72 M65 75 L53 78" stroke="#8b5a2b" strokeWidth="0.6" />
 
           {/* Right arm raised */}
-          <path d="M255 140 L300 100 L330 55" stroke="#8b5a2b" strokeWidth="1" fill="none" />
-          <path d="M330 55 L335 48 M330 55 L340 52 M330 55 L342 58" stroke="#8b5a2b" strokeWidth="0.6" />
+          <path d="M260 175 L305 130 L335 75" stroke="#8b5a2b" strokeWidth="1" fill="none" />
+          <path d="M335 75 L340 68 M335 75 L345 72 M335 75 L347 78" stroke="#8b5a2b" strokeWidth="0.6" />
         </g>
 
         {/* Anatomical proportion lines */}
         <g opacity="0.15">
           {/* Shoulder width guide */}
-          <line x1="145" y1="135" x2="255" y2="135" stroke="#8b5a2b" strokeWidth="0.5" strokeDasharray="3,3" />
+          <line x1="140" y1="170" x2="260" y2="170" stroke="#8b5a2b" strokeWidth="0.5" strokeDasharray="3,3" />
           {/* Hip width guide */}
-          <line x1="165" y1="270" x2="235" y2="270" stroke="#8b5a2b" strokeWidth="0.5" strokeDasharray="3,3" />
+          <line x1="160" y1="300" x2="240" y2="300" stroke="#8b5a2b" strokeWidth="0.5" strokeDasharray="3,3" />
           {/* Center line */}
-          <line x1="200" y1="35" x2="200" y2="450" stroke="#8b5a2b" strokeWidth="0.3" strokeDasharray="5,5" />
+          <line x1="200" y1="30" x2="200" y2="470" stroke="#8b5a2b" strokeWidth="0.3" strokeDasharray="5,5" />
         </g>
       </svg>
 
@@ -209,8 +241,9 @@ export default function BodySVG(_props: BodySVGProps) {
             }}
             onMouseEnter={() => setHoveredPart(spot.id)}
             onMouseLeave={() => setHoveredPart(null)}
-            onClick={() => handleClick(spot.id)}
-            whileHover={{ scale: 1.2 }}
+            onClick={(e) => handleClick(spot.id, e)}
+            // Only scale on hover for hands, not head parts
+            whileHover={spot.isHead ? {} : { scale: 1.15 }}
             whileTap={{ scale: 0.95 }}
             animate={{
               boxShadow: isHovered || isSelected
