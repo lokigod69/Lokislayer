@@ -1,7 +1,7 @@
 // src/components/core/EntryLobby/index.tsx
-// Portal - Elegant Black & White Interface Selection
+// Portal - Elegant Black & White Interface Selection with 3D card effects
 
-import { useMemo, useEffect, useState } from 'react';
+import { useMemo, useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
 import { interfaces } from '../../../config/interfaces';
@@ -94,68 +94,228 @@ function ConnectingLines() {
   );
 }
 
-// B&W thumbnail styles for each interface
-const thumbnailStyles: Record<string, React.CSSProperties> = {
-  'neural-map': {
-    background: `
-      radial-gradient(circle at 30% 40%, rgba(255,255,255,0.15) 0%, transparent 20%),
-      radial-gradient(circle at 70% 30%, rgba(255,255,255,0.1) 0%, transparent 20%),
-      radial-gradient(circle at 50% 70%, rgba(255,255,255,0.12) 0%, transparent 20%),
-      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 0%, transparent 40%),
-      linear-gradient(135deg, #0d0d0d 0%, #1a1a1a 100%)
-    `,
-  },
-  'anatomical-map': {
-    background: `
-      radial-gradient(ellipse 30% 50% at 50% 45%, rgba(255,255,255,0.08) 0%, transparent 100%),
-      linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 50%),
-      linear-gradient(135deg, #141414 0%, #0a0a0a 100%)
-    `,
-  },
-  'retro-os': {
-    background: `
-      linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.08) 12%, transparent 12%, transparent 100%),
-      repeating-linear-gradient(0deg, transparent 0px, transparent 8px, rgba(255,255,255,0.02) 8px, rgba(255,255,255,0.02) 9px),
-      linear-gradient(135deg, #121212 0%, #0d0d0d 100%)
-    `,
-  },
-  'broadcast': {
-    background: `
-      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 30%),
-      repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 4px),
-      linear-gradient(135deg, #0f0f0f 0%, #181818 100%)
-    `,
-  },
-  'control-room': {
-    background: `
-      radial-gradient(circle at 25% 35%, rgba(255,255,255,0.06) 0%, transparent 25%),
-      radial-gradient(circle at 75% 65%, rgba(255,255,255,0.04) 0%, transparent 25%),
-      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 40%),
-      linear-gradient(135deg, #101010 0%, #1a1a1a 100%)
-    `,
-  },
-  'vending-machine': {
-    background: `
-      linear-gradient(180deg, rgba(255,255,255,0.04) 0%, transparent 20%),
-      repeating-linear-gradient(90deg, transparent 0px, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 31px),
-      repeating-linear-gradient(0deg, transparent 0px, transparent 25px, rgba(255,255,255,0.015) 25px, rgba(255,255,255,0.015) 26px),
-      linear-gradient(135deg, #0d0d0d 0%, #151515 100%)
-    `,
-  },
-};
+// Interface card with 3D tilt effect
+function InterfaceCard({
+  iface,
+  index,
+  onClick
+}: {
+  iface: typeof interfaces[0];
+  index: number;
+  onClick: () => void;
+}) {
+  const cardRef = useRef<HTMLButtonElement>(null);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
 
-// Interface icons in monochrome style
-const interfaceIcons: Record<string, string> = {
-  'neural-map': '◉',
-  'anatomical-map': '⬡',
-  'retro-os': '▢',
-  'broadcast': '◎',
-  'control-room': '▣',
-  'vending-machine': '▤',
-};
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+
+    // Calculate tilt (stronger effect)
+    setTilt({
+      x: (y - 0.5) * -25,
+      y: (x - 0.5) * 25,
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setTilt({ x: 0, y: 0 });
+    setIsHovered(false);
+  };
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  return (
+    <motion.button
+      ref={cardRef}
+      className={styles.card}
+      onClick={onClick}
+      initial={{ opacity: 0, y: 30, rotateX: 10 }}
+      animate={{ opacity: 1, y: 0, rotateX: 0 }}
+      transition={{
+        duration: 0.7,
+        delay: 0.4 + index * 0.1,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onMouseEnter={handleMouseEnter}
+      style={{
+        transform: `perspective(1000px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) ${isHovered ? 'translateZ(40px) scale(1.08)' : 'translateZ(0) scale(1)'}`,
+        transition: isHovered ? 'transform 0.1s ease-out' : 'transform 0.4s ease-out',
+      }}
+    >
+      {/* 3D lighting effect */}
+      <div
+        className={styles.cardShine}
+        style={{
+          opacity: isHovered ? 1 : 0,
+          background: `radial-gradient(circle at ${50 + tilt.y * 2}% ${50 + tilt.x * 2}%, rgba(255,255,255,0.2) 0%, transparent 60%)`,
+        }}
+      />
+
+      {/* Interface Preview Thumbnail */}
+      <div className={styles.cardThumbnail}>
+        <InterfacePreview slug={iface.slug} isHovered={isHovered} />
+      </div>
+
+      {/* Content */}
+      <div className={styles.cardContent}>
+        <div className={styles.cardName}>{iface.name}</div>
+      </div>
+
+      {/* Edge highlight on hover */}
+      <div
+        className={styles.cardEdge}
+        style={{ opacity: isHovered ? 1 : 0 }}
+      />
+    </motion.button>
+  );
+}
+
+// Miniature preview of each interface in B&W
+function InterfacePreview({ slug, isHovered }: { slug: string; isHovered: boolean }) {
+  switch (slug) {
+    case 'neural-map':
+      return (
+        <div className={styles.previewNeuralMap}>
+          {/* Center node */}
+          <div className={styles.neuralCenter} />
+          {/* Orbiting nodes */}
+          {[0, 60, 120, 180, 240, 300].map((angle, i) => (
+            <div
+              key={i}
+              className={styles.neuralNode}
+              style={{
+                transform: `rotate(${angle}deg) translateX(32px) rotate(-${angle}deg)`,
+                animationDelay: `${i * 0.1}s`,
+              }}
+            />
+          ))}
+          {/* Connection lines */}
+          <svg className={styles.neuralLines}>
+            {[0, 60, 120, 180, 240, 300].map((angle, i) => {
+              const rad = (angle * Math.PI) / 180;
+              return (
+                <line
+                  key={i}
+                  x1="50%"
+                  y1="50%"
+                  x2={`${50 + Math.cos(rad) * 32}%`}
+                  y2={`${50 + Math.sin(rad) * 32}%`}
+                  stroke="rgba(255,255,255,0.2)"
+                  strokeWidth="1"
+                />
+              );
+            })}
+          </svg>
+        </div>
+      );
+
+    case 'anatomical-map':
+      return (
+        <div className={styles.previewAnatomical}>
+          {/* Vitruvian man silhouette */}
+          <div className={styles.anatomicalFigure}>
+            <div className={styles.anatomicalHead} />
+            <div className={styles.anatomicalBody} />
+            <div className={styles.anatomicalArm} style={{ left: '15%' }} />
+            <div className={styles.anatomicalArm} style={{ right: '15%' }} />
+            <div className={styles.anatomicalLeg} style={{ left: '35%' }} />
+            <div className={styles.anatomicalLeg} style={{ right: '35%' }} />
+          </div>
+          {/* Circle */}
+          <div className={styles.anatomicalCircle} />
+        </div>
+      );
+
+    case 'retro-os':
+      return (
+        <div className={styles.previewRetroOS}>
+          {/* Title bar */}
+          <div className={styles.retroTitleBar}>
+            <div className={styles.retroButtons}>
+              <span /><span /><span />
+            </div>
+          </div>
+          {/* Desktop icons */}
+          <div className={styles.retroDesktop}>
+            <div className={styles.retroIcon} />
+            <div className={styles.retroIcon} />
+            <div className={styles.retroIcon} />
+          </div>
+          {/* Taskbar */}
+          <div className={styles.retroTaskbar} />
+        </div>
+      );
+
+    case 'broadcast':
+      return (
+        <div className={styles.previewBroadcast}>
+          {/* Radio dial */}
+          <div className={styles.broadcastDial}>
+            <div className={styles.broadcastNeedle} style={{
+              transform: `rotate(${isHovered ? 25 : -15}deg)`,
+              transition: 'transform 0.3s ease'
+            }} />
+          </div>
+          {/* Frequency lines */}
+          <div className={styles.broadcastFreq}>
+            {[...Array(7)].map((_, i) => (
+              <div key={i} className={styles.freqLine} />
+            ))}
+          </div>
+          {/* Waveform */}
+          <div className={styles.broadcastWave} />
+        </div>
+      );
+
+    case 'control-room':
+      return (
+        <div className={styles.previewControlRoom}>
+          {/* 2x3 panel grid */}
+          <div className={styles.controlGrid}>
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className={styles.controlPanel}>
+                <div className={styles.controlLed} />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+    case 'vending-machine':
+      return (
+        <div className={styles.previewVending}>
+          {/* Display screen */}
+          <div className={styles.vendingScreen} />
+          {/* Product grid */}
+          <div className={styles.vendingGrid}>
+            {[...Array(9)].map((_, i) => (
+              <div key={i} className={styles.vendingSlot} />
+            ))}
+          </div>
+          {/* Keypad */}
+          <div className={styles.vendingKeypad}>
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className={styles.vendingKey} />
+            ))}
+          </div>
+        </div>
+      );
+
+    default:
+      return <div className={styles.previewDefault} />;
+  }
+}
 
 export default function EntryLobby() {
-  const { setInterface, visitedInterfaces } = useStore();
+  const { setInterface } = useStore();
 
   const handleBackToDice = () => {
     setInterface(null);
@@ -201,53 +361,14 @@ export default function EntryLobby() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          {interfaces.map((iface, index) => {
-            const isVisited = visitedInterfaces.includes(iface.id);
-
-            return (
-              <motion.button
-                key={iface.id}
-                className={`${styles.card} ${isVisited ? styles.cardVisited : ''}`}
-                onClick={() => setInterface(iface.id)}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.6,
-                  delay: 0.4 + index * 0.1,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {/* Thumbnail preview - B&W */}
-                <div className={styles.cardThumbnail} style={thumbnailStyles[iface.slug]}>
-                  {/* Centered icon */}
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '2rem',
-                      color: 'rgba(255,255,255,0.15)',
-                      fontFamily: 'system-ui',
-                    }}
-                  >
-                    {interfaceIcons[iface.slug] || '○'}
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className={styles.cardContent}>
-                  <div className={styles.cardName}>{iface.name}</div>
-                </div>
-
-                {/* Visited indicator */}
-                {isVisited && <div className={styles.visitedMark}>✓</div>}
-              </motion.button>
-            );
-          })}
+          {interfaces.map((iface, index) => (
+            <InterfaceCard
+              key={iface.id}
+              iface={iface}
+              index={index}
+              onClick={() => setInterface(iface.id)}
+            />
+          ))}
         </motion.div>
 
         {/* Back to dice */}
