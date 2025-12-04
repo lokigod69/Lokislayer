@@ -36,6 +36,20 @@
   z-index: 1;
 }
 
+/* Animated particles flowing along lines */
+.animatedLine {
+  animation: flowParticles 1.5s linear infinite;
+}
+
+@keyframes flowParticles {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
 /* Center Home Node */
 .homeNode {
   position: absolute;

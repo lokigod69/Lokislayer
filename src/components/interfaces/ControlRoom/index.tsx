@@ -266,8 +266,9 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
   );
 }
 
-// Oscilloscope display - animated waveform with selectable wave types
+// Oscilloscope display - animated waveform, click to cycle wave types
 type WaveType = 'sine' | 'saw' | 'square' | 'triangle';
+const WAVE_TYPES: WaveType[] = ['sine', 'saw', 'square', 'triangle'];
 
 function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
   const [phase, setPhase] = useState(0);
@@ -294,17 +295,14 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
           y = 50 + Math.sin((i / 15) + phase) * amplitude;
           break;
         case 'saw':
-          // Sawtooth wave
           const sawPos = ((i / 25) + phase / 2) % 1;
           y = 50 + (sawPos * 2 - 1) * amplitude;
           break;
         case 'square':
-          // Square wave
           const squareVal = Math.sin((i / 15) + phase) >= 0 ? 1 : -1;
           y = 50 + squareVal * amplitude;
           break;
         case 'triangle':
-          // Triangle wave
           const triPos = ((i / 25) + phase / 2) % 1;
           const triVal = triPos < 0.5 ? (triPos * 4 - 1) : (3 - triPos * 4);
           y = 50 + triVal * amplitude;
@@ -317,15 +315,17 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
     return points.join(' ');
   }, [phase, waveType, isActive]);
 
-  const handleWaveSelect = useCallback((e: React.MouseEvent, type: WaveType) => {
-    e.stopPropagation(); // Prevent panel click
-    setWaveType(type);
+  // Click anywhere on oscilloscope to cycle wave type
+  const handleClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setWaveType((current) => {
+      const currentIndex = WAVE_TYPES.indexOf(current);
+      return WAVE_TYPES[(currentIndex + 1) % WAVE_TYPES.length];
+    });
   }, []);
 
-  const waveTypes: WaveType[] = ['sine', 'saw', 'square', 'triangle'];
-
   return (
-    <div className={styles.oscilloscope}>
+    <div className={styles.oscilloscope} onClick={handleClick}>
       <svg viewBox="0 0 100 100" className={styles.oscScreen}>
         {/* Grid */}
         <g className={styles.oscGrid}>
@@ -343,18 +343,8 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
           style={{ opacity: isActive ? 1 : 0.3 }}
         />
       </svg>
-      {/* Wave type buttons */}
-      <div className={styles.oscButtons}>
-        {waveTypes.map((type) => (
-          <button
-            key={type}
-            className={`${styles.oscBtn} ${waveType === type ? styles.oscBtnActive : ''}`}
-            onClick={(e) => handleWaveSelect(e, type)}
-          >
-            {type === 'sine' ? '∿' : type === 'saw' ? '⊿' : type === 'square' ? '⊓' : '△'}
-          </button>
-        ))}
-      </div>
+      {/* Wave type label */}
+      <div className={styles.oscLabel}>{waveType.toUpperCase()}</div>
     </div>
   );
 }
