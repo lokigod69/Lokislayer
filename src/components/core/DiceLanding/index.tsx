@@ -1,4 +1,5 @@
 // src/components/core/DiceLanding/index.tsx
+// Clean 3D dice landing - bigger dice, simpler text
 
 import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -6,7 +7,7 @@ import { useStore } from '../../../store/useStore';
 import { getRandomInterfaceId, getInterfaceById } from '../../../config/interfaces';
 import styles from './styles.module.css';
 
-// Dice face dot patterns
+// Dice face dot patterns (1-6)
 const dotPatterns: Record<number, number[][]> = {
   1: [[1, 1]],
   2: [[0, 0], [2, 2]],
@@ -16,7 +17,7 @@ const dotPatterns: Record<number, number[][]> = {
   6: [[0, 0], [0, 2], [1, 0], [1, 2], [2, 0], [2, 2]],
 };
 
-// 3D rotation for each face to be front-facing
+// 3D rotation for each face
 const faceRotations: Record<number, { rotateX: number; rotateY: number }> = {
   1: { rotateX: 0, rotateY: 0 },
   2: { rotateX: 0, rotateY: 90 },
@@ -46,15 +47,15 @@ function DiceFace({ value }: { value: number }) {
   );
 }
 
-// Generate random particles
+// Background particles
 function Particles() {
   const particles = useMemo(() => {
-    return Array.from({ length: 20 }, (_, i) => ({
+    return Array.from({ length: 15 }, (_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
       delay: Math.random() * 15,
       duration: 15 + Math.random() * 10,
-      size: 2 + Math.random() * 3,
+      size: 2 + Math.random() * 2,
     }));
   }, []);
 
@@ -115,8 +116,7 @@ export default function DiceLanding() {
   }, [isRolling, setInterface]);
 
   const handleSkip = useCallback(() => {
-    // Navigate to interface selection (we'll use a special value)
-    setInterface(-1); // -1 will mean "show selection"
+    setInterface(-1);
   }, [setInterface]);
 
   const handleDevSelect = useCallback((num: number) => {
@@ -133,12 +133,11 @@ export default function DiceLanding() {
       <div className={`${styles.orb} ${styles.orb1}`} />
       <div className={`${styles.orb} ${styles.orb2}`} />
       <div className={styles.gridPattern} />
-      <div className={styles.noise} />
       <Particles />
 
       {/* Content */}
       <div className={styles.content}>
-        {/* Title */}
+        {/* Title - positioned higher */}
         <motion.h1
           className={styles.title}
           initial={{ opacity: 0, y: -30 }}
@@ -148,21 +147,12 @@ export default function DiceLanding() {
           Roll Your Fate
         </motion.h1>
 
-        <motion.p
-          className={styles.subtitle}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-        >
-          Click the dice to enter a random reality
-        </motion.p>
-
-        {/* 3D Dice */}
+        {/* 3D Dice - bigger and more prominent */}
         <motion.div
           className={styles.diceContainer}
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.3, type: 'spring' }}
+          transition={{ duration: 0.6, delay: 0.2, type: 'spring' }}
         >
           <motion.button
             className={styles.diceWrapper}
@@ -170,6 +160,7 @@ export default function DiceLanding() {
             disabled={isRolling}
             whileHover={!isRolling ? { scale: 1.05 } : {}}
             whileTap={!isRolling ? { scale: 0.95 } : {}}
+            aria-label="Roll the dice"
           >
             <motion.div
               className={styles.dice}
@@ -249,10 +240,10 @@ export default function DiceLanding() {
           onClick={handleSkip}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.4 }}
           whileHover={{ scale: 1.02 }}
         >
-          Skip → Choose Your Reality
+          Skip → Choose Interface
         </motion.button>
 
         {/* Dev mode buttons */}
@@ -260,9 +251,9 @@ export default function DiceLanding() {
           className={styles.devMode}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 0.6 }}
         >
-          <span className={styles.devLabel}>Dev Mode:</span>
+          <span className={styles.devLabel}>Dev:</span>
           <div className={styles.devButtons}>
             {[1, 2, 3, 4, 5, 6].map((num) => (
               <button
