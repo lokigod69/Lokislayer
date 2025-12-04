@@ -1,18 +1,39 @@
 // src/components/interfaces/AnatomicalMap/index.tsx
-// Da Vinci Vitruvian Man style interface
+// Da Vinci Vitruvian Man style interface - Dark Mode
 
+import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import BodySVG from './BodySVG';
 import styles from './styles.module.css';
 
 export default function AnatomicalMap() {
-  return (
-    <div className={styles.container}>
-      {/* Parchment texture overlay */}
-      <div className={styles.parchmentOverlay} />
+  const [selectedProject, setSelectedProject] = useState<string | null>(null);
 
-      {/* Ink splatters decoration */}
-      <div className={styles.inkSplatters} />
+  // Close modal when clicking anywhere on the background
+  const handleBackgroundClick = useCallback(() => {
+    if (selectedProject) {
+      setSelectedProject(null);
+    }
+  }, [selectedProject]);
+
+  // Close on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedProject) {
+        setSelectedProject(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedProject]);
+
+  return (
+    <div className={styles.container} onClick={handleBackgroundClick}>
+      {/* Texture overlay */}
+      <div className={styles.textureOverlay} />
+
+      {/* Vignette */}
+      <div className={styles.vignette} />
 
       {/* Body Figure */}
       <motion.div
@@ -21,7 +42,10 @@ export default function AnatomicalMap() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.6 }}
       >
-        <BodySVG onSelectProject={() => {}} />
+        <BodySVG
+          selectedProject={selectedProject}
+          setSelectedProject={setSelectedProject}
+        />
       </motion.div>
 
       {/* Instructions */}

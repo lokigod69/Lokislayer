@@ -282,8 +282,8 @@ function SettingsModal({
             </label>
             <input
               type="range"
-              min="32"
-              max="72"
+              min="48"
+              max="128"
               value={tempSize}
               onChange={(e) => setTempSize(Number(e.target.value))}
               className={styles.iconSizeSlider}
@@ -372,7 +372,7 @@ export default function Desktop() {
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [showStartMenu, setShowStartMenu] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
-  const [iconSize, setIconSize] = useState(48);
+  const [iconSize, setIconSize] = useState(72);
 
   // Modal states
   const [activeProject, setActiveProject] = useState<Project | null>(null);

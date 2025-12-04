@@ -1,10 +1,10 @@
 // src/components/interfaces/NeuralMap/index.tsx
 // Neural Map with center home node, draggable project nodes, and connection lines
-// Lines follow nodes during drag and snap back on release
+// Nodes stay where dragged, click opens confirmation modal
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { projects } from '../../../config/projects';
+import { motion, AnimatePresence } from 'framer-motion';
+import { projects, Project } from '../../../config/projects';
 import { useStore } from '../../../store/useStore';
 import styles from './styles.module.css';
 
@@ -23,45 +23,36 @@ interface Position {
   y: number;
 }
 
-interface NodeState {
-  basePosition: Position; // Original position in circle
-  currentOffset: Position; // Current drag offset
-  isSnapping: boolean; // Whether snapping back
-}
-
 export default function NeuralMap() {
   const { setInterface } = useStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerSize, setContainerSize] = useState({ width: 800, height: 600 });
   const [hoveredHome, setHoveredHome] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  // Node states with positions and drag offsets
-  const [nodeStates, setNodeStates] = useState<Record<string, NodeState>>({});
+  // Node positions - persist where they're dragged
+  const [nodePositions, setNodePositions] = useState<Record<string, Position>>({});
 
   // Calculate center
   const centerX = containerSize.width / 2;
   const centerY = containerSize.height / 2;
 
-  // Calculate positions in a circle
-  const calculatePositions = useCallback((width: number, height: number) => {
+  // Calculate initial positions in a circle
+  const calculateInitialPositions = useCallback((width: number, height: number) => {
     const cx = width / 2;
     const cy = height / 2;
     const radius = Math.min(width, height) * 0.32;
 
-    const states: Record<string, NodeState> = {};
+    const positions: Record<string, Position> = {};
     projects.forEach((project, index) => {
       const angle = (index * 2 * Math.PI) / projects.length - Math.PI / 2;
-      states[project.id] = {
-        basePosition: {
-          x: cx + radius * Math.cos(angle),
-          y: cy + radius * Math.sin(angle),
-        },
-        currentOffset: { x: 0, y: 0 },
-        isSnapping: false,
+      positions[project.id] = {
+        x: cx + radius * Math.cos(angle),
+        y: cy + radius * Math.sin(angle),
       };
     });
-    return states;
+    return positions;
   }, []);
 
   // Initialize positions on mount and resize
@@ -72,15 +63,18 @@ export default function NeuralMap() {
         const width = rect.width || 800;
         const height = rect.height || 600;
         setContainerSize({ width, height });
-        setNodeStates(calculatePositions(width, height));
+        // Only set initial positions if not already set
+        setNodePositions((prev) => {
+          if (Object.keys(prev).length === 0) {
+            return calculateInitialPositions(width, height);
+          }
+          return prev;
+        });
         setIsReady(true);
       }
     };
 
-    // Initial update
     updateSize();
-
-    // Small delay to ensure proper measurement
     const timer = setTimeout(updateSize, 100);
 
     window.addEventListener('resize', updateSize);
@@ -88,69 +82,56 @@ export default function NeuralMap() {
       window.removeEventListener('resize', updateSize);
       clearTimeout(timer);
     };
-  }, [calculatePositions]);
+  }, [calculateInitialPositions]);
 
   // Handle home node click
   const handleHomeClick = useCallback(() => {
     setInterface(-1);
   }, [setInterface]);
 
-  // Handle node drag
-  const handleDrag = useCallback((projectId: string, offsetX: number, offsetY: number) => {
-    setNodeStates((prev) => ({
+  // Update node position (called during drag)
+  const handleNodeMove = useCallback((projectId: string, newPos: Position) => {
+    setNodePositions((prev) => ({
       ...prev,
-      [projectId]: {
-        ...prev[projectId],
-        currentOffset: { x: offsetX, y: offsetY },
-        isSnapping: false,
-      },
+      [projectId]: newPos,
     }));
   }, []);
 
-  // Handle drag end - snap back
-  const handleDragEnd = useCallback((projectId: string) => {
-    setNodeStates((prev) => ({
-      ...prev,
-      [projectId]: {
-        ...prev[projectId],
-        currentOffset: { x: 0, y: 0 },
-        isSnapping: true,
-      },
-    }));
-    // Reset snapping flag after animation
-    setTimeout(() => {
-      setNodeStates((prev) => ({
-        ...prev,
-        [projectId]: {
-          ...prev[projectId],
-          isSnapping: false,
-        },
-      }));
-    }, 300);
+  // Handle node click - show confirmation modal
+  const handleNodeClick = useCallback((project: Project) => {
+    setSelectedProject(project);
   }, []);
 
-  // Handle node click
-  const handleNodeClick = useCallback((project: typeof projects[0]) => {
-    if (project.status === 'coming-soon') return;
-    window.open(project.url, '_blank', 'noopener,noreferrer');
+  // Handle modal confirm - navigate
+  const handleConfirmVisit = useCallback(() => {
+    if (selectedProject && selectedProject.status === 'live') {
+      window.open(selectedProject.url, '_blank', 'noopener,noreferrer');
+    }
+    setSelectedProject(null);
+  }, [selectedProject]);
+
+  // Handle modal close
+  const handleCloseModal = useCallback(() => {
+    setSelectedProject(null);
   }, []);
 
-  // Get current position of a node (base + offset)
-  const getNodePosition = (projectId: string) => {
-    const state = nodeStates[projectId];
-    if (!state) return { x: centerX, y: centerY };
-    return {
-      x: state.basePosition.x + state.currentOffset.x,
-      y: state.basePosition.y + state.currentOffset.y,
+  // Close modal on Escape
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && selectedProject) {
+        setSelectedProject(null);
+      }
     };
-  };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedProject]);
 
   if (!isReady) {
     return <div ref={containerRef} className={styles.container} />;
   }
 
   return (
-    <div ref={containerRef} className={styles.container}>
+    <div ref={containerRef} className={styles.container} onClick={handleCloseModal}>
       {/* Animated background */}
       <div className={styles.backgroundParticles} />
 
@@ -177,8 +158,8 @@ export default function NeuralMap() {
 
         {/* Lines from center to each node */}
         {projects.map((project) => {
-          const pos = getNodePosition(project.id);
-          const state = nodeStates[project.id];
+          const pos = nodePositions[project.id];
+          if (!pos) return null;
 
           return (
             <g key={`line-${project.id}`}>
@@ -192,9 +173,6 @@ export default function NeuralMap() {
                 strokeWidth="6"
                 opacity="0.3"
                 filter="url(#lineGlow)"
-                style={{
-                  transition: state?.isSnapping ? 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
-                }}
               />
               {/* Main solid line */}
               <line
@@ -205,9 +183,6 @@ export default function NeuralMap() {
                 stroke={project.theme.primaryColor}
                 strokeWidth="2"
                 opacity="0.7"
-                style={{
-                  transition: state?.isSnapping ? 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
-                }}
               />
               {/* Animated flowing particles */}
               <line
@@ -220,9 +195,6 @@ export default function NeuralMap() {
                 strokeDasharray="4 16"
                 opacity="0.4"
                 className={styles.animatedLine}
-                style={{
-                  transition: state?.isSnapping ? 'all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
-                }}
               />
             </g>
           );
@@ -239,7 +211,10 @@ export default function NeuralMap() {
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-        onClick={handleHomeClick}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleHomeClick();
+        }}
         onHoverStart={() => setHoveredHome(true)}
         onHoverEnd={() => setHoveredHome(false)}
         whileHover={{ scale: 1.1 }}
@@ -259,13 +234,13 @@ export default function NeuralMap() {
         <div className={styles.homeCore}>
           <span className={styles.homeIcon}>🏠</span>
         </div>
-        <div className={styles.homeLabel}>Home</div>
+        <div className={styles.homeLabel}>HOME</div>
       </motion.div>
 
       {/* Project Nodes */}
       {projects.map((project, index) => {
-        const state = nodeStates[project.id];
-        if (!state) return null;
+        const pos = nodePositions[project.id];
+        if (!pos) return null;
 
         const icon = projectIcons[project.id] || '⚡';
 
@@ -273,16 +248,59 @@ export default function NeuralMap() {
           <DraggableNode
             key={project.id}
             project={project}
-            basePosition={state.basePosition}
+            position={pos}
             icon={icon}
             index={index}
-            isSnapping={state.isSnapping}
-            onDrag={(ox, oy) => handleDrag(project.id, ox, oy)}
-            onDragEnd={() => handleDragEnd(project.id)}
+            onMove={(newPos) => handleNodeMove(project.id, newPos)}
             onClick={() => handleNodeClick(project)}
           />
         );
       })}
+
+      {/* Confirmation Modal */}
+      <AnimatePresence>
+        {selectedProject && (
+          <motion.div
+            className={styles.modalOverlay}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleCloseModal}
+          >
+            <motion.div
+              className={styles.modal}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={styles.modalIcon}>
+                {projectIcons[selectedProject.id] || '⚡'}
+              </div>
+              <h2 className={styles.modalTitle}>{selectedProject.name}</h2>
+              <p className={styles.modalDescription}>{selectedProject.description}</p>
+              {selectedProject.status === 'coming-soon' ? (
+                <div className={styles.modalComingSoon}>Coming Soon</div>
+              ) : (
+                <div className={styles.modalButtons}>
+                  <button
+                    className={styles.modalButtonCancel}
+                    onClick={handleCloseModal}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className={styles.modalButtonVisit}
+                    onClick={handleConfirmVisit}
+                  >
+                    Visit Site →
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Instructions */}
       <motion.div
@@ -291,7 +309,7 @@ export default function NeuralMap() {
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
       >
-        Click home to return • Drag nodes to explore • Click to visit
+        Drag nodes to rearrange • Click to visit
       </motion.div>
     </div>
   );
@@ -300,91 +318,83 @@ export default function NeuralMap() {
 // Separate draggable node component
 function DraggableNode({
   project,
-  basePosition,
+  position,
   icon,
   index,
-  isSnapping,
-  onDrag,
-  onDragEnd,
+  onMove,
   onClick,
 }: {
-  project: typeof projects[0];
-  basePosition: Position;
+  project: Project;
+  position: Position;
   icon: string;
   index: number;
-  isSnapping: boolean;
-  onDrag: (offsetX: number, offsetY: number) => void;
-  onDragEnd: () => void;
+  onMove: (pos: Position) => void;
   onClick: () => void;
 }) {
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const dragStartRef = useRef({ x: 0, y: 0 });
-  const nodeRef = useRef<HTMLDivElement>(null);
+  const dragStartRef = useRef({ x: 0, y: 0, startPos: { x: 0, y: 0 } });
+  const hasDraggedRef = useRef(false);
 
   // Handle mouse/touch drag
   const handlePointerDown = (e: React.PointerEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setIsDragging(true);
-    dragStartRef.current = { x: e.clientX, y: e.clientY };
-    setDragOffset({ x: 0, y: 0 });
+    hasDraggedRef.current = false;
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      startPos: { ...position },
+    };
 
     const handlePointerMove = (moveEvent: PointerEvent) => {
-      const offsetX = moveEvent.clientX - dragStartRef.current.x;
-      const offsetY = moveEvent.clientY - dragStartRef.current.y;
-      setDragOffset({ x: offsetX, y: offsetY });
-      onDrag(offsetX, offsetY);
+      const dx = moveEvent.clientX - dragStartRef.current.x;
+      const dy = moveEvent.clientY - dragStartRef.current.y;
+
+      // Mark as dragged if moved more than 5px
+      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+        hasDraggedRef.current = true;
+      }
+
+      onMove({
+        x: dragStartRef.current.startPos.x + dx,
+        y: dragStartRef.current.startPos.y + dy,
+      });
     };
 
     const handlePointerUp = () => {
       setIsDragging(false);
-      setDragOffset({ x: 0, y: 0 });
-      onDragEnd();
       document.removeEventListener('pointermove', handlePointerMove);
       document.removeEventListener('pointerup', handlePointerUp);
+
+      // Only trigger click if we didn't drag
+      if (!hasDraggedRef.current) {
+        onClick();
+      }
     };
 
     document.addEventListener('pointermove', handlePointerMove);
     document.addEventListener('pointerup', handlePointerUp);
   };
 
-  const handleClick = () => {
-    // Only trigger click if not dragging (no significant movement)
-    if (Math.abs(dragOffset.x) < 5 && Math.abs(dragOffset.y) < 5) {
-      onClick();
-    }
-  };
-
   return (
     <motion.div
-      ref={nodeRef}
       className={`${styles.projectNode} ${project.status === 'coming-soon' ? styles.comingSoon : ''}`}
       style={{
-        left: basePosition.x,
-        top: basePosition.y,
-        x: dragOffset.x,
-        y: dragOffset.y,
+        left: position.x,
+        top: position.y,
         zIndex: isDragging ? 100 : isHovered ? 50 : 10,
         cursor: isDragging ? 'grabbing' : 'grab',
-        transition: isSnapping ? 'transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)' : 'none',
       }}
       initial={{ scale: 0, opacity: 0 }}
-      animate={{
-        scale: 1,
-        opacity: 1,
-        x: isSnapping ? 0 : dragOffset.x,
-        y: isSnapping ? 0 : dragOffset.y,
-      }}
+      animate={{ scale: 1, opacity: 1 }}
       transition={{
         scale: { delay: index * 0.1 + 0.3, type: 'spring', stiffness: 200 },
-        x: isSnapping ? { type: 'spring', stiffness: 300, damping: 20 } : { duration: 0 },
-        y: isSnapping ? { type: 'spring', stiffness: 300, damping: 20 } : { duration: 0 },
       }}
       onPointerDown={handlePointerDown}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      onClick={handleClick}
     >
       {/* Glow */}
       <motion.div
