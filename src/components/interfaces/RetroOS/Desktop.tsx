@@ -367,6 +367,26 @@ function HelpModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+// Calculate icon positions based on icon size
+function calculateIconPositions(size: number): Record<string, IconPosition> {
+  const positions: Record<string, IconPosition> = {};
+  // Icon cell size scales with icon size
+  const cellWidth = size * 1.8;  // Width of each icon cell
+  const cellHeight = size * 1.6; // Height of each icon cell (icon + label)
+  const padding = 20;
+  const maxRowsBeforeWrap = 4; // Max icons per column before wrapping
+
+  projects.forEach((project, index) => {
+    const col = Math.floor(index / maxRowsBeforeWrap);
+    const row = index % maxRowsBeforeWrap;
+    positions[project.id] = {
+      x: padding + col * cellWidth,
+      y: padding + row * cellHeight,
+    };
+  });
+  return positions;
+}
+
 export default function Desktop() {
   const { setInterface } = useStore();
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
@@ -379,20 +399,16 @@ export default function Desktop() {
   const [showSettings, setShowSettings] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
 
-  // Icon positions - stored per project
-  const [iconPositions, setIconPositions] = useState<Record<string, IconPosition>>(() => {
-    // Initialize positions in a grid on the left side
-    const positions: Record<string, IconPosition> = {};
-    projects.forEach((project, index) => {
-      const col = Math.floor(index / 4);
-      const row = index % 4;
-      positions[project.id] = {
-        x: 20 + col * 90,
-        y: 20 + row * 95,
-      };
-    });
-    return positions;
-  });
+  // Icon positions - stored per project, recalculated when size changes
+  const [iconPositions, setIconPositions] = useState<Record<string, IconPosition>>(() =>
+    calculateIconPositions(72)
+  );
+
+  // Recalculate positions when icon size changes
+  const handleIconSizeChange = useCallback((newSize: number) => {
+    setIconSize(newSize);
+    setIconPositions(calculateIconPositions(newSize));
+  }, []);
 
   // Update clock
   useEffect(() => {
@@ -460,7 +476,7 @@ export default function Desktop() {
         {showSettings && (
           <SettingsModal
             iconSize={iconSize}
-            onIconSizeChange={setIconSize}
+            onIconSizeChange={handleIconSizeChange}
             onClose={() => setShowSettings(false)}
           />
         )}
