@@ -294,12 +294,15 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
   }, [phase, waveType, isActive]);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
+    // Only change wave type when panel is already active
+    // Let the click bubble up to activate panel first if not active
+    if (!isActive) return;
     e.stopPropagation();
     setWaveType((current) => {
       const currentIndex = WAVE_TYPES.indexOf(current);
       return WAVE_TYPES[(currentIndex + 1) % WAVE_TYPES.length];
     });
-  }, []);
+  }, [isActive]);
 
   return (
     <div className={styles.oscilloscope} onClick={handleClick}>
@@ -331,6 +334,9 @@ const GRID_LAYOUTS: Record<number, { cols: number; rows: number }> = {
   32: { cols: 8, rows: 4 },
   64: { cols: 8, rows: 8 },
   128: { cols: 16, rows: 8 },
+  256: { cols: 16, rows: 16 },
+  512: { cols: 32, rows: 16 },
+  1024: { cols: 32, rows: 32 },
 };
 
 function MonitorDisplay({ isActive }: { isActive: boolean }) {
@@ -350,12 +356,15 @@ function MonitorDisplay({ isActive }: { isActive: boolean }) {
 
   const handleDialClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Cycle through pattern counts: 8 -> 16 -> 32 -> 64 -> 128 -> 8
+    // Cycle through pattern counts: 8 -> 16 -> 32 -> 64 -> 128 -> 256 -> 512 -> 1024 -> 8
     setPatternCount((current) => {
       if (current === 8) return 16;
       if (current === 16) return 32;
       if (current === 32) return 64;
       if (current === 64) return 128;
+      if (current === 128) return 256;
+      if (current === 256) return 512;
+      if (current === 512) return 1024;
       return 8;
     });
   };
