@@ -44,15 +44,15 @@
   z-index: 10;
 }
 
-/* Body container */
+/* Body container - scaled up 20% */
 .bodyContainer {
   position: relative;
-  width: 80vmin;
-  height: 90vmin;
-  max-width: 600px;
-  max-height: 750px;
-  min-width: 320px;
-  min-height: 400px;
+  width: 96vmin;
+  height: 108vmin;
+  max-width: 720px;
+  max-height: 900px;
+  min-width: 384px;
+  min-height: 480px;
 }
 
 /* Body figure SVG */
@@ -109,15 +109,15 @@
 }
 
 .hotspotInner {
-  width: 44px;
-  height: 44px;
+  width: 54px;
+  height: 54px;
   background: rgba(40, 32, 24, 0.9);
   border: 2px solid #c0a080;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 26px;
   transition: all 0.3s ease;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
@@ -150,12 +150,9 @@
   pointer-events: none;
 }
 
-/* Tooltip */
+/* Tooltip base styles */
 .tooltip {
   position: absolute;
-  bottom: calc(100% + 20px);
-  left: 50%;
-  transform: translateX(-50%);
   width: 220px;
   padding: 16px;
   background: #2a2218;
@@ -168,7 +165,14 @@
   font-family: 'Times New Roman', serif;
 }
 
-.tooltip::before {
+/* Tooltip position: Top (default for brain) */
+.tooltipTop {
+  bottom: calc(100% + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltipTop::before {
   content: '';
   position: absolute;
   bottom: -12px;
@@ -178,7 +182,7 @@
   border-top-color: #604830;
 }
 
-.tooltip::after {
+.tooltipTop::after {
   content: '';
   position: absolute;
   bottom: -9px;
@@ -186,6 +190,87 @@
   transform: translateX(-50%);
   border: 10px solid transparent;
   border-top-color: #2a2218;
+}
+
+/* Tooltip position: Bottom (for mouth, heart, hands) */
+.tooltipBottom {
+  top: calc(100% + 20px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tooltipBottom::before {
+  content: '';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 12px solid transparent;
+  border-bottom-color: #604830;
+}
+
+.tooltipBottom::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-bottom-color: #2a2218;
+}
+
+/* Tooltip position: Left (for ear) */
+.tooltipLeft {
+  right: calc(100% + 20px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltipLeft::before {
+  content: '';
+  position: absolute;
+  right: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 12px solid transparent;
+  border-left-color: #604830;
+}
+
+.tooltipLeft::after {
+  content: '';
+  position: absolute;
+  right: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 10px solid transparent;
+  border-left-color: #2a2218;
+}
+
+/* Tooltip position: Right (for eye) */
+.tooltipRight {
+  left: calc(100% + 20px);
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tooltipRight::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 12px solid transparent;
+  border-right-color: #604830;
+}
+
+.tooltipRight::after {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 10px solid transparent;
+  border-right-color: #2a2218;
 }
 
 .tooltipBodyPart {

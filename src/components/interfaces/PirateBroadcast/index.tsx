@@ -6,6 +6,57 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '../../../config/projects';
 import styles from './styles.module.css';
 
+// White noise canvas component
+function WhiteNoise({ isActive }: { isActive: boolean }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>();
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !isActive) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const drawNoise = () => {
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const gray = Math.random() * 255;
+        data[i] = gray;     // R
+        data[i + 1] = gray; // G
+        data[i + 2] = gray; // B
+        data[i + 3] = 180;  // A (semi-transparent)
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      animationRef.current = requestAnimationFrame(drawNoise);
+    };
+
+    drawNoise();
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isActive]);
+
+  if (!isActive) return null;
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className={styles.whiteNoise}
+    />
+  );
+}
+
 // Project frequencies - evenly spaced from 88 to 108 MHz
 const PROJECT_FREQUENCIES = [88, 92, 96, 100, 104, 108];
 const MIN_FREQ = 88;
@@ -264,22 +315,11 @@ export default function Broadcast() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className={styles.staticBars}>
-                  {Array.from({ length: 12 }).map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className={styles.staticBar}
-                      animate={{
-                        height: [20, 60, 30, 50, 20],
-                      }}
-                      transition={{
-                        repeat: Infinity,
-                        duration: 0.5,
-                        delay: i * 0.05,
-                        ease: 'easeInOut',
-                      }}
-                    />
-                  ))}
+                <div className={styles.noiseContainer}>
+                  <WhiteNoise isActive={!tunedProject} />
+                  <div className={styles.noiseOverlay}>
+                    <p className={styles.noSignalText}>NO SIGNAL</p>
+                  </div>
                 </div>
                 <p className={styles.searchingText}>
                   Scanning frequencies<span className={styles.dots}>...</span>

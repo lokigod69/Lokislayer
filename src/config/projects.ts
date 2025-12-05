@@ -20,7 +20,7 @@ export interface Project {
       bodyPart: 'ear' | 'brain' | 'mouth' | 'hands' | 'eye' | 'heart';
     };
     retroOS: {
-      iconType: 'media-player' | 'terminal' | 'folder' | 'sticky' | 'screensaver' | 'hidden';
+      iconType: 'media-player' | 'terminal' | 'folder' | 'sticky' | 'screensaver' | 'hidden' | 'speech';
       filename: string;
     };
     pirateBroadcast: {
@@ -88,7 +88,7 @@ export const projects: Project[] = [
     mappings: {
       neuralMap: { position: { x: 0, y: 150 }, connections: ['lokitunes', 'matrixarena'] },
       anatomicalMap: { bodyPart: 'mouth' },
-      retroOS: { iconType: 'folder', filename: 'Language_DB' },
+      retroOS: { iconType: 'speech', filename: 'VocApp.exe' },
       pirateBroadcast: { frequency: 96.3 },
       controlRoom: { panelType: 'typewriter' },
       vendingMachine: { slot: 'B1', productType: 'spellbook' },

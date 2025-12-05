@@ -44,14 +44,26 @@ export default function BodySVG({ selectedProject, setSelectedProject }: BodySVG
   };
 
   // Hotspot positions - adjusted for larger head (SVG viewBox 0 0 400 500)
+  // tooltipPosition determines which direction the tooltip appears
   const hotspots = [
-    { id: 'brain', x: 200, y: 50, label: 'Brain' },
-    { id: 'eye', x: 230, y: 80, label: 'Eye' },
-    { id: 'ear', x: 155, y: 90, label: 'Ear' },
-    { id: 'mouth', x: 200, y: 115, label: 'Mouth' },
-    { id: 'heart', x: 180, y: 230, label: 'Heart' },
-    { id: 'hands', x: 355, y: 250, label: 'Hands' },
+    { id: 'brain', x: 200, y: 40, label: 'Brain', tooltipPosition: 'top' as const },
+    { id: 'eye', x: 218, y: 80, label: 'Eye', tooltipPosition: 'right' as const },
+    { id: 'ear', x: 158, y: 90, label: 'Ear', tooltipPosition: 'left' as const },
+    { id: 'mouth', x: 200, y: 117, label: 'Mouth', tooltipPosition: 'bottom' as const },
+    { id: 'heart', x: 180, y: 220, label: 'Heart', tooltipPosition: 'bottom' as const },
+    { id: 'hands', x: 360, y: 245, label: 'Hands', tooltipPosition: 'bottom' as const },
   ];
+
+  // Get tooltip position class based on direction
+  const getTooltipPositionClass = (position: 'top' | 'bottom' | 'left' | 'right') => {
+    switch (position) {
+      case 'top': return styles.tooltipTop;
+      case 'bottom': return styles.tooltipBottom;
+      case 'left': return styles.tooltipLeft;
+      case 'right': return styles.tooltipRight;
+      default: return styles.tooltipTop;
+    }
+  };
 
   return (
     <div className={styles.bodyContainer}>
@@ -238,10 +250,10 @@ export default function BodySVG({ selectedProject, setSelectedProject }: BodySVG
             <AnimatePresence>
               {isSelected && (
                 <motion.div
-                  className={styles.tooltip}
-                  initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                  className={`${styles.tooltip} ${getTooltipPositionClass(spot.tooltipPosition)}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <div className={styles.tooltipBodyPart}>

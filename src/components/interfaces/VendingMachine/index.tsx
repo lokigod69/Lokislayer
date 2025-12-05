@@ -30,13 +30,14 @@ const displayNames: Record<string, string> = {
 const slotCodes = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 // Interaction states
-type MachineState = 'idle' | 'selected' | 'coinInserted' | 'dispensing';
+type MachineState = 'idle' | 'selected' | 'coinDropping' | 'loading' | 'ready' | 'dispensing';
 
 export default function VendingMachine() {
   const [machineState, setMachineState] = useState<MachineState>('idle');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [dispensedProject, setDispensedProject] = useState<Project | null>(null);
+  const [loadProgress, setLoadProgress] = useState(0);
 
   const getProjectForSlot = useCallback((slot: string): Project | undefined => {
     return projects.find((p) => p.mappings.vendingMachine.slot === slot);
@@ -45,52 +46,69 @@ export default function VendingMachine() {
   // Step 1: Select an item
   const handleSlotClick = useCallback((slot: string) => {
     const project = getProjectForSlot(slot);
-    if (project && machineState !== 'dispensing') {
+    if (project && machineState !== 'dispensing' && machineState !== 'coinDropping' && machineState !== 'loading') {
       setSelectedSlot(slot);
       setSelectedProject(project);
       setMachineState('selected');
+      setLoadProgress(0);
     }
   }, [getProjectForSlot, machineState]);
 
-  // Step 2: Insert coin
+  // Step 2: Insert coin - now with animation
   const handleInsertCoin = useCallback(() => {
     if (machineState !== 'selected' || !selectedProject) return;
 
-    // Coin insertion animation/sound could go here
-    setMachineState('coinInserted');
+    // Show coin dropping animation
+    setMachineState('coinDropping');
+
+    // After coin drops, start loading the product
+    setTimeout(() => {
+      setMachineState('loading');
+
+      // Animate loading progress from 0 to 100
+      let progress = 0;
+      const loadInterval = setInterval(() => {
+        progress += 5;
+        setLoadProgress(progress);
+
+        if (progress >= 100) {
+          clearInterval(loadInterval);
+          setMachineState('ready');
+        }
+      }, 100); // 100ms * 20 steps = 2 seconds to load
+    }, 800); // Coin drop animation duration
   }, [machineState, selectedProject]);
 
   // Step 3: Vend the product
   const handleVend = useCallback(() => {
-    if (machineState !== 'coinInserted' || !selectedProject) return;
+    if (machineState !== 'ready' || !selectedProject) return;
     if (selectedProject.status === 'coming-soon') return;
 
     setMachineState('dispensing');
+    setDispensedProject(selectedProject);
 
-    // Dispense animation
+    // Navigate after showing dispensed item
     setTimeout(() => {
-      setDispensedProject(selectedProject);
-
-      // Navigate after showing dispensed item
-      setTimeout(() => {
-        if (selectedProject.status === 'live') {
-          window.open(selectedProject.url, '_blank', 'noopener,noreferrer');
-        }
-        // Reset machine
-        setSelectedSlot(null);
-        setSelectedProject(null);
-        setDispensedProject(null);
-        setMachineState('idle');
-      }, 2000);
-    }, 1500);
+      if (selectedProject.status === 'live') {
+        window.open(selectedProject.url, '_blank', 'noopener,noreferrer');
+      }
+      // Reset machine
+      setSelectedSlot(null);
+      setSelectedProject(null);
+      setDispensedProject(null);
+      setMachineState('idle');
+      setLoadProgress(0);
+    }, 2000);
   }, [selectedProject, machineState]);
 
   // Clear selection
   const handleClear = useCallback(() => {
+    if (machineState === 'dispensing') return;
     setSelectedSlot(null);
     setSelectedProject(null);
     setMachineState('idle');
-  }, []);
+    setLoadProgress(0);
+  }, [machineState]);
 
   const getDisplayName = (project: Project) => {
     return displayNames[project.id] || project.name;
@@ -127,13 +145,34 @@ export default function VendingMachine() {
               >
                 DISPENSING...
               </motion.span>
+            ) : machineState === 'coinDropping' ? (
+              <motion.span
+                className={styles.displayCoin}
+                animate={{ opacity: [1, 0.5, 1] }}
+                transition={{ repeat: Infinity, duration: 0.2 }}
+              >
+                🪙 DING! 🪙
+              </motion.span>
+            ) : machineState === 'loading' ? (
+              <>
+                <span className={styles.displaySlot}>{selectedSlot}</span>
+                <span className={styles.displayLoading}>LOADING... {loadProgress}%</span>
+              </>
+            ) : machineState === 'ready' ? (
+              <>
+                <span className={styles.displaySlot}>{selectedSlot}</span>
+                <motion.span
+                  className={styles.displayReady}
+                  animate={{ opacity: [1, 0.7, 1] }}
+                  transition={{ repeat: Infinity, duration: 0.8 }}
+                >
+                  ✓ READY TO VEND
+                </motion.span>
+              </>
             ) : selectedProject ? (
               <>
                 <span className={styles.displaySlot}>{selectedSlot}</span>
                 <span className={styles.displayName}>{getDisplayName(selectedProject)}</span>
-                {machineState === 'coinInserted' && (
-                  <span className={styles.displayReady}>READY</span>
-                )}
               </>
             ) : (
               <span className={styles.displayIdle}>SELECT ITEM</span>
@@ -148,7 +187,8 @@ export default function VendingMachine() {
             if (!project) return null;
 
             const isSelected = selectedSlot === slot;
-            const isReady = isSelected && machineState === 'coinInserted';
+            const isReady = isSelected && machineState === 'ready';
+            const isLoading = isSelected && (machineState === 'loading' || machineState === 'coinDropping');
             const icon = projectIcons[project.id] || '📦';
 
             return (
@@ -156,7 +196,7 @@ export default function VendingMachine() {
                 key={slot}
                 className={`${styles.productSlot} ${isSelected ? styles.selected : ''} ${
                   isReady ? styles.ready : ''
-                } ${project.status === 'coming-soon' ? styles.comingSoon : ''}`}
+                } ${isLoading ? styles.loading : ''} ${project.status === 'coming-soon' ? styles.comingSoon : ''}`}
                 onClick={() => handleSlotClick(slot)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -176,9 +216,12 @@ export default function VendingMachine() {
                 )}
 
                 {/* Selection glow - subtle pulse when selected */}
-                {isSelected && !isReady && <div className={styles.selectionGlow} />}
+                {isSelected && !isReady && !isLoading && <div className={styles.selectionGlow} />}
 
-                {/* Ready glow - green when coin inserted */}
+                {/* Loading glow - yellow when loading */}
+                {isLoading && <div className={styles.loadingGlow} />}
+
+                {/* Ready glow - green when ready */}
                 {isReady && <div className={styles.readyGlow} />}
               </motion.button>
             );
@@ -191,14 +234,16 @@ export default function VendingMachine() {
           <motion.button
             className={`${styles.coinSlot} ${
               machineState === 'selected' ? styles.coinSlotActive : ''
-            }`}
+            } ${machineState === 'coinDropping' ? styles.coinSlotDropping : ''}`}
             onClick={handleInsertCoin}
             disabled={machineState !== 'selected'}
             whileHover={machineState === 'selected' ? { scale: 1.05 } : {}}
             whileTap={machineState === 'selected' ? { scale: 0.95 } : {}}
           >
             <div className={styles.coinSlotOpening} />
-            <span className={styles.coinSlotText}>INSERT COIN</span>
+            <span className={styles.coinSlotText}>
+              {machineState === 'coinDropping' ? '🪙 DING!' : 'INSERT COIN'}
+            </span>
             {machineState === 'selected' && (
               <motion.div
                 className={styles.coinGlow}
@@ -206,18 +251,29 @@ export default function VendingMachine() {
                 transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
               />
             )}
+            {/* Coin dropping animation */}
+            {machineState === 'coinDropping' && (
+              <motion.div
+                className={styles.droppingCoin}
+                initial={{ y: -30, opacity: 1 }}
+                animate={{ y: 30, opacity: 0 }}
+                transition={{ duration: 0.6, ease: 'easeIn' }}
+              >
+                🪙
+              </motion.div>
+            )}
           </motion.button>
 
           {/* Action buttons */}
           <div className={styles.actionButtons}>
             <motion.button
               className={`${styles.vendButton} ${
-                machineState !== 'coinInserted' ? styles.vendDisabled : ''
-              }`}
+                machineState !== 'ready' ? styles.vendDisabled : ''
+              } ${machineState === 'ready' ? styles.vendReady : ''}`}
               onClick={handleVend}
-              disabled={machineState !== 'coinInserted' || selectedProject?.status === 'coming-soon'}
-              whileHover={machineState === 'coinInserted' ? { scale: 1.05 } : {}}
-              whileTap={machineState === 'coinInserted' ? { scale: 0.95 } : {}}
+              disabled={machineState !== 'ready' || selectedProject?.status === 'coming-soon'}
+              whileHover={machineState === 'ready' ? { scale: 1.05 } : {}}
+              whileTap={machineState === 'ready' ? { scale: 0.95 } : {}}
             >
               {machineState === 'dispensing' ? 'VENDING...' : 'VEND'}
             </motion.button>
@@ -225,6 +281,7 @@ export default function VendingMachine() {
             <motion.button
               className={styles.clearButton}
               onClick={handleClear}
+              disabled={machineState === 'dispensing'}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -236,9 +293,42 @@ export default function VendingMachine() {
         {/* Dispense tray */}
         <div className={styles.dispenseTray}>
           <div className={styles.trayOpening}>
-            <AnimatePresence>
-              {dispensedProject && (
+            <AnimatePresence mode="wait">
+              {/* Show loading product */}
+              {(machineState === 'loading' || machineState === 'ready') && selectedProject && (
                 <motion.div
+                  key="loading"
+                  className={styles.loadingItem}
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                >
+                  <span
+                    className={styles.loadingIcon}
+                    style={{
+                      filter: machineState === 'loading'
+                        ? `blur(${Math.max(0, 8 - loadProgress / 12.5)}px) grayscale(${Math.max(0, 100 - loadProgress)}%)`
+                        : 'none',
+                    }}
+                  >
+                    {projectIcons[selectedProject.id] || '📦'}
+                  </span>
+                  <span className={styles.loadingText}>
+                    {machineState === 'loading' ? `Loading... ${loadProgress}%` : getDisplayName(selectedProject)}
+                  </span>
+                  {/* Progress bar */}
+                  <div className={styles.loadingBar}>
+                    <motion.div
+                      className={styles.loadingBarFill}
+                      style={{ width: `${loadProgress}%` }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+              {/* Show dispensed product */}
+              {dispensedProject && machineState === 'dispensing' && (
+                <motion.div
+                  key="dispensed"
                   className={styles.dispensedItem}
                   initial={{ y: -100, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}

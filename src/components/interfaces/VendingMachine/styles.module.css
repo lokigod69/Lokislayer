@@ -146,6 +146,18 @@
   text-shadow: 0 0 10px #00ff00;
 }
 
+.displayCoin {
+  font-size: 1.2rem;
+  color: #ffd700;
+  text-shadow: 0 0 15px #ffd700;
+}
+
+.displayLoading {
+  font-size: 0.9rem;
+  color: #ffaa00;
+  text-shadow: 0 0 8px #ffaa00;
+}
+
 .displayIdle {
   font-size: 1rem;
   color: #444;
@@ -197,12 +209,20 @@
   box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
-/* Ready state - green border after coin inserted */
+/* Ready state - green border after loading complete */
 .productSlot.ready {
   border-color: #00ff00;
   box-shadow:
     0 0 20px rgba(0, 255, 0, 0.4),
     inset 0 0 30px rgba(0, 255, 0, 0.1);
+}
+
+/* Loading state - yellow/orange pulsing */
+.productSlot.loading {
+  border-color: #ffaa00;
+  box-shadow:
+    0 0 15px rgba(255, 170, 0, 0.3),
+    inset 0 0 20px rgba(255, 170, 0, 0.1);
 }
 
 .productSlot.comingSoon {
@@ -262,7 +282,21 @@
   50% { opacity: 1; }
 }
 
-/* Ready glow - green after coin inserted */
+/* Loading glow - yellow/orange when loading */
+.loadingGlow {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: radial-gradient(circle at center, rgba(255, 170, 0, 0.15) 0%, transparent 70%);
+  animation: loadingGlowPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes loadingGlowPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* Ready glow - green after loading complete */
 .readyGlow {
   position: absolute;
   inset: 0;
@@ -339,6 +373,24 @@
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
 }
 
+/* Coin dropping state */
+.coinSlot.coinSlotDropping {
+  border-color: #ffd700;
+  background: linear-gradient(180deg, #2a2810 0%, #1a1808 100%);
+}
+
+.coinSlot.coinSlotDropping .coinSlotText {
+  color: #ffd700;
+  text-shadow: 0 0 15px #ffd700;
+}
+
+/* Dropping coin animation */
+.droppingCoin {
+  position: absolute;
+  font-size: 1.5rem;
+  pointer-events: none;
+}
+
 /* Golden glow animation for coin slot */
 .coinGlow {
   position: absolute;
@@ -391,6 +443,25 @@
   cursor: not-allowed;
 }
 
+/* Vend button ready state - bright green pulsing */
+.vendButton.vendReady {
+  animation: vendReadyPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes vendReadyPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 15px #00ff00,
+      inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    box-shadow:
+      0 0 30px #00ff00,
+      0 0 60px rgba(0, 255, 0, 0.5),
+      inset 0 2px 0 rgba(255, 255, 255, 0.3);
+  }
+}
+
 .clearButton {
   padding: 12px 15px;
   background: linear-gradient(180deg, #ff4444 0%, #aa0000 100%);
@@ -428,6 +499,43 @@
   align-items: center;
   justify-content: center;
   border-bottom: 2px solid #222;
+}
+
+/* Loading item in tray */
+.loadingItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+}
+
+.loadingIcon {
+  font-size: 2rem;
+  transition: filter 0.2s ease;
+}
+
+.loadingText {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: #ffaa00;
+  text-shadow: 0 0 5px #ffaa00;
+}
+
+.loadingBar {
+  width: 100px;
+  height: 6px;
+  background: #222;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid #444;
+}
+
+.loadingBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffaa00, #00ff00);
+  border-radius: 2px;
+  transition: width 0.1s linear;
 }
 
 .dispensedItem {

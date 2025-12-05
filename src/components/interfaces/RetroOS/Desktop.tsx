@@ -16,6 +16,7 @@ const iconEmojis: Record<string, string> = {
   sticky: '📝',
   screensaver: '🖼️',
   hidden: '🗑️',
+  speech: '🗣️',
 };
 
 interface IconPosition {
@@ -517,8 +518,13 @@ export default function Desktop() {
           className={`${styles.startButton} ${showStartMenu ? styles.startButtonActive : ''}`}
           onClick={() => setShowStartMenu((prev) => !prev)}
         >
-          <span className={styles.startLogo}>🪟</span>
-          start
+          <svg className={styles.windowsLogo} viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 12.4L35.7 7.6V42.1H0V12.4Z" fill="#F25022"/>
+            <path d="M40.2 6.9L87.8 0V42.1H40.2V6.9Z" fill="#7FBA00"/>
+            <path d="M0 45.9H35.7V80.4L0 75.6V45.9Z" fill="#00A4EF"/>
+            <path d="M40.2 45.9H87.8V88L40.2 81.1V45.9Z" fill="#FFB900"/>
+          </svg>
+          Start
         </button>
 
         <div className={styles.taskbarDivider} />
