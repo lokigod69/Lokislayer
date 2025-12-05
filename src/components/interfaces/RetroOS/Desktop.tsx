@@ -30,7 +30,7 @@ interface DraggableIconProps {
   iconSize: number;
   isSelected: boolean;
   onSelect: () => void;
-  onClick: () => void;
+  onDoubleClick: () => void;
   onPositionChange: (id: string, pos: IconPosition) => void;
 }
 
@@ -41,12 +41,13 @@ function DraggableIcon({
   iconSize,
   isSelected,
   onSelect,
-  onClick,
+  onDoubleClick,
   onPositionChange,
 }: DraggableIconProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [clickTime, setClickTime] = useState(0);
+  const lastClickTimeRef = useRef(0);
   const iconRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -71,9 +72,17 @@ function DraggableIcon({
 
     const handleMouseUp = () => {
       setIsDragging(false);
-      // If it was a quick click (not a drag), trigger onClick
-      if (Date.now() - clickTime < 200) {
-        onClick();
+      const now = Date.now();
+      // If it was a quick click (not a drag)
+      if (now - clickTime < 200) {
+        // Check for double-click (two clicks within 400ms)
+        if (now - lastClickTimeRef.current < 400) {
+          onDoubleClick();
+          lastClickTimeRef.current = 0; // Reset to prevent triple-click
+        } else {
+          // Single click - just select (already done in mouseDown)
+          lastClickTimeRef.current = now;
+        }
       }
     };
 
@@ -84,7 +93,7 @@ function DraggableIcon({
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging, dragStart, project.id, onPositionChange, onClick, clickTime]);
+  }, [isDragging, dragStart, project.id, onPositionChange, onDoubleClick, clickTime]);
 
   // Touch support
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -110,8 +119,15 @@ function DraggableIcon({
 
     const handleTouchEnd = () => {
       setIsDragging(false);
-      if (Date.now() - clickTime < 200) {
-        onClick();
+      const now = Date.now();
+      if (now - clickTime < 200) {
+        // Check for double-tap
+        if (now - lastClickTimeRef.current < 400) {
+          onDoubleClick();
+          lastClickTimeRef.current = 0;
+        } else {
+          lastClickTimeRef.current = now;
+        }
       }
     };
 
@@ -122,7 +138,7 @@ function DraggableIcon({
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isDragging, dragStart, project.id, onPositionChange, onClick, clickTime]);
+  }, [isDragging, dragStart, project.id, onPositionChange, onDoubleClick, clickTime]);
 
   const sizeMultiplier = iconSize / 48;
 
@@ -433,8 +449,14 @@ export default function Desktop() {
     setShowStartMenu(false);
   };
 
-  const handleIconClick = useCallback((project: Project) => {
-    setActiveProject(project);
+  // Double-click opens the page directly
+  const handleIconDoubleClick = useCallback((project: Project) => {
+    if (project.status === 'live') {
+      window.open(project.url, '_blank', 'noopener,noreferrer');
+    } else {
+      // For coming soon projects, show the modal instead
+      setActiveProject(project);
+    }
   }, []);
 
   const handlePositionChange = useCallback((id: string, pos: IconPosition) => {
@@ -460,7 +482,7 @@ export default function Desktop() {
             iconSize={iconSize}
             isSelected={selectedIcon === project.id}
             onSelect={() => setSelectedIcon(project.id)}
-            onClick={() => handleIconClick(project)}
+            onDoubleClick={() => handleIconDoubleClick(project)}
             onPositionChange={handlePositionChange}
           />
         ))}
@@ -505,6 +527,10 @@ export default function Desktop() {
               onShutDown={() => {
                 setShowStartMenu(false);
                 handleShutDown();
+              }}
+              onProgramClick={(project) => {
+                setShowStartMenu(false);
+                handleIconDoubleClick(project);
               }}
               onClose={() => setShowStartMenu(false)}
             />

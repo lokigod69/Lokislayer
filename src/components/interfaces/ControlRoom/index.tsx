@@ -1,7 +1,7 @@
 // src/components/interfaces/ControlRoom/index.tsx
-// Redesigned as compact 1970s sci-fi control console with distinct instruments
+// Compact 1970s sci-fi control console with enhanced instruments
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '../../../config/projects';
 import styles from './styles.module.css';
@@ -89,7 +89,7 @@ export default function ControlRoom() {
                   {panelType === 'radar' && <RadarDisplay isActive={isActive} />}
                   {panelType === 'oscilloscope' && <OscilloscopeDisplay isActive={isActive} />}
                   {panelType === 'monitor' && <MonitorDisplay isActive={isActive} />}
-                  {panelType === 'typewriter' && <TypewriterDisplay isActive={isActive} project={project} />}
+                  {panelType === 'typewriter' && <TypewriterDisplay isActive={isActive} />}
                   {panelType === 'tape-recorder' && <TapeRecorderDisplay isActive={isActive} />}
                   {panelType === 'clipboard' && <ClipboardDisplay isActive={isActive} />}
                 </div>
@@ -146,16 +146,15 @@ export default function ControlRoom() {
   );
 }
 
-// Radar display - spinning sonar with blips that appear when sweep passes
+// Radar display - spinning sonar with blips that appear AFTER sweep passes
 function RadarDisplay({ isActive }: { isActive: boolean }) {
   const [rotation, setRotation] = useState(0);
-  // Hidden targets - angle and distance, not yet revealed
-  const [targets, setTargets] = useState<{ angle: number; distance: number; id: number }[]>([]);
-  // Visible blips - revealed when sweep passes
-  const [blips, setBlips] = useState<{ x: number; y: number; opacity: number; id: number }[]>([]);
-  const [nextId, setNextId] = useState(0);
+  // Blips only appear after the sweep has passed their position
+  const [blips, setBlips] = useState<{ x: number; y: number; opacity: number; id: number; spawnAngle: number }[]>([]);
+  const nextIdRef = useRef(0);
+  const lastSpawnRef = useRef(0);
 
-  // Rotate the sweep - always animate, faster when active
+  // Rotate the sweep
   useEffect(() => {
     const speed = isActive ? 3 : 1;
     const interval = setInterval(() => {
@@ -164,62 +163,36 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
     return () => clearInterval(interval);
   }, [isActive]);
 
-  // Spawn new hidden targets periodically
+  // Spawn blips when sweep passes their position (blip appears behind the sweep)
   useEffect(() => {
     if (!isActive) {
-      setTargets([]);
       setBlips([]);
       return;
     }
-    const interval = setInterval(() => {
-      // Add a new hidden target at random angle
-      const angle = Math.random() * 360;
+
+    // Check if we should spawn a new blip (every ~60 degrees of rotation)
+    const spawnInterval = 60;
+    const currentSpawnZone = Math.floor(rotation / spawnInterval);
+
+    if (currentSpawnZone !== lastSpawnRef.current && Math.random() > 0.4) {
+      lastSpawnRef.current = currentSpawnZone;
+
+      // Blip spawns at the current sweep angle (so it appears where sweep just passed)
+      const blipAngle = rotation - 10; // Slightly behind the sweep
       const distance = 15 + Math.random() * 30;
-      setTargets((prev) => {
-        // Keep max 6 targets
-        const updated = [...prev.slice(-5), { angle, distance, id: nextId }];
-        return updated;
-      });
-      setNextId((id) => id + 1);
-    }, 1500);
-    return () => clearInterval(interval);
-  }, [isActive, nextId]);
+      const rad = (blipAngle * Math.PI) / 180;
 
-  // Check if sweep passes any hidden targets - reveal them as blips
-  useEffect(() => {
-    if (!isActive || targets.length === 0) return;
+      const newBlip = {
+        x: 50 + Math.cos(rad) * distance,
+        y: 50 + Math.sin(rad) * distance,
+        opacity: 1,
+        id: nextIdRef.current++,
+        spawnAngle: blipAngle,
+      };
 
-    const toReveal: typeof targets = [];
-    const remaining: typeof targets = [];
-
-    targets.forEach((target) => {
-      // Check if sweep angle is close to target angle (within 10 degrees)
-      const sweepAngle = rotation;
-      let diff = Math.abs(sweepAngle - target.angle);
-      if (diff > 180) diff = 360 - diff;
-
-      if (diff < 10) {
-        toReveal.push(target);
-      } else {
-        remaining.push(target);
-      }
-    });
-
-    if (toReveal.length > 0) {
-      // Convert revealed targets to visible blips
-      const newBlips = toReveal.map((t) => {
-        const rad = (t.angle * Math.PI) / 180;
-        return {
-          x: 50 + Math.cos(rad) * t.distance,
-          y: 50 + Math.sin(rad) * t.distance,
-          opacity: 1,
-          id: t.id,
-        };
-      });
-      setBlips((prev) => [...prev, ...newBlips]);
-      setTargets(remaining);
+      setBlips((prev) => [...prev.slice(-8), newBlip]);
     }
-  }, [rotation, targets, isActive]);
+  }, [rotation, isActive]);
 
   // Fade blips over time
   useEffect(() => {
@@ -227,7 +200,7 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
     const interval = setInterval(() => {
       setBlips((prev) =>
         prev
-          .map((b) => ({ ...b, opacity: b.opacity * 0.97 }))
+          .map((b) => ({ ...b, opacity: b.opacity * 0.96 }))
           .filter((b) => b.opacity > 0.05)
       );
     }, 100);
@@ -248,7 +221,12 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
         className={styles.radarSweep}
         style={{ transform: `rotate(${rotation}deg)` }}
       />
-      {/* Blips - only visible after sweep discovers them */}
+      {/* Sweep trail effect */}
+      <div
+        className={styles.radarSweepTrail}
+        style={{ transform: `rotate(${rotation}deg)` }}
+      />
+      {/* Blips - appear after sweep passes */}
       {blips.map((blip) => (
         <div
           key={blip.id}
@@ -266,7 +244,7 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
   );
 }
 
-// Oscilloscope display - animated waveform, click to cycle wave types
+// Oscilloscope display - animated waveform
 type WaveType = 'sine' | 'saw' | 'square' | 'triangle';
 const WAVE_TYPES: WaveType[] = ['sine', 'saw', 'square', 'triangle'];
 
@@ -274,7 +252,6 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
   const [phase, setPhase] = useState(0);
   const [waveType, setWaveType] = useState<WaveType>('sine');
 
-  // Always animate - faster when active
   useEffect(() => {
     const speed = isActive ? 0.15 : 0.05;
     const interval = setInterval(() => {
@@ -285,7 +262,7 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
 
   const generatePath = useMemo(() => {
     const points: string[] = [];
-    const amplitude = isActive ? 35 : 20; // Always visible, stronger when active
+    const amplitude = isActive ? 35 : 20;
 
     for (let i = 0; i <= 100; i++) {
       const x = i;
@@ -316,7 +293,6 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
     return points.join(' ');
   }, [phase, waveType, isActive]);
 
-  // Click anywhere on oscilloscope to cycle wave type
   const handleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setWaveType((current) => {
@@ -328,7 +304,6 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
   return (
     <div className={styles.oscilloscope} onClick={handleClick}>
       <svg viewBox="0 0 100 100" className={styles.oscScreen}>
-        {/* Grid */}
         <g className={styles.oscGrid}>
           {[25, 50, 75].map((y) => (
             <line key={`h${y}`} x1="0" y1={y} x2="100" y2={y} />
@@ -337,39 +312,56 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
             <line key={`v${x}`} x1={x} y1="0" x2={x} y2="100" />
           ))}
         </g>
-        {/* Waveform */}
         <path
           d={generatePath}
           className={styles.oscWave}
           style={{ opacity: isActive ? 1 : 0.7 }}
         />
       </svg>
-      {/* Wave type label */}
       <div className={styles.oscLabel}>{waveType.toUpperCase()}</div>
     </div>
   );
 }
 
-// Monitor display - static/pixels
+// Monitor display - with dial to change pattern count
 function MonitorDisplay({ isActive }: { isActive: boolean }) {
+  const [patternCount, setPatternCount] = useState(64);
   const [pixels, setPixels] = useState<boolean[]>(Array(64).fill(false));
 
   useEffect(() => {
     if (!isActive) {
-      setPixels(Array(64).fill(false));
+      setPixels(Array(patternCount).fill(false));
       return;
     }
     const interval = setInterval(() => {
-      setPixels(Array(64).fill(false).map(() => Math.random() > 0.7));
+      setPixels(Array(patternCount).fill(false).map(() => Math.random() > 0.6));
     }, 100);
     return () => clearInterval(interval);
-  }, [isActive]);
+  }, [isActive, patternCount]);
+
+  const handleDialClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    // Cycle through pattern counts: 36 -> 64 -> 100 -> 36
+    setPatternCount((current) => {
+      if (current === 36) return 64;
+      if (current === 64) return 100;
+      return 36;
+    });
+  };
+
+  const gridSize = Math.sqrt(patternCount);
 
   return (
     <div className={styles.monitor}>
       <div className={styles.monitorScreen}>
         {isActive ? (
-          <div className={styles.pixelGrid}>
+          <div
+            className={styles.pixelGrid}
+            style={{
+              gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+              gridTemplateRows: `repeat(${gridSize}, 1fr)`,
+            }}
+          >
             {pixels.map((on, i) => (
               <div key={i} className={`${styles.pixel} ${on ? styles.pixelOn : ''}`} />
             ))}
@@ -379,52 +371,101 @@ function MonitorDisplay({ isActive }: { isActive: boolean }) {
         )}
       </div>
       <div className={styles.monitorScanlines} />
+      {/* Dial control */}
+      <button
+        className={styles.monitorDial}
+        onClick={handleDialClick}
+        title="Change pattern density"
+      >
+        <span className={styles.dialLabel}>{gridSize}×{gridSize}</span>
+      </button>
     </div>
   );
 }
 
-// Typewriter display - text appearing
-function TypewriterDisplay({ isActive, project }: { isActive: boolean; project: typeof projects[0] }) {
-  const [text, setText] = useState('');
-  const fullText = project.name.toUpperCase();
+// Typewriter display - rotating messages with typing animation
+const TYPEWRITER_MESSAGES = [
+  'BOUNTY HUNTER',
+  'TASK CREATING',
+  'SOFTWARE FOR',
+  'FRIENDS FAMILY',
+  'AND COUPLES',
+  'LOKI SLAYER',
+  'SYSTEMS ONLINE',
+];
+
+function TypewriterDisplay({ isActive }: { isActive: boolean }) {
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     if (!isActive) {
-      setText('');
+      setDisplayText('');
+      setIsTyping(false);
       return;
     }
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i <= fullText.length) {
-        setText(fullText.slice(0, i));
-        i++;
+
+    const currentMessage = TYPEWRITER_MESSAGES[currentMessageIndex];
+    let charIndex = 0;
+    setIsTyping(true);
+
+    // Type out the current message
+    const typeInterval = setInterval(() => {
+      if (charIndex <= currentMessage.length) {
+        setDisplayText(currentMessage.slice(0, charIndex));
+        charIndex++;
       } else {
-        clearInterval(interval);
+        clearInterval(typeInterval);
+        setIsTyping(false);
+
+        // Wait, then move to next message
+        setTimeout(() => {
+          setCurrentMessageIndex((i) => (i + 1) % TYPEWRITER_MESSAGES.length);
+        }, 1500);
       }
-    }, 100);
-    return () => clearInterval(interval);
-  }, [isActive, fullText]);
+    }, 80);
+
+    return () => clearInterval(typeInterval);
+  }, [isActive, currentMessageIndex]);
 
   return (
     <div className={styles.typewriter}>
       <div className={styles.typewriterPaper}>
         <span className={styles.typewriterText}>
-          {text}
-          {isActive && text.length < fullText.length && <span className={styles.cursor}>|</span>}
+          {displayText}
+          {isTyping && <span className={styles.cursor}>|</span>}
         </span>
+      </div>
+      {/* Typewriter carriage indicator */}
+      <div className={styles.typewriterCarriage}>
+        <div
+          className={styles.carriagePosition}
+          style={{ left: `${Math.min(displayText.length * 6, 90)}%` }}
+        />
       </div>
     </div>
   );
 }
 
-// Tape recorder display - spinning reels
+// Tape recorder display - with audio waveform visualization
 function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
   const [rotation, setRotation] = useState(0);
+  const [waveData, setWaveData] = useState<number[]>(Array(20).fill(0));
 
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive) {
+      setWaveData(Array(20).fill(0));
+      return;
+    }
     const interval = setInterval(() => {
       setRotation((r) => (r + 5) % 360);
+      // Generate random audio waveform data
+      setWaveData((prev) => {
+        const newData = [...prev.slice(1)];
+        newData.push(Math.random() * 100);
+        return newData;
+      });
     }, 50);
     return () => clearInterval(interval);
   }, [isActive]);
@@ -443,6 +484,10 @@ function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
           <div className={styles.reelSpoke} style={{ transform: 'rotate(120deg)' }} />
           <div className={styles.reelSpoke} style={{ transform: 'rotate(240deg)' }} />
         </div>
+        {/* Tape path visualization */}
+        <div className={styles.tapePath}>
+          {isActive && <div className={styles.tapeMoving} />}
+        </div>
         {/* Right reel */}
         <div
           className={styles.reel}
@@ -453,6 +498,16 @@ function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
           <div className={styles.reelSpoke} style={{ transform: 'rotate(120deg)' }} />
           <div className={styles.reelSpoke} style={{ transform: 'rotate(240deg)' }} />
         </div>
+      </div>
+      {/* Audio waveform visualization */}
+      <div className={styles.tapeWaveform}>
+        {waveData.map((value, i) => (
+          <div
+            key={i}
+            className={styles.waveBar}
+            style={{ height: `${Math.max(10, value)}%` }}
+          />
+        ))}
       </div>
       {/* VU meter */}
       <div className={styles.tapeVu}>
@@ -465,25 +520,67 @@ function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
   );
 }
 
-// Clipboard display - checklist
+// Clipboard display - animated checklist with appearing items
+const CHECKLIST_ITEMS = [
+  { text: 'INITIALIZE', delay: 0 },
+  { text: 'LOAD DATA', delay: 300 },
+  { text: 'VERIFY SYS', delay: 600 },
+  { text: 'CONNECT', delay: 900 },
+  { text: 'READY', delay: 1200 },
+];
+
 function ClipboardDisplay({ isActive }: { isActive: boolean }) {
+  const [visibleItems, setVisibleItems] = useState<number>(0);
+  const [checkedItems, setCheckedItems] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (!isActive) {
+      setVisibleItems(0);
+      setCheckedItems(new Set());
+      return;
+    }
+
+    // Show items one by one
+    CHECKLIST_ITEMS.forEach((item, index) => {
+      setTimeout(() => {
+        setVisibleItems((v) => Math.max(v, index + 1));
+      }, item.delay);
+
+      // Check items after they appear
+      setTimeout(() => {
+        setCheckedItems((prev) => new Set([...prev, index]));
+      }, item.delay + 400);
+    });
+  }, [isActive]);
+
   return (
     <div className={styles.clipboard}>
-      <div>
+      <div className={styles.clipboardBoard}>
         <div className={styles.clipboardClip} />
         <div className={styles.clipboardPaper}>
-          <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
-            <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
-            <span>INIT</span>
-          </div>
-          <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
-            <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
-            <span>LOAD</span>
-          </div>
-          <div className={`${styles.checkItem} ${isActive ? styles.checked : ''}`}>
-            <span className={styles.checkbox}>{isActive ? '✓' : '○'}</span>
-            <span>READY</span>
-          </div>
+          {CHECKLIST_ITEMS.map((item, index) => (
+            <motion.div
+              key={item.text}
+              className={`${styles.checkItem} ${checkedItems.has(index) ? styles.checked : ''}`}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{
+                opacity: index < visibleItems ? 1 : 0,
+                x: index < visibleItems ? 0 : -10,
+              }}
+              transition={{ duration: 0.2 }}
+            >
+              <motion.span
+                className={styles.checkbox}
+                animate={{
+                  scale: checkedItems.has(index) ? [1, 1.3, 1] : 1,
+                }}
+                transition={{ duration: 0.2 }}
+              >
+                {checkedItems.has(index) ? '✓' : '○'}
+              </motion.span>
+              <span className={styles.checkText}>{item.text}</span>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>

@@ -81,7 +81,7 @@ function Particles() {
 export default function DiceLanding() {
   const { setInterface } = useStore();
   const [isRolling, setIsRolling] = useState(false);
-  const [currentFace, setCurrentFace] = useState(1);
+  const [currentFace, setCurrentFace] = useState<number | null>(null); // null = idle angled view
   const [rolledNumber, setRolledNumber] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
 
@@ -123,7 +123,11 @@ export default function DiceLanding() {
     setInterface(num);
   }, [setInterface]);
 
-  const rotation = faceRotations[currentFace];
+  // Angled rotation to show dice as 3D cube (edge facing viewer)
+  // When currentFace is null (idle), show angled view; otherwise show the specific face
+  const rotation = currentFace !== null
+    ? faceRotations[currentFace]
+    : { rotateX: -25, rotateY: 35 }; // Angled to show corner/edge
   const resultInterface = rolledNumber ? getInterfaceById(rolledNumber) : null;
 
   return (

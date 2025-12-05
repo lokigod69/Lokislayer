@@ -1,4 +1,4 @@
-/* Control Room - 1970s Sci-Fi Console with Proper Spacing */
+/* Control Room - Compact 1970s Sci-Fi Console */
 
 .container {
   position: relative;
@@ -7,6 +7,8 @@
   background: linear-gradient(180deg, #0d0d0d 0%, #1a1a1a 50%, #0d0d0d 100%);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   padding: 20px 40px;
 }
@@ -23,24 +25,25 @@
 .title {
   position: relative;
   text-align: center;
-  padding: 20px 0;
+  padding: 12px 0;
   font-family: 'Courier New', monospace;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: 10px;
+  letter-spacing: 8px;
   color: #ff6b35;
   text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
   margin: 0;
   flex-shrink: 0;
 }
 
-/* Main console */
+/* Main console - constrained size */
 .console {
-  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  gap: 16px;
+  width: 100%;
+  max-width: 900px;
+  max-height: 600px;
+  gap: 12px;
 }
 
 /* Panel grid - proper spacing */
@@ -49,16 +52,16 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  gap: 16px;
+  gap: 12px;
   min-height: 0;
 }
 
-/* Individual panel */
+/* Individual panel - smaller */
 .panel {
   background: linear-gradient(145deg, #1e1e1e, #161616);
   border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 6px;
+  padding: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -82,23 +85,23 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
   border-bottom: 1px solid #2a2a2a;
   flex-shrink: 0;
 }
 
 .panelLabel {
   font-family: 'Courier New', monospace;
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 1px;
   color: #555;
   text-transform: uppercase;
 }
 
 .led {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #2a2a2a;
   transition: all 0.2s;
@@ -106,10 +109,10 @@
 
 .ledOn {
   background: #22c55e;
-  box-shadow: 0 0 10px #22c55e;
+  box-shadow: 0 0 8px #22c55e;
 }
 
-/* Instrument area - fills all available space */
+/* Instrument area - fills available space */
 .instrumentArea {
   flex: 1;
   display: flex;
@@ -121,8 +124,8 @@
 
 /* Project info - compact */
 .projectInfo {
-  margin-top: 8px;
-  padding-top: 8px;
+  margin-top: 6px;
+  padding-top: 6px;
   border-top: 1px solid #2a2a2a;
   text-align: center;
   flex-shrink: 0;
@@ -130,20 +133,20 @@
 
 .projectName {
   font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 700;
   color: #ff6b35;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .launchBtn {
-  padding: 6px 16px;
+  padding: 4px 12px;
   background: linear-gradient(180deg, #333, #1a1a1a);
   border: 1px solid #444;
-  border-radius: 4px;
+  border-radius: 3px;
   color: #ff6b35;
   font-family: 'Courier New', monospace;
-  font-size: 10px;
+  font-size: 9px;
   letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.2s;
@@ -164,10 +167,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0 0;
+  padding: 8px 0 0;
   border-top: 1px solid #2a2a2a;
   font-family: 'Courier New', monospace;
-  font-size: 10px;
+  font-size: 9px;
   color: #555;
   flex-shrink: 0;
 }
@@ -179,8 +182,8 @@
 }
 
 .statusLed {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: #22c55e;
   box-shadow: 0 0 6px #22c55e;
@@ -200,12 +203,19 @@
   color: #666;
 }
 
-/* Instructions - hidden on desktop, too cluttered */
+/* Instructions */
 .instructions {
-  display: none;
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  color: #444;
+  text-align: center;
 }
 
-/* ============ INSTRUMENT DISPLAYS - FILL CONTAINERS ============ */
+/* ============ INSTRUMENT DISPLAYS ============ */
 
 /* Radar - fills container while staying circular */
 .radar {
@@ -267,14 +277,31 @@
   box-shadow: 0 0 12px #22c55e;
 }
 
+/* Sweep trail - fading cone behind sweep */
+.radarSweepTrail {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  background: conic-gradient(
+    from -30deg,
+    rgba(34, 197, 94, 0.3) 0deg,
+    rgba(34, 197, 94, 0.1) 20deg,
+    transparent 40deg
+  );
+  transform-origin: left top;
+  pointer-events: none;
+}
+
 .radarBlip {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: #22c55e;
   border-radius: 50%;
   transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px #22c55e;
+  box-shadow: 0 0 8px #22c55e;
 }
 
 .radarCenter {
@@ -294,7 +321,7 @@
   height: 100%;
   background: linear-gradient(180deg, #001800 0%, #001200 100%);
   border: 2px solid #2a2a2a;
-  border-radius: 6px;
+  border-radius: 4px;
   position: relative;
   overflow: hidden;
   cursor: pointer;
@@ -319,10 +346,10 @@
 
 .oscLabel {
   position: absolute;
-  bottom: 6px;
-  right: 8px;
+  bottom: 4px;
+  right: 6px;
   font-family: 'Courier New', monospace;
-  font-size: 10px;
+  font-size: 8px;
   color: #22c55e;
   opacity: 0.7;
   pointer-events: none;
@@ -334,16 +361,16 @@
   height: 100%;
   background: #000;
   border: 2px solid #2a2a2a;
-  border-radius: 6px;
+  border-radius: 4px;
   position: relative;
   overflow: hidden;
 }
 
 .monitorScreen {
   position: absolute;
-  inset: 4px;
+  inset: 3px;
   background: #001200;
-  border-radius: 3px;
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -351,17 +378,16 @@
 
 .monitorOff {
   font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-size: 10px;
   color: #2a2a2a;
 }
 
 .pixelGrid {
   display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 2px;
+  gap: 1px;
   width: 100%;
   height: 100%;
-  padding: 6px;
+  padding: 4px;
 }
 
 .pixel {
@@ -371,7 +397,7 @@
 
 .pixelOn {
   background: #22c55e;
-  box-shadow: 0 0 3px #22c55e;
+  box-shadow: 0 0 2px #22c55e;
 }
 
 .monitorScanlines {
@@ -387,25 +413,56 @@
   pointer-events: none;
 }
 
+/* Monitor dial control */
+.monitorDial {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(145deg, #333, #222);
+  border: 1px solid #444;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.monitorDial:hover {
+  border-color: #ff6b35;
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
+}
+
+.dialLabel {
+  font-family: 'Courier New', monospace;
+  font-size: 6px;
+  color: #888;
+}
+
 /* Typewriter - fills container */
 .typewriter {
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
   border: 2px solid #2a2a2a;
-  border-radius: 6px;
+  border-radius: 4px;
+  padding: 8px;
 }
 
 .typewriterPaper {
   background: linear-gradient(180deg, #f8f8e8 0%, #f0f0d8 100%);
-  padding: 16px 28px;
-  border-radius: 3px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-  max-width: 85%;
-  min-height: 50px;
+  padding: 10px 16px;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  max-width: 90%;
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -413,9 +470,10 @@
 
 .typewriterText {
   font-family: 'Courier New', monospace;
-  font-size: 16px;
+  font-size: 11px;
   color: #2a2a2a;
   font-weight: 600;
+  text-align: center;
 }
 
 .cursor {
@@ -426,6 +484,25 @@
   50% { opacity: 0; }
 }
 
+/* Typewriter carriage indicator */
+.typewriterCarriage {
+  width: 80%;
+  height: 3px;
+  background: #2a2a2a;
+  border-radius: 2px;
+  position: relative;
+}
+
+.carriagePosition {
+  position: absolute;
+  top: -2px;
+  width: 6px;
+  height: 7px;
+  background: #ff6b35;
+  border-radius: 1px;
+  transition: left 0.08s ease-out;
+}
+
 /* Tape Recorder - fills container */
 .tapeRecorder {
   width: 100%;
@@ -433,27 +510,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 10px;
+  justify-content: space-between;
   background: linear-gradient(180deg, #1a1a1a 0%, #141414 100%);
   border: 2px solid #2a2a2a;
-  border-radius: 6px;
-  padding: 10px;
+  border-radius: 4px;
+  padding: 8px;
 }
 
 .reelsContainer {
   display: flex;
-  gap: 20px;
-  flex: 1;
+  gap: 8px;
   align-items: center;
+  flex: 1;
 }
 
 .reel {
-  width: 70px;
-  height: 70px;
+  width: 40px;
+  height: 40px;
   background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
   border-radius: 50%;
-  border: 2px solid #3a3a3a;
+  border: 1px solid #3a3a3a;
   position: relative;
   display: flex;
   align-items: center;
@@ -461,28 +537,75 @@
 }
 
 .reelCenter {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 8px;
   background: #1a1a1a;
   border-radius: 50%;
-  border: 2px solid #444;
+  border: 1px solid #444;
 }
 
 .reelSpoke {
   position: absolute;
-  width: 2px;
+  width: 1px;
   height: 100%;
   background: #3a3a3a;
   transform-origin: center;
 }
 
+/* Tape path between reels */
+.tapePath {
+  width: 16px;
+  height: 20px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tapeMoving {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    #3a3a3a 0px,
+    #3a3a3a 2px,
+    #4a3020 2px,
+    #4a3020 4px
+  );
+  animation: tapeScroll 0.3s linear infinite;
+}
+
+@keyframes tapeScroll {
+  from { transform: translateY(0); }
+  to { transform: translateY(-4px); }
+}
+
+/* Audio waveform visualization */
+.tapeWaveform {
+  display: flex;
+  gap: 1px;
+  height: 20px;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 100px;
+}
+
+.waveBar {
+  flex: 1;
+  background: linear-gradient(to top, #22c55e, #4ade80);
+  min-height: 2px;
+  transition: height 0.05s ease;
+  border-radius: 1px 1px 0 0;
+}
+
 .tapeVu {
   width: 100%;
-  max-width: 140px;
-  height: 14px;
+  max-width: 100px;
+  height: 8px;
   background: #1a1a1a;
   border: 1px solid #3a3a3a;
-  border-radius: 3px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
@@ -501,24 +624,24 @@
   justify-content: center;
 }
 
-.clipboard > div:first-child {
-  width: 80%;
-  max-width: 120px;
-  height: 90%;
-  max-height: 160px;
+.clipboardBoard {
+  width: 75%;
+  max-width: 90px;
+  height: 85%;
+  max-height: 120px;
   background: linear-gradient(180deg, #8b5a2b 0%, #6b4423 100%);
-  border-radius: 4px;
-  padding: 8px;
+  border-radius: 3px;
+  padding: 6px;
   position: relative;
 }
 
 .clipboardClip {
   position: absolute;
-  top: -5px;
+  top: -4px;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
-  height: 10px;
+  width: 18px;
+  height: 8px;
   background: linear-gradient(180deg, #666, #444);
   border-radius: 2px 2px 0 0;
 }
@@ -526,28 +649,42 @@
 .clipboardPaper {
   background: linear-gradient(180deg, #f8f8e8 0%, #f0f0d8 100%);
   height: 100%;
-  border-radius: 3px;
-  padding: 8px 6px;
+  border-radius: 2px;
+  padding: 6px 5px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 3px;
+  overflow: hidden;
 }
 
 .checkItem {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   font-family: 'Courier New', monospace;
-  font-size: 10px;
-  color: #555;
+  font-size: 8px;
+  color: #666;
+  transition: color 0.2s;
 }
 
 .checkItem.checked {
   color: #22c55e;
 }
 
+.checkItem.checked .checkText {
+  text-decoration: line-through;
+}
+
 .checkbox {
-  font-size: 12px;
+  font-size: 10px;
+  width: 10px;
+  flex-shrink: 0;
+}
+
+.checkText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Mobile adjustments */
@@ -557,17 +694,22 @@
   }
 
   .title {
-    font-size: 18px;
-    padding: 16px 0;
+    font-size: 16px;
+    padding: 10px 0;
     letter-spacing: 6px;
   }
 
+  .console {
+    max-width: 800px;
+    max-height: 550px;
+  }
+
   .panelGrid {
-    gap: 12px;
+    gap: 10px;
   }
 
   .panel {
-    padding: 10px;
+    padding: 8px;
   }
 }
 
@@ -578,36 +720,45 @@
 
   .title {
     font-size: 14px;
-    padding: 12px 0;
+    padding: 8px 0;
     letter-spacing: 4px;
+  }
+
+  .console {
+    max-width: 100%;
+    max-height: none;
   }
 
   .panelGrid {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
+    gap: 8px;
   }
 
   .panel {
-    padding: 8px;
+    padding: 6px;
   }
 
   .panelHeader {
-    margin-bottom: 6px;
-    padding-bottom: 6px;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
   }
 
   .panelLabel {
-    font-size: 8px;
+    font-size: 7px;
   }
 
   .reel {
-    width: 50px;
-    height: 50px;
+    width: 32px;
+    height: 32px;
   }
 
   .reelsContainer {
-    gap: 16px;
+    gap: 6px;
+  }
+
+  .instructions {
+    display: none;
   }
 }
 
@@ -619,19 +770,19 @@
   .title {
     font-size: 12px;
     letter-spacing: 3px;
-    padding: 10px 0;
+    padding: 6px 0;
   }
 
   .panelGrid {
-    gap: 8px;
+    gap: 6px;
   }
 
   .panel {
-    padding: 6px;
+    padding: 5px;
   }
 
   .reel {
-    width: 40px;
-    height: 40px;
+    width: 28px;
+    height: 28px;
   }
 }

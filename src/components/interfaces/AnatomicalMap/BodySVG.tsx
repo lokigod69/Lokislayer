@@ -228,7 +228,9 @@ export default function BodySVG({ selectedProject, setSelectedProject }: BodySVG
               transition={{ duration: 0.2 }}
             >
               <div className={styles.hotspotInner}>
-                <span>{bodyPartIcons[spot.id]}</span>
+                <span className={spot.id === 'ear' ? styles.flippedIcon : ''}>
+                  {bodyPartIcons[spot.id]}
+                </span>
               </div>
             </motion.div>
 

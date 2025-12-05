@@ -56,13 +56,25 @@
   transform: translate(-50%, -50%);
   cursor: pointer;
   z-index: 20;
+  /* Explicit dimensions for proper centering */
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .homeGlow {
   position: absolute;
-  inset: -30px;
+  /* Center the glow on the node */
+  top: 50%;
+  left: 50%;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background: radial-gradient(circle, rgba(167, 139, 250, 0.5) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .homeCore {
@@ -112,6 +124,12 @@
   transform: translate(-50%, -50%);
   cursor: grab;
   user-select: none;
+  /* Explicit dimensions for proper centering */
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .projectNode:active {
@@ -137,8 +155,14 @@
 /* Pulsing glow effect */
 .nodeGlow {
   position: absolute;
-  inset: -20px;
+  /* Center the glow on the node */
+  top: 50%;
+  left: 50%;
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
+  pointer-events: none;
 }
 
 /* Node icon */
@@ -328,9 +352,19 @@
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
+  .homeNode {
+    width: 70px;
+    height: 70px;
+  }
+
   .homeCore {
     width: 70px;
     height: 70px;
+  }
+
+  .homeGlow {
+    width: 120px;
+    height: 120px;
   }
 
   .homeIcon {
@@ -342,9 +376,19 @@
     bottom: -28px;
   }
 
+  .projectNode {
+    width: 60px;
+    height: 60px;
+  }
+
   .nodeCore {
     width: 60px;
     height: 60px;
+  }
+
+  .nodeGlow {
+    width: 100px;
+    height: 100px;
   }
 
   .nodeIcon {

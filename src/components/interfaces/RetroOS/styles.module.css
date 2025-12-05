@@ -396,6 +396,43 @@
   flex: 1;
   background: #fff;
   padding: 8px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.startMenuSectionTitle {
+  padding: 6px 12px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: #316ac5;
+}
+
+.programsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.programItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.programName {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comingSoonTag {
+  font-size: 9px;
+  padding: 2px 4px;
+  background: #f0ad4e;
+  color: #fff;
+  border-radius: 3px;
+  font-weight: bold;
 }
 
 .startMenuRight {

@@ -1,16 +1,29 @@
 // src/components/interfaces/RetroOS/StartMenu.tsx
 // Windows XP Style Start Menu - Simplified with Settings, Help, Shut Down
 
+import { projects, Project } from '../../../config/projects';
 import styles from './styles.module.css';
+
+// XP-style emoji icons for each project type
+const iconEmojis: Record<string, string> = {
+  'media-player': '🎵',
+  terminal: '💻',
+  folder: '📁',
+  sticky: '📝',
+  screensaver: '🖼️',
+  hidden: '🗑️',
+  speech: '🗣️',
+};
 
 interface StartMenuProps {
   onSettings: () => void;
   onHelp: () => void;
   onShutDown: () => void;
   onClose: () => void;
+  onProgramClick: (project: Project) => void;
 }
 
-export default function StartMenu({ onSettings, onHelp, onShutDown, onClose }: StartMenuProps) {
+export default function StartMenu({ onSettings, onHelp, onShutDown, onClose, onProgramClick }: StartMenuProps) {
   return (
     <div className={styles.startMenu} onClick={(e) => e.stopPropagation()}>
       {/* Header with user info */}
@@ -21,15 +34,29 @@ export default function StartMenu({ onSettings, onHelp, onShutDown, onClose }: S
 
       {/* Menu Body */}
       <div className={styles.startMenuBody}>
-        {/* Left side - empty since we removed programs list */}
+        {/* Left side - Programs list */}
         <div className={styles.startMenuLeft}>
-          <div className={styles.startMenuItem} style={{ opacity: 0.5, cursor: 'default' }}>
-            <span className={styles.startMenuItemIcon}>📂</span>
-            <span>All Programs</span>
-          </div>
+          <div className={styles.startMenuSectionTitle}>All Programs</div>
           <div className={styles.startMenuDivider} />
-          <div style={{ padding: '20px', textAlign: 'center', color: '#888', fontSize: 11 }}>
-            Click icons on the desktop<br />to open programs
+          <div className={styles.programsList}>
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                className={`${styles.startMenuItem} ${styles.programItem}`}
+                onClick={() => {
+                  onProgramClick(project);
+                  onClose();
+                }}
+              >
+                <span className={styles.startMenuItemIcon}>
+                  {iconEmojis[project.mappings.retroOS.iconType] || '📄'}
+                </span>
+                <span className={styles.programName}>{project.name}</span>
+                {project.status === 'coming-soon' && (
+                  <span className={styles.comingSoonTag}>Soon</span>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 

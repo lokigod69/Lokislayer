@@ -122,6 +122,12 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
+/* Flip icon horizontally (used for ear to show left ear) */
+.flippedIcon {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
 .hotspot:hover .hotspotInner {
   background: rgba(60, 48, 36, 0.95);
   box-shadow: 0 4px 20px rgba(192, 160, 128, 0.3);
