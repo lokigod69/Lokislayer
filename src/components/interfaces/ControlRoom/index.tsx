@@ -221,11 +221,6 @@ function RadarDisplay({ isActive }: { isActive: boolean }) {
         className={styles.radarSweep}
         style={{ transform: `rotate(${rotation}deg)` }}
       />
-      {/* Sweep trail effect */}
-      <div
-        className={styles.radarSweepTrail}
-        style={{ transform: `rotate(${rotation}deg)` }}
-      />
       {/* Blips - appear after sweep passes */}
       {blips.map((blip) => (
         <div
