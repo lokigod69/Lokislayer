@@ -324,6 +324,15 @@ function OscilloscopeDisplay({ isActive }: { isActive: boolean }) {
 }
 
 // Monitor display - with dial to change pattern count
+// Grid dimensions for each pattern count (cols x rows)
+const GRID_LAYOUTS: Record<number, { cols: number; rows: number }> = {
+  8: { cols: 4, rows: 2 },
+  16: { cols: 4, rows: 4 },
+  32: { cols: 8, rows: 4 },
+  64: { cols: 8, rows: 8 },
+  128: { cols: 16, rows: 8 },
+};
+
 function MonitorDisplay({ isActive }: { isActive: boolean }) {
   const [patternCount, setPatternCount] = useState(64);
   const [pixels, setPixels] = useState<boolean[]>(Array(64).fill(false));
@@ -341,15 +350,17 @@ function MonitorDisplay({ isActive }: { isActive: boolean }) {
 
   const handleDialClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    // Cycle through pattern counts: 36 -> 64 -> 100 -> 36
+    // Cycle through pattern counts: 8 -> 16 -> 32 -> 64 -> 128 -> 8
     setPatternCount((current) => {
-      if (current === 36) return 64;
-      if (current === 64) return 100;
-      return 36;
+      if (current === 8) return 16;
+      if (current === 16) return 32;
+      if (current === 32) return 64;
+      if (current === 64) return 128;
+      return 8;
     });
   };
 
-  const gridSize = Math.sqrt(patternCount);
+  const layout = GRID_LAYOUTS[patternCount] || { cols: 8, rows: 8 };
 
   return (
     <div className={styles.monitor}>
@@ -358,8 +369,8 @@ function MonitorDisplay({ isActive }: { isActive: boolean }) {
           <div
             className={styles.pixelGrid}
             style={{
-              gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-              gridTemplateRows: `repeat(${gridSize}, 1fr)`,
+              gridTemplateColumns: `repeat(${layout.cols}, 1fr)`,
+              gridTemplateRows: `repeat(${layout.rows}, 1fr)`,
             }}
           >
             {pixels.map((on, i) => (
@@ -377,7 +388,7 @@ function MonitorDisplay({ isActive }: { isActive: boolean }) {
         onClick={handleDialClick}
         title="Change pattern density"
       >
-        <span className={styles.dialLabel}>{gridSize}×{gridSize}</span>
+        <span className={styles.dialLabel}>{patternCount}</span>
       </button>
     </div>
   );
