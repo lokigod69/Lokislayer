@@ -4,6 +4,7 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects, Project } from '../../../config/projects';
+import { useStore } from '../../../store/useStore';
 import styles from './styles.module.css';
 
 // Create a ding sound using Web Audio API
@@ -79,6 +80,7 @@ const slotCodes = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 type MachineState = 'idle' | 'selected' | 'coinDropping' | 'loading' | 'ready' | 'dispensing';
 
 export default function VendingMachine() {
+  const { audioEnabled } = useStore();
   const [machineState, setMachineState] = useState<MachineState>('idle');
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -104,8 +106,10 @@ export default function VendingMachine() {
   const handleInsertCoin = useCallback(() => {
     if (machineState !== 'selected' || !selectedProject) return;
 
-    // Play ding sound
-    playDingSound();
+    // Play ding sound if audio is enabled
+    if (audioEnabled) {
+      playDingSound();
+    }
 
     // Show coin dropping animation
     setMachineState('coinDropping');
@@ -126,7 +130,7 @@ export default function VendingMachine() {
         }
       }, 100); // 100ms * 20 steps = 2 seconds to load
     }, 800); // Coin drop animation duration
-  }, [machineState, selectedProject]);
+  }, [machineState, selectedProject, audioEnabled]);
 
   // Step 3: Vend the product
   const handleVend = useCallback(() => {
@@ -431,6 +435,24 @@ export default function VendingMachine() {
       >
         Select item → Insert coin → Press VEND
       </motion.div>
+
+      {/* Audio toggle button */}
+      <AudioToggleButton />
     </div>
+  );
+}
+
+// Inline audio toggle for vending machine
+function AudioToggleButton() {
+  const { audioEnabled, toggleAudio } = useStore();
+
+  return (
+    <button
+      onClick={toggleAudio}
+      className={styles.audioToggle}
+      title={audioEnabled ? 'Mute audio' : 'Unmute audio'}
+    >
+      {audioEnabled ? '🔊' : '🔇'}
+    </button>
   );
 }

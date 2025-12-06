@@ -85,7 +85,6 @@ export default function DiceLanding() {
   const [rolledNumber, setRolledNumber] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [rollPosition, setRollPosition] = useState({ x: 0, y: 0 });
-  const [rollPhase, setRollPhase] = useState<'idle' | 'rolling' | 'bouncing' | 'settling'>('idle');
 
   const handleRoll = useCallback(() => {
     if (isRolling) return;
@@ -93,7 +92,6 @@ export default function DiceLanding() {
     setIsRolling(true);
     setShowResult(false);
     setRolledNumber(null);
-    setRollPhase('rolling');
 
     // Start from left side of screen
     setRollPosition({ x: -200, y: -50 });
@@ -115,7 +113,6 @@ export default function DiceLanding() {
         });
       } else if (rollCount <= 15) {
         // Bouncing phase
-        setRollPhase('bouncing');
         const bounceProgress = (rollCount - 10) / 5;
         setRollPosition({
           x: Math.sin(bounceProgress * Math.PI * 2) * 20,
@@ -123,7 +120,6 @@ export default function DiceLanding() {
         });
       } else {
         // Settling phase
-        setRollPhase('settling');
         const settleProgress = (rollCount - 15) / 5;
         setRollPosition({
           x: 20 * (1 - settleProgress),
@@ -137,7 +133,6 @@ export default function DiceLanding() {
         setCurrentFace(finalNumber);
         setRolledNumber(finalNumber);
         setIsRolling(false);
-        setRollPhase('idle');
         setRollPosition({ x: 0, y: 0 });
         setShowResult(true);
 
