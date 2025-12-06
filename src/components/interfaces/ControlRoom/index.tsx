@@ -537,11 +537,11 @@ function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
 
 // Clipboard display - animated checklist with appearing items
 const CHECKLIST_ITEMS = [
-  { text: 'INITIALIZE', delay: 0 },
-  { text: 'LOAD DATA', delay: 300 },
-  { text: 'VERIFY SYS', delay: 600 },
-  { text: 'CONNECT', delay: 900 },
-  { text: 'READY', delay: 1200 },
+  { text: 'LOADING', delay: 0 },
+  { text: 'INTERFACE', delay: 300 },
+  { text: 'PICTURES', delay: 600 },
+  { text: 'ART', delay: 900 },
+  { text: 'EXPERIENCE', delay: 1200 },
 ];
 
 function ClipboardDisplay({ isActive }: { isActive: boolean }) {

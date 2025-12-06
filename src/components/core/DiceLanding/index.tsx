@@ -84,6 +84,8 @@ export default function DiceLanding() {
   const [currentFace, setCurrentFace] = useState<number | null>(null); // null = idle angled view
   const [rolledNumber, setRolledNumber] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [rollPosition, setRollPosition] = useState({ x: 0, y: 0 });
+  const [rollPhase, setRollPhase] = useState<'idle' | 'rolling' | 'bouncing' | 'settling'>('idle');
 
   const handleRoll = useCallback(() => {
     if (isRolling) return;
@@ -91,13 +93,43 @@ export default function DiceLanding() {
     setIsRolling(true);
     setShowResult(false);
     setRolledNumber(null);
+    setRollPhase('rolling');
 
-    // Animate through random faces
+    // Start from left side of screen
+    setRollPosition({ x: -200, y: -50 });
+
+    // Animate through random faces while moving
     let rollCount = 0;
-    const maxRolls = 15;
+    const maxRolls = 20;
     const interval = setInterval(() => {
       setCurrentFace(Math.floor(Math.random() * 6) + 1);
       rollCount++;
+
+      // Update position - roll across then bounce
+      if (rollCount <= 10) {
+        // Rolling across (left to center)
+        const progress = rollCount / 10;
+        setRollPosition({
+          x: -200 + (200 * progress),
+          y: -50 + Math.sin(progress * Math.PI * 3) * 30, // Bouncing motion
+        });
+      } else if (rollCount <= 15) {
+        // Bouncing phase
+        setRollPhase('bouncing');
+        const bounceProgress = (rollCount - 10) / 5;
+        setRollPosition({
+          x: Math.sin(bounceProgress * Math.PI * 2) * 20,
+          y: -Math.abs(Math.sin(bounceProgress * Math.PI * 3)) * 25,
+        });
+      } else {
+        // Settling phase
+        setRollPhase('settling');
+        const settleProgress = (rollCount - 15) / 5;
+        setRollPosition({
+          x: 20 * (1 - settleProgress),
+          y: 0,
+        });
+      }
 
       if (rollCount >= maxRolls) {
         clearInterval(interval);
@@ -105,6 +137,8 @@ export default function DiceLanding() {
         setCurrentFace(finalNumber);
         setRolledNumber(finalNumber);
         setIsRolling(false);
+        setRollPhase('idle');
+        setRollPosition({ x: 0, y: 0 });
         setShowResult(true);
 
         // Navigate after showing result
@@ -112,7 +146,7 @@ export default function DiceLanding() {
           setInterface(finalNumber);
         }, 1500);
       }
-    }, 100);
+    }, 80);
   }, [isRolling, setInterface]);
 
   const handleSkip = useCallback(() => {
@@ -165,15 +199,25 @@ export default function DiceLanding() {
             whileHover={!isRolling ? { scale: 1.05 } : {}}
             whileTap={!isRolling ? { scale: 0.95 } : {}}
             aria-label="Roll the dice"
+            animate={{
+              x: rollPosition.x,
+              y: rollPosition.y,
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 300,
+              damping: 20,
+            }}
           >
             <motion.div
               className={styles.dice}
               animate={{
-                rotateX: isRolling ? [0, 360, 720, 1080] : rotation.rotateX,
-                rotateY: isRolling ? [0, 360, 720, 1080] : rotation.rotateY,
+                rotateX: isRolling ? [0, 360, 720, 1080, 1440] : rotation.rotateX,
+                rotateY: isRolling ? [0, 180, 540, 900, 1260] : rotation.rotateY,
+                rotateZ: isRolling ? [0, 90, 180, 270, 360] : 0,
               }}
               transition={{
-                duration: isRolling ? 1.5 : 0.5,
+                duration: isRolling ? 1.6 : 0.5,
                 ease: isRolling ? 'easeOut' : [0.16, 1, 0.3, 1],
               }}
             >

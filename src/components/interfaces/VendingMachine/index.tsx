@@ -6,6 +6,52 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { projects, Project } from '../../../config/projects';
 import styles from './styles.module.css';
 
+// Create a ding sound using Web Audio API
+function playDingSound() {
+  try {
+    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+
+    // Create oscillator for the main ding tone
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    // Bell-like frequency
+    oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5 note
+    oscillator.type = 'sine';
+
+    // Quick attack, medium decay for "ding" effect
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.8);
+
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.8);
+
+    // Add a second harmonic for richer sound
+    const oscillator2 = audioContext.createOscillator();
+    const gainNode2 = audioContext.createGain();
+
+    oscillator2.connect(gainNode2);
+    gainNode2.connect(audioContext.destination);
+
+    oscillator2.frequency.setValueAtTime(1760, audioContext.currentTime); // A6 (octave up)
+    oscillator2.type = 'sine';
+
+    gainNode2.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode2.gain.linearRampToValueAtTime(0.15, audioContext.currentTime + 0.01);
+    gainNode2.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+
+    oscillator2.start(audioContext.currentTime);
+    oscillator2.stop(audioContext.currentTime + 0.5);
+  } catch (e) {
+    // Audio not supported, fail silently
+    console.log('Audio not available');
+  }
+}
+
 // Product icons for each project - simpler, no heavy glow
 const projectIcons: Record<string, string> = {
   lokitunes: '🎵',
@@ -54,9 +100,12 @@ export default function VendingMachine() {
     }
   }, [getProjectForSlot, machineState]);
 
-  // Step 2: Insert coin - now with animation
+  // Step 2: Insert coin - now with animation and sound
   const handleInsertCoin = useCallback(() => {
     if (machineState !== 'selected' || !selectedProject) return;
+
+    // Play ding sound
+    playDingSound();
 
     // Show coin dropping animation
     setMachineState('coinDropping');
