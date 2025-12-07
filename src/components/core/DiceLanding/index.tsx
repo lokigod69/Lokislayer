@@ -187,95 +187,98 @@ export default function DiceLanding() {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, delay: 0.2, type: 'spring' }}
         >
-          <motion.button
-            className={styles.diceWrapper}
-            onClick={handleRoll}
-            disabled={isRolling}
-            whileHover={!isRolling ? { scale: 1.05 } : {}}
-            whileTap={!isRolling ? { scale: 0.95 } : {}}
-            aria-label="Roll the dice"
-            animate={{
-              x: rollPosition.x,
-              y: rollPosition.y,
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 300,
-              damping: 20,
-            }}
-          >
-            <motion.div
-              className={styles.dice}
+          {/* Dice area - fixed size wrapper for centering */}
+          <div className={styles.diceArea}>
+            <motion.button
+              className={styles.diceWrapper}
+              onClick={handleRoll}
+              disabled={isRolling}
+              whileHover={!isRolling ? { scale: 1.05 } : {}}
+              whileTap={!isRolling ? { scale: 0.95 } : {}}
+              aria-label="Roll the dice"
               animate={{
-                rotateX: isRolling ? [0, 360, 720, 1080, 1440] : rotation.rotateX,
-                rotateY: isRolling ? [0, 180, 540, 900, 1260] : rotation.rotateY,
-                rotateZ: isRolling ? [0, 90, 180, 270, 360] : 0,
+                x: rollPosition.x,
+                y: rollPosition.y,
               }}
               transition={{
-                duration: isRolling ? 1.6 : 0.5,
-                ease: isRolling ? 'easeOut' : [0.16, 1, 0.3, 1],
+                type: 'spring',
+                stiffness: 300,
+                damping: 20,
               }}
             >
-              {/* Front - 1 */}
-              <div className={`${styles.face} ${styles.front}`}>
-                <DiceFace value={1} />
-              </div>
-              {/* Back - 6 */}
-              <div className={`${styles.face} ${styles.back}`}>
-                <DiceFace value={6} />
-              </div>
-              {/* Right - 2 */}
-              <div className={`${styles.face} ${styles.right}`}>
-                <DiceFace value={2} />
-              </div>
-              {/* Left - 5 */}
-              <div className={`${styles.face} ${styles.left}`}>
-                <DiceFace value={5} />
-              </div>
-              {/* Top - 3 */}
-              <div className={`${styles.face} ${styles.top}`}>
-                <DiceFace value={3} />
-              </div>
-              {/* Bottom - 4 */}
-              <div className={`${styles.face} ${styles.bottom}`}>
-                <DiceFace value={4} />
-              </div>
-            </motion.div>
+              <motion.div
+                className={styles.dice}
+                animate={{
+                  rotateX: isRolling ? [0, 360, 720, 1080, 1440] : rotation.rotateX,
+                  rotateY: isRolling ? [0, 180, 540, 900, 1260] : rotation.rotateY,
+                  rotateZ: isRolling ? [0, 90, 180, 270, 360] : 0,
+                }}
+                transition={{
+                  duration: isRolling ? 1.6 : 0.5,
+                  ease: isRolling ? 'easeOut' : [0.16, 1, 0.3, 1],
+                }}
+              >
+                {/* Front - 1 */}
+                <div className={`${styles.face} ${styles.front}`}>
+                  <DiceFace value={1} />
+                </div>
+                {/* Back - 6 */}
+                <div className={`${styles.face} ${styles.back}`}>
+                  <DiceFace value={6} />
+                </div>
+                {/* Right - 2 */}
+                <div className={`${styles.face} ${styles.right}`}>
+                  <DiceFace value={2} />
+                </div>
+                {/* Left - 5 */}
+                <div className={`${styles.face} ${styles.left}`}>
+                  <DiceFace value={5} />
+                </div>
+                {/* Top - 3 */}
+                <div className={`${styles.face} ${styles.top}`}>
+                  <DiceFace value={3} />
+                </div>
+                {/* Bottom - 4 */}
+                <div className={`${styles.face} ${styles.bottom}`}>
+                  <DiceFace value={4} />
+                </div>
+              </motion.div>
 
-            {/* Glow effect */}
-            <div className={styles.diceGlow} />
+              {/* Glow effect */}
+              <div className={styles.diceGlow} />
+            </motion.button>
+          </div>
 
-            {/* Rolling indicator - inside wrapper to move with dice */}
-            <AnimatePresence>
-              {isRolling && (
-                <motion.div
-                  className={styles.rollingText}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  Rolling...
-                </motion.div>
-              )}
-            </AnimatePresence>
+          {/* Rolling indicator - centered below dice */}
+          <AnimatePresence>
+            {isRolling && (
+              <motion.div
+                className={styles.rollingText}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                Rolling...
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            {/* Result display - inside wrapper to stay centered with dice */}
-            <AnimatePresence>
-              {showResult && resultInterface && (
-                <motion.div
-                  className={styles.result}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ type: 'spring', damping: 15 }}
-                >
-                  <div className={styles.resultNumber}>{rolledNumber}</div>
-                  <div className={styles.resultName}>{resultInterface.name}</div>
-                  <div className={styles.resultEntering}>Entering...</div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
+          {/* Result display - centered below dice */}
+          <AnimatePresence>
+            {showResult && resultInterface && (
+              <motion.div
+                className={styles.result}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: 'spring', damping: 15 }}
+              >
+                <div className={styles.resultNumber}>{rolledNumber}</div>
+                <div className={styles.resultName}>{resultInterface.name}</div>
+                <div className={styles.resultEntering}>Entering...</div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* Skip button */}

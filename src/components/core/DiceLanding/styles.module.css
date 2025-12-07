@@ -129,21 +129,40 @@
 /* 3D Dice */
 .diceContainer {
   position: relative;
-  perspective: 1000px;
   margin: 3rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.diceWrapper {
+/* Fixed-size wrapper to ensure centering */
+.diceArea {
   position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+}
+
+@media (min-width: 640px) {
+  .diceArea {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.diceWrapper {
+  position: absolute;
   width: 100px;
   height: 100px;
   cursor: pointer;
   background: none;
   border: none;
   outline: none;
+  margin: 0;
+  padding: 0;
 }
 
 @media (min-width: 640px) {
@@ -238,11 +257,7 @@
 
 /* Rolling text */
 .rollingText {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
   font-size: 0.65rem;
   font-weight: 500;
   letter-spacing: 0.25em;
@@ -251,11 +266,12 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   animation: fadeIn 0.3s ease;
   white-space: nowrap;
+  text-align: center;
 }
 
 @media (min-width: 640px) {
   .rollingText {
-    margin-top: 0.75rem;
+    margin-top: 1.75rem;
     font-size: 0.7rem;
   }
 }
@@ -267,17 +283,12 @@
 
 /* Result display */
 .result {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-top: 0.75rem;
+  margin-top: 1.5rem;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: max-content;
 }
 
 .resultNumber {
@@ -299,7 +310,7 @@
 
 @media (min-width: 640px) {
   .result {
-    margin-top: 1rem;
+    margin-top: 1.75rem;
   }
 
   .resultNumber {

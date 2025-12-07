@@ -141,13 +141,7 @@ export default function Broadcast() {
 
     const handleEnd = () => {
       setIsDragging(false);
-      // Snap to nearest station if close
-      for (const freq of PROJECT_FREQUENCIES) {
-        if (Math.abs(frequency - freq) <= SNAP_THRESHOLD * 2) {
-          setFrequency(freq);
-          break;
-        }
-      }
+      // No snapping - allow user to stay at any frequency including no-signal zones
     };
 
     document.addEventListener('mousemove', handleMove);
