@@ -244,37 +244,38 @@ export default function DiceLanding() {
 
             {/* Glow effect */}
             <div className={styles.diceGlow} />
+
+            {/* Rolling indicator - inside wrapper to move with dice */}
+            <AnimatePresence>
+              {isRolling && (
+                <motion.div
+                  className={styles.rollingText}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  Rolling...
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Result display - inside wrapper to stay centered with dice */}
+            <AnimatePresence>
+              {showResult && resultInterface && (
+                <motion.div
+                  className={styles.result}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ type: 'spring', damping: 15 }}
+                >
+                  <div className={styles.resultNumber}>{rolledNumber}</div>
+                  <div className={styles.resultName}>{resultInterface.name}</div>
+                  <div className={styles.resultEntering}>Entering...</div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.button>
-
-          {/* Rolling indicator */}
-          <AnimatePresence>
-            {isRolling && (
-              <motion.div
-                className={styles.rollingText}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                Rolling...
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Result display */}
-          <AnimatePresence>
-            {showResult && resultInterface && (
-              <motion.div
-                className={styles.result}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-              >
-                <div className={styles.resultNumber}>{rolledNumber}</div>
-                <div className={styles.resultName}>{resultInterface.name}</div>
-                <div className={styles.resultEntering}>Entering...</div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
 
         {/* Skip button */}
