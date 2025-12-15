@@ -1,169 +1,221 @@
 // src/components/core/WaveGrid/index.tsx
-// Animated wave grid with mouse-following illumination effect
+// Animated wave grid with mouse-following illumination - inspired by vibary.art
 
-import { useRef, useMemo, useEffect, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import * as THREE from 'three';
+import { useRef, useEffect, useCallback } from 'react';
 
-// Vertex shader for wave distortion
-const vertexShader = `
-  uniform float uTime;
-  uniform vec2 uMouse;
-  uniform float uMouseRadius;
-
-  varying vec2 vUv;
-  varying float vWave;
-  varying float vMouseDist;
-
-  void main() {
-    vUv = uv;
-    vec3 pos = position;
-
-    // Multiple wave layers for organic movement
-    float wave1 = sin(pos.x * 2.0 + uTime * 0.8) * 0.15;
-    float wave2 = sin(pos.y * 1.5 + uTime * 0.6) * 0.12;
-    float wave3 = sin((pos.x + pos.y) * 1.0 + uTime * 0.4) * 0.1;
-    float wave4 = cos(pos.x * 3.0 - uTime * 0.5) * 0.08;
-    float wave5 = cos(pos.y * 2.5 + uTime * 0.7) * 0.06;
-
-    // Combine waves
-    float totalWave = wave1 + wave2 + wave3 + wave4 + wave5;
-
-    // Mouse interaction - create a bulge/ripple
-    vec2 mousePos = uMouse * 2.0 - 1.0; // Convert to -1 to 1 range
-    mousePos.x *= (1920.0 / 1080.0); // Aspect ratio adjustment
-    float mouseDist = distance(pos.xy * vec2(1.0, 0.6), mousePos * vec2(5.0, 3.0));
-    float mouseWave = exp(-mouseDist * 0.3) * 0.8;
-    float mouseRipple = sin(mouseDist * 3.0 - uTime * 3.0) * exp(-mouseDist * 0.5) * 0.3;
-
-    vWave = totalWave;
-    vMouseDist = mouseWave;
-
-    pos.z += totalWave + mouseWave + mouseRipple;
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-  }
-`;
-
-// Fragment shader for grid lines and illumination
-const fragmentShader = `
-  uniform float uTime;
-  uniform vec2 uMouse;
-  uniform vec2 uResolution;
-
-  varying vec2 vUv;
-  varying float vWave;
-  varying float vMouseDist;
-
-  void main() {
-    // Grid parameters
-    float gridSize = 40.0;
-    float lineWidth = 0.03;
-
-    // Create grid lines
-    vec2 grid = fract(vUv * gridSize);
-    float lineX = smoothstep(lineWidth, 0.0, grid.x) + smoothstep(1.0 - lineWidth, 1.0, grid.x);
-    float lineY = smoothstep(lineWidth, 0.0, grid.y) + smoothstep(1.0 - lineWidth, 1.0, grid.y);
-    float gridLine = max(lineX, lineY);
-
-    // Base color - very subtle grid
-    float baseAlpha = 0.12 + vWave * 0.05;
-
-    // Mouse illumination - bright spot that follows cursor
-    vec2 mousePos = uMouse;
-    float mouseDist = distance(vUv, mousePos);
-    float mouseGlow = exp(-mouseDist * 4.0) * 0.7;
-    float mouseRing = exp(-abs(mouseDist - 0.15) * 20.0) * 0.3;
-
-    // Wave brightness variation
-    float waveBrightness = 0.1 + abs(vWave) * 0.3;
-
-    // Combine all effects
-    float alpha = gridLine * (baseAlpha + mouseGlow + waveBrightness);
-    alpha += mouseGlow * 0.15; // Add ambient glow around mouse
-    alpha += mouseRing * gridLine; // Subtle ring around mouse
-
-    // Slight color tint based on wave height
-    vec3 color = vec3(1.0);
-    color = mix(color, vec3(0.9, 0.9, 1.0), vMouseDist * 0.3);
-
-    gl_FragColor = vec4(color, alpha);
-  }
-`;
-
-// Grid plane component
-function WavePlane({ mousePos }: { mousePos: { x: number; y: number } }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const smoothMouseRef = useRef({ x: 0.5, y: 0.5 });
-
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-      uMouseRadius: { value: 0.3 },
-      uResolution: { value: new THREE.Vector2(1920, 1080) },
-    }),
-    []
-  );
-
-  useFrame((state) => {
-    if (!meshRef.current) return;
-
-    const material = meshRef.current.material as THREE.ShaderMaterial;
-    material.uniforms.uTime.value = state.clock.elapsedTime;
-
-    // Smooth mouse movement
-    smoothMouseRef.current.x += (mousePos.x - smoothMouseRef.current.x) * 0.08;
-    smoothMouseRef.current.y += (mousePos.y - smoothMouseRef.current.y) * 0.08;
-
-    material.uniforms.uMouse.value.set(smoothMouseRef.current.x, smoothMouseRef.current.y);
-  });
-
-  return (
-    <mesh ref={meshRef} rotation={[-Math.PI / 2.5, 0, 0]} position={[0, -1, 0]}>
-      <planeGeometry args={[12, 8, 100, 100]} />
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        transparent
-        side={THREE.DoubleSide}
-        depthWrite={false}
-      />
-    </mesh>
-  );
-}
-
-// Main export component
 export default function WaveGrid() {
-  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const mouseRef = useRef({ x: 0.5, y: 0.5 });
+  const targetMouseRef = useRef({ x: 0.5, y: 0.5 });
+  const animationRef = useRef<number>();
+  const timeRef = useRef(0);
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Smooth mouse interpolation
+    mouseRef.current.x += (targetMouseRef.current.x - mouseRef.current.x) * 0.08;
+    mouseRef.current.y += (targetMouseRef.current.y - mouseRef.current.y) * 0.08;
+
+    // Clear canvas
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, width, height);
+
+    // Grid settings
+    const gridSpacing = 35;
+    const rows = Math.ceil(height / gridSpacing) + 4;
+    const cols = Math.ceil(width / gridSpacing) + 4;
+
+    // Time for animation
+    timeRef.current += 0.015;
+    const time = timeRef.current;
+
+    // Mouse position in pixels
+    const mouseX = mouseRef.current.x * width;
+    const mouseY = mouseRef.current.y * height;
+
+    // Draw grid lines with wave distortion
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+    ctx.lineWidth = 1;
+
+    // Calculate distorted points
+    const getDistortedPoint = (x: number, y: number): [number, number] => {
+      // Base wave ripples traveling across the grid
+      const wave1 = Math.sin(x * 0.008 + time * 1.5) * 8;
+      const wave2 = Math.sin(y * 0.006 + time * 1.2) * 6;
+      const wave3 = Math.sin((x + y) * 0.004 + time * 0.8) * 5;
+      const wave4 = Math.cos(x * 0.01 - time * 1.0) * 4;
+      const wave5 = Math.cos(y * 0.008 + time * 0.6) * 4;
+
+      // Combined wave displacement
+      const waveX = wave1 + wave3 + wave4;
+      const waveY = wave2 + wave3 + wave5;
+
+      // Mouse ripple effect
+      const dx = x - mouseX;
+      const dy = y - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const maxDist = 300;
+
+      let mouseWaveX = 0;
+      let mouseWaveY = 0;
+
+      if (dist < maxDist) {
+        const influence = 1 - dist / maxDist;
+        const ripple = Math.sin(dist * 0.03 - time * 4) * influence * 20;
+        const angle = Math.atan2(dy, dx);
+        mouseWaveX = Math.cos(angle) * ripple;
+        mouseWaveY = Math.sin(angle) * ripple;
+      }
+
+      return [
+        x + waveX + mouseWaveX,
+        y + waveY + mouseWaveY
+      ];
+    };
+
+    // Calculate brightness based on distance to mouse
+    const getBrightness = (x: number, y: number): number => {
+      const dx = x - mouseX;
+      const dy = y - mouseY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const maxDist = 350;
+
+      // Base brightness
+      let brightness = 0.12;
+
+      // Mouse glow
+      if (dist < maxDist) {
+        const glow = Math.pow(1 - dist / maxDist, 2);
+        brightness += glow * 0.6;
+      }
+
+      return Math.min(brightness, 0.8);
+    };
+
+    // Draw horizontal lines
+    for (let row = -2; row < rows; row++) {
+      const baseY = row * gridSpacing;
+
+      ctx.beginPath();
+      let started = false;
+
+      for (let col = -2; col <= cols; col++) {
+        const baseX = col * gridSpacing;
+        const [px, py] = getDistortedPoint(baseX, baseY);
+        const brightness = getBrightness(baseX, baseY);
+
+        if (!started) {
+          ctx.moveTo(px, py);
+          started = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+
+        // Vary line opacity based on position
+        ctx.strokeStyle = `rgba(255, 255, 255, ${brightness})`;
+      }
+      ctx.stroke();
+    }
+
+    // Draw vertical lines
+    for (let col = -2; col < cols; col++) {
+      const baseX = col * gridSpacing;
+
+      ctx.beginPath();
+      let started = false;
+
+      for (let row = -2; row <= rows; row++) {
+        const baseY = row * gridSpacing;
+        const [px, py] = getDistortedPoint(baseX, baseY);
+        const brightness = getBrightness(baseX, baseY);
+
+        if (!started) {
+          ctx.moveTo(px, py);
+          started = true;
+        } else {
+          ctx.lineTo(px, py);
+        }
+
+        ctx.strokeStyle = `rgba(255, 255, 255, ${brightness})`;
+      }
+      ctx.stroke();
+    }
+
+    // Draw mouse glow overlay
+    const gradient = ctx.createRadialGradient(
+      mouseX, mouseY, 0,
+      mouseX, mouseY, 300
+    );
+    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.08)');
+    gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.02)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    animationRef.current = requestAnimationFrame(draw);
+  }, []);
 
   useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    // Set canvas size
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = `${window.innerWidth}px`;
+      canvas.style.height = `${window.innerHeight}px`;
+
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.scale(dpr, dpr);
+      }
+    };
+
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Mouse tracking
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({
+      targetMouseRef.current = {
         x: e.clientX / window.innerWidth,
-        y: 1 - e.clientY / window.innerHeight, // Invert Y for WebGL coordinates
-      });
+        y: e.clientY / window.innerHeight,
+      };
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+
+    // Start animation
+    animationRef.current = requestAnimationFrame(draw);
+
+    return () => {
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [draw]);
 
   return (
-    <div style={{
-      position: 'absolute',
-      inset: 0,
-      zIndex: 0,
-      pointerEvents: 'none',
-    }}>
-      <Canvas
-        camera={{ position: [0, 2, 5], fov: 60 }}
-        style={{ background: 'transparent' }}
-        gl={{ alpha: true, antialias: true }}
-      >
-        <WavePlane mousePos={mousePos} />
-      </Canvas>
-    </div>
+    <canvas
+      ref={canvasRef}
+      style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 0,
+        pointerEvents: 'none',
+      }}
+    />
   );
 }
