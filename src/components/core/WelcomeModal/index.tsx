@@ -45,16 +45,15 @@ export default function WelcomeModal({ isOpen, onTakeTour, onSkip }: WelcomeModa
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
-              <h1 className={styles.title}>You found it.</h1>
+              <h1 className={styles.title}>Hi.</h1>
 
               <p className={styles.description}>
-                Welcome to the waiting room between ideas. Six doors, six experiments,
-                one questionable sense of direction.
+                You're entering the layer of Loki. This page is just a portal
+                bringing you to the first batch of projects.
               </p>
 
               <p className={styles.subdescription}>
-                Roll the dice and let fate pick your path—or skip ahead
-                if patience isn't your thing.
+                Best experienced on desktop. Any feedback welcome. Enjoy!
               </p>
 
               <div className={styles.actions}>
@@ -77,10 +76,6 @@ export default function WelcomeModal({ isOpen, onTakeTour, onSkip }: WelcomeModa
                   Skip → Choose Interface
                 </motion.button>
               </div>
-
-              <p className={styles.footnote}>
-                Don't worry. Nothing here bites. <span className={styles.footnoteEmphasis}>Probably.</span>
-              </p>
             </motion.div>
           </motion.div>
         </motion.div>
