@@ -1,245 +1,107 @@
-/* Neural Map Styles - Bioluminescent Consciousness Network */
+/* Neural Map - Ethereal Consciousness Network */
 
 .container {
   position: relative;
   width: 100%;
   height: 100%;
-  background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 100%);
+  background: linear-gradient(135deg, #030308 0%, #0a0a18 50%, #050510 100%);
   overflow: hidden;
 }
 
-/* Animated background particles */
-.backgroundParticles {
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(2px 2px at 20px 30px, rgba(139, 92, 246, 0.3), transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(236, 72, 153, 0.2), transparent),
-    radial-gradient(1px 1px at 90px 40px, rgba(59, 130, 246, 0.3), transparent),
-    radial-gradient(2px 2px at 130px 80px, rgba(139, 92, 246, 0.2), transparent),
-    radial-gradient(1px 1px at 160px 120px, rgba(236, 72, 153, 0.3), transparent);
-  background-size: 200px 200px;
-  animation: drift 20s linear infinite;
-  opacity: 0.6;
-}
-
-@keyframes drift {
-  0% { transform: translateY(0) translateX(0); }
-  100% { transform: translateY(-200px) translateX(100px); }
-}
-
-/* Connection lines */
-.connections {
+/* Animated background orbs */
+.backgroundOrbs {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  overflow: hidden;
 }
 
-/* Animated particles flowing along lines */
-.animatedLine {
-  animation: flowParticles 1.5s linear infinite;
+.orb1,
+.orb2,
+.orb3 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: float 20s ease-in-out infinite;
 }
 
-@keyframes flowParticles {
-  from {
-    stroke-dashoffset: 0;
+.orb1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.orb2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(236, 72, 153, 0.3) 0%, transparent 70%);
+  bottom: 20%;
+  right: 15%;
+  animation-delay: -7s;
+}
+
+.orb3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.35) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: -14s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
   }
+  25% {
+    transform: translate(30px, -30px) scale(1.05);
+  }
+  50% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+  75% {
+    transform: translate(-30px, -20px) scale(1.02);
+  }
+}
+
+/* React Flow customization */
+.flow {
+  width: 100%;
+  height: 100%;
+}
+
+.flow :global(.react-flow__edge-path) {
+  stroke-linecap: round;
+}
+
+.flow :global(.react-flow__edge.animated path) {
+  stroke-dasharray: 5;
+  animation: flowDash 0.5s linear infinite;
+}
+
+@keyframes flowDash {
   to {
-    stroke-dashoffset: -16;
+    stroke-dashoffset: -10;
   }
 }
 
-/* Center Home Node */
-.homeNode {
+/* Title */
+.title {
   position: absolute;
-  transform: translate(-50%, -50%);
-  cursor: pointer;
-  z-index: 20;
-  /* Explicit dimensions for proper centering */
-  width: 100px;
-  height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.homeGlow {
-  position: absolute;
-  /* Center the glow on the node */
-  top: 50%;
-  left: 50%;
-  width: 160px;
-  height: 160px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(167, 139, 250, 0.5) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.homeCore {
-  position: relative;
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, rgba(167, 139, 250, 0.3) 0%, rgba(99, 102, 241, 0.2) 100%);
-  border: 2px solid rgba(167, 139, 250, 0.6);
-  box-shadow:
-    0 0 30px rgba(167, 139, 250, 0.4),
-    inset 0 0 30px rgba(167, 139, 250, 0.2);
-  transition: all 0.3s ease;
-}
-
-.homeNode:hover .homeCore {
-  box-shadow:
-    0 0 50px rgba(167, 139, 250, 0.6),
-    inset 0 0 30px rgba(167, 139, 250, 0.3);
-}
-
-.homeIcon {
-  font-size: 36px;
-  z-index: 1;
-}
-
-.homeLabel {
-  position: absolute;
-  bottom: -35px;
+  top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-/* Project Nodes */
-.projectNode {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  cursor: grab;
-  user-select: none;
-  /* Explicit dimensions for proper centering */
-  width: 80px;
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.projectNode:active {
-  cursor: grabbing;
-}
-
-.projectNode.comingSoon {
-  opacity: 0.7;
-}
-
-.nodeCore {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid;
-  transition: all 0.3s ease;
-}
-
-/* Pulsing glow effect */
-.nodeGlow {
-  position: absolute;
-  /* Center the glow on the node */
-  top: 50%;
-  left: 50%;
-  width: 120px;
-  height: 120px;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-/* Node icon */
-.nodeIcon {
-  font-size: 28px;
-  z-index: 1;
-}
-
-/* Node label */
-.nodeLabel {
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-  opacity: 0.8;
-  transition: opacity 0.3s ease;
-}
-
-.projectNode:hover .nodeLabel {
-  opacity: 1;
-}
-
-/* Status badge for coming soon */
-.statusBadge {
-  position: absolute;
-  top: -10px;
-  right: -10px;
-  padding: 4px 8px;
-  font-size: 9px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.2);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  border-radius: 10px;
-}
-
-/* Hover preview tooltip */
-.preview {
-  position: absolute;
-  bottom: calc(100% + 20px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 220px;
-  padding: 16px;
-  background: rgba(10, 10, 30, 0.95);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  z-index: 100;
-  pointer-events: none;
-}
-
-.previewTitle {
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 8px;
-}
-
-.previewDescription {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.4;
-  margin-bottom: 12px;
-}
-
-.previewHint {
-  font-size: 11px;
+  font-size: 0.75rem;
+  font-weight: 300;
+  letter-spacing: 0.4em;
   color: rgba(255, 255, 255, 0.4);
-  text-align: center;
+  text-transform: uppercase;
+  z-index: 100;
 }
 
 /* Instructions */
@@ -248,174 +110,400 @@
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.35);
   text-align: center;
-  z-index: 5;
+  z-index: 100;
+  letter-spacing: 0.05em;
 }
 
-/* Modal overlay */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+/* ===== HUB NODE ===== */
+.hubNode {
+  position: relative;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  cursor: pointer;
 }
 
-/* Modal content */
+.hubGlow {
+  position: absolute;
+  inset: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, transparent 60%);
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(1.1);
+  }
+}
+
+.hubRing {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(167, 139, 250, 0.3);
+  animation: rotateRing 10s linear infinite;
+}
+
+.hubRing::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: rgba(167, 139, 250, 0.8);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 15px rgba(167, 139, 250, 0.8);
+}
+
+@keyframes rotateRing {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hubCore {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(167, 139, 250, 0.2) 0%, rgba(99, 102, 241, 0.15) 100%);
+  border: 1px solid rgba(167, 139, 250, 0.4);
+  box-shadow:
+    0 0 40px rgba(167, 139, 250, 0.3),
+    inset 0 0 30px rgba(167, 139, 250, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.hubIcon {
+  font-size: 32px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 20px rgba(167, 139, 250, 0.8);
+}
+
+.hubLabel {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+}
+
+/* ===== PROJECT NODE ===== */
+.projectNode {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.projectNode.comingSoon {
+  opacity: 0.6;
+}
+
+.nodeGlow {
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--node-color, #8b5cf6) 0%, transparent 60%);
+  opacity: 0.3;
+  animation: pulseGlow 3s ease-in-out infinite;
+  animation-delay: calc(var(--index, 0) * -0.5s);
+}
+
+.nodeRing {
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1px solid var(--node-color, #8b5cf6);
+  opacity: 0.4;
+  animation: rotateRing 15s linear infinite reverse;
+}
+
+.nodeRing::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--node-color, #8b5cf6);
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 0 10px var(--node-color, #8b5cf6);
+}
+
+.nodeCore {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--node-color, #8b5cf6) 20%, transparent) 0%,
+    color-mix(in srgb, var(--node-color, #8b5cf6) 10%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--node-color, #8b5cf6) 50%, transparent);
+  box-shadow:
+    0 0 30px color-mix(in srgb, var(--node-color, #8b5cf6) 30%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--node-color, #8b5cf6) 15%, transparent);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.projectNode:hover .nodeCore {
+  box-shadow:
+    0 0 50px color-mix(in srgb, var(--node-color, #8b5cf6) 50%, transparent),
+    inset 0 0 25px color-mix(in srgb, var(--node-color, #8b5cf6) 20%, transparent);
+}
+
+.nodeIcon {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 15px var(--node-color, #8b5cf6);
+}
+
+.nodeLabel {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.projectNode:hover .nodeLabel {
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.statusBadge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 3px 8px;
+  font-size: 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  border-radius: 10px;
+}
+
+/* ===== MODAL ===== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
 .modal {
-  background: rgba(15, 15, 35, 0.95);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 16px;
-  padding: 32px;
-  max-width: 360px;
-  width: 90%;
+  position: relative;
+  max-width: 380px;
+  width: 100%;
+  padding: 40px 32px;
+  background: linear-gradient(
+    145deg,
+    rgba(15, 15, 30, 0.95) 0%,
+    rgba(10, 10, 20, 0.98) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--modal-color, #8b5cf6) 30%, transparent);
+  border-radius: 20px;
   text-align: center;
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.5),
-    0 0 40px rgba(139, 92, 246, 0.2);
+    0 25px 80px rgba(0, 0, 0, 0.5),
+    0 0 60px color-mix(in srgb, var(--modal-color, #8b5cf6) 20%, transparent);
+  overflow: hidden;
+}
+
+.modalGlow {
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  width: 200%;
+  height: 100%;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--modal-color, #8b5cf6) 15%, transparent) 0%,
+    transparent 60%
+  );
+  pointer-events: none;
 }
 
 .modalIcon {
+  position: relative;
   font-size: 48px;
   margin-bottom: 16px;
+  text-shadow: 0 0 30px var(--modal-color, #8b5cf6);
 }
 
 .modalTitle {
-  font-size: 24px;
-  font-weight: 700;
+  position: relative;
+  font-size: 1.5rem;
+  font-weight: 600;
   color: white;
   margin: 0 0 12px 0;
+  letter-spacing: 0.02em;
 }
 
 .modalDescription {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.5;
-  margin: 0 0 24px 0;
+  position: relative;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.6;
+  margin: 0 0 28px 0;
 }
 
-.modalComingSoon {
-  display: inline-block;
-  padding: 8px 20px;
-  background: rgba(251, 191, 36, 0.2);
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  border-radius: 8px;
+.comingSoonBadge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: 30px;
   color: #fbbf24;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
-.modalButtons {
+.modalActions {
+  position: relative;
   display: flex;
   gap: 12px;
   justify-content: center;
 }
 
-.modalButtonCancel {
-  padding: 10px 24px;
+.cancelBtn {
+  padding: 12px 28px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelBtn:hover {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
   color: white;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
-.modalButtonCancel:hover {
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.modalButtonVisit {
-  padding: 10px 24px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+.visitBtn {
+  padding: 12px 28px;
+  background: linear-gradient(
+    135deg,
+    var(--modal-color, #8b5cf6) 0%,
+    color-mix(in srgb, var(--modal-color, #8b5cf6) 70%, #6366f1) 100%
+  );
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   color: white;
-  font-size: 14px;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--modal-color, #8b5cf6) 40%, transparent);
 }
 
-.modalButtonVisit:hover {
+.visitBtn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--modal-color, #8b5cf6) 50%, transparent);
 }
 
 /* Mobile adjustments */
 @media (max-width: 768px) {
-  .homeNode {
-    width: 70px;
-    height: 70px;
-  }
-
-  .homeCore {
-    width: 70px;
-    height: 70px;
-  }
-
-  .homeGlow {
-    width: 120px;
-    height: 120px;
-  }
-
-  .homeIcon {
-    font-size: 28px;
-  }
-
-  .homeLabel {
-    font-size: 12px;
-    bottom: -28px;
-  }
-
-  .projectNode {
-    width: 60px;
-    height: 60px;
-  }
-
-  .nodeCore {
-    width: 60px;
-    height: 60px;
-  }
-
-  .nodeGlow {
+  .hubNode {
     width: 100px;
     height: 100px;
   }
 
+  .hubCore {
+    width: 65px;
+    height: 65px;
+  }
+
+  .hubIcon {
+    font-size: 26px;
+  }
+
+  .projectNode {
+    width: 75px;
+    height: 75px;
+  }
+
+  .nodeCore {
+    width: 50px;
+    height: 50px;
+  }
+
   .nodeIcon {
-    font-size: 22px;
+    font-size: 18px;
   }
 
   .nodeLabel {
-    font-size: 10px;
-    bottom: -24px;
-  }
-
-  .preview {
-    width: 180px;
-    padding: 12px;
-    bottom: calc(100% + 10px);
-  }
-
-  .previewTitle {
-    font-size: 14px;
-  }
-
-  .previewDescription {
-    font-size: 11px;
+    font-size: 9px;
+    bottom: -20px;
   }
 
   .instructions {
-    font-size: 12px;
-    bottom: 16px;
+    font-size: 0.65rem;
+    padding: 0 20px;
+  }
+
+  .modal {
+    padding: 32px 24px;
+  }
+
+  .modalIcon {
+    font-size: 40px;
+  }
+
+  .modalTitle {
+    font-size: 1.25rem;
   }
 }

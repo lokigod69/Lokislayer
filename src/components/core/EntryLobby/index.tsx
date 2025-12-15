@@ -5,6 +5,7 @@ import { useMemo, useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
 import { interfaces } from '../../../config/interfaces';
+import WaveGrid from '../WaveGrid';
 import styles from './styles.module.css';
 
 // Generate subtle particles
@@ -329,9 +330,7 @@ export default function EntryLobby() {
     <div className={styles.portal}>
       {/* Background layers */}
       <div className={styles.backgroundGradient} />
-      <div className={`${styles.orb} ${styles.orb1}`} />
-      <div className={`${styles.orb} ${styles.orb2}`} />
-      <div className={styles.gridPattern} />
+      <WaveGrid />
       <Particles />
 
       {/* Connecting lines */}
