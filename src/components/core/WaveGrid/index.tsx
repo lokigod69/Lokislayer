@@ -17,16 +17,17 @@ export default function WaveGrid() {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    // Use CSS pixel dimensions for calculations (not DPR-scaled canvas size)
+    const width = window.innerWidth;
+    const height = window.innerHeight;
 
     // Smooth mouse interpolation
     mouseRef.current.x += (targetMouseRef.current.x - mouseRef.current.x) * 0.08;
     mouseRef.current.y += (targetMouseRef.current.y - mouseRef.current.y) * 0.08;
 
-    // Clear canvas
+    // Clear canvas (use actual canvas dimensions)
     ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Grid settings
     const gridSpacing = 35;
@@ -37,7 +38,7 @@ export default function WaveGrid() {
     timeRef.current += 0.015;
     const time = timeRef.current;
 
-    // Mouse position in pixels
+    // Mouse position in CSS pixels (matches actual cursor position)
     const mouseX = mouseRef.current.x * width;
     const mouseY = mouseRef.current.y * height;
 

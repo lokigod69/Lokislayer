@@ -278,7 +278,7 @@ export default function NeuralMap() {
                     Cancel
                   </button>
                   <button className={styles.visitBtn} onClick={handleVisit}>
-                    Enter Portal →
+                    Enter
                   </button>
                 </div>
               )}
