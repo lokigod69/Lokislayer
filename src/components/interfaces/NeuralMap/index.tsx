@@ -162,7 +162,7 @@ export default function NeuralMap() {
 
   // Create edges from hub to all projects
   const initialEdges: Edge[] = useMemo(() => {
-    return projects.map((project, index) => ({
+    return projects.map((project) => ({
       id: `hub-${project.id}`,
       source: 'hub',
       target: project.id,
@@ -182,8 +182,8 @@ export default function NeuralMap() {
     }));
   }, []);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, , onNodesChange] = useNodesState(initialNodes);
+  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
 
   return (
     <div className={styles.container}>
