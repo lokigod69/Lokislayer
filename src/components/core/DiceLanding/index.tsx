@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
 import { getRandomInterfaceId, getInterfaceById } from '../../../config/interfaces';
 import WelcomeModal from '../WelcomeModal';
+import WaveGrid from '../WaveGrid';
 import styles from './styles.module.css';
 
 const WELCOME_SEEN_KEY = 'lokislayer-welcome-seen';
@@ -146,12 +147,17 @@ export default function DiceLanding() {
         setRolledNumber(finalNumber);
         setIsRolling(false);
         setRollPosition({ x: 0, y: 0 });
-        setShowResult(true);
 
-        // Navigate after showing result
+        // Wait for dice to settle into final position (0.5s animation)
+        // Then show the result
         setTimeout(() => {
-          setInterface(finalNumber);
-        }, 1500);
+          setShowResult(true);
+
+          // Navigate after result has been displayed
+          setTimeout(() => {
+            setInterface(finalNumber);
+          }, 1500);
+        }, 600);
       }
     }, 80);
   }, [isRolling, setInterface]);
@@ -192,9 +198,7 @@ export default function DiceLanding() {
     <div className={styles.container}>
       {/* Background */}
       <div className={styles.backgroundGradient} />
-      <div className={`${styles.orb} ${styles.orb1}`} />
-      <div className={`${styles.orb} ${styles.orb2}`} />
-      <div className={styles.gridPattern} />
+      <WaveGrid />
       <Particles />
 
       {/* Content */}
