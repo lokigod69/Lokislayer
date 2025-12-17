@@ -22,13 +22,14 @@ const dotPatterns: Record<number, number[][]> = {
 };
 
 // 3D rotation for each face
+// Face positions: Front=1, Back=6, Right=2, Left=5, Top=3, Bottom=4
 const faceRotations: Record<number, { rotateX: number; rotateY: number }> = {
-  1: { rotateX: 0, rotateY: 0 },
-  2: { rotateX: 0, rotateY: 90 },
-  3: { rotateX: -90, rotateY: 0 },
-  4: { rotateX: 90, rotateY: 0 },
-  5: { rotateX: 0, rotateY: -90 },
-  6: { rotateX: 180, rotateY: 0 },
+  1: { rotateX: 0, rotateY: 0 },      // Front face - no rotation
+  2: { rotateX: 0, rotateY: -90 },    // Right face - rotate left to show
+  3: { rotateX: -90, rotateY: 0 },    // Top face - rotate up
+  4: { rotateX: 90, rotateY: 0 },     // Bottom face - rotate down
+  5: { rotateX: 0, rotateY: 90 },     // Left face - rotate right to show
+  6: { rotateX: 180, rotateY: 0 },    // Back face - flip
 };
 
 function DiceFace({ value }: { value: number }) {
