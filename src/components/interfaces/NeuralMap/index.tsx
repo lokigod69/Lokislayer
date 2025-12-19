@@ -89,7 +89,7 @@ const projectIcons: Record<string, string> = {
   vocapp: '✎',
   bountyhunter: '⌖',
   crym: '◐',
-  crymera: '✧',
+  deepdive: '✧',
 };
 
 export default function NeuralMap() {

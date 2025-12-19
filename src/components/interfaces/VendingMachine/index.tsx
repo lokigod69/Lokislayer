@@ -60,7 +60,7 @@ const projectIcons: Record<string, string> = {
   vocapp: '📚',
   bountyhunter: '🎯',
   crym: '🏠', // 3D room/space
-  crymera: '🖼️', // Picture/gallery
+  deepdive: '🧠', // Psychoanalysis/mind
 };
 
 // Display names (without URL extensions)
@@ -70,7 +70,7 @@ const displayNames: Record<string, string> = {
   vocapp: 'VocApp',
   bountyhunter: 'BountyHunter',
   crym: 'Crym', // Changed from Crym.space
-  crymera: 'Crymera',
+  deepdive: 'The Deep Dive',
 };
 
 // Slot codes in order
