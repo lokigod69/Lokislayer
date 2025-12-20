@@ -1,7 +1,7 @@
 // src/components/interfaces/NeuralMap/index.tsx
 // Neural Map - Beautiful node-based visualization using React Flow
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useEffect } from 'react';
 import {
   ReactFlow,
   Node,
@@ -9,6 +9,8 @@ import {
   Background,
   useNodesState,
   useEdgesState,
+  useReactFlow,
+  ReactFlowProvider,
   BackgroundVariant,
   ConnectionLineType,
   MarkerType,
@@ -92,9 +94,23 @@ const projectIcons: Record<string, string> = {
   deepdive: '✧',
 };
 
-export default function NeuralMap() {
+function NeuralMapContent() {
   const { setInterface } = useStore();
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const { fitView } = useReactFlow();
+
+  // Delay rendering to ensure container has proper dimensions
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsReady(true);
+      // Fit view after component is ready
+      setTimeout(() => {
+        fitView({ padding: 0.3 });
+      }, 100);
+    }, 50);
+    return () => clearTimeout(timer);
+  }, [fitView]);
 
   // Handle hub click - go back to portal
   const handleHubClick = useCallback(() => {
@@ -194,7 +210,12 @@ export default function NeuralMap() {
         <div className={styles.orb3} />
       </div>
 
-      <ReactFlow
+      {!isReady ? (
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', letterSpacing: '0.2em' }}>LOADING...</div>
+        </div>
+      ) : (
+        <ReactFlow
         nodes={nodes}
         edges={edges}
         onNodesChange={onNodesChange}
@@ -219,6 +240,7 @@ export default function NeuralMap() {
           color="rgba(139, 92, 246, 0.15)"
         />
       </ReactFlow>
+      )}
 
       {/* Title */}
       <motion.div
@@ -287,5 +309,14 @@ export default function NeuralMap() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+// Wrapper with ReactFlowProvider for proper initialization
+export default function NeuralMap() {
+  return (
+    <ReactFlowProvider>
+      <NeuralMapContent />
+    </ReactFlowProvider>
   );
 }

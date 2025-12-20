@@ -536,12 +536,13 @@ function TapeRecorderDisplay({ isActive }: { isActive: boolean }) {
 }
 
 // Clipboard display - animated checklist with appearing items
+// Psychoanalysis-themed words for The Deep Dive
 const CHECKLIST_ITEMS = [
-  { text: 'LOADING', delay: 0 },
-  { text: 'INTERFACE', delay: 300 },
-  { text: 'PICTURES', delay: 600 },
-  { text: 'ART', delay: 900 },
-  { text: 'EXPERIENCE', delay: 1200 },
+  { text: 'DESCEND', delay: 0 },
+  { text: 'SHADOW', delay: 300 },
+  { text: 'REFLECT', delay: 600 },
+  { text: 'INTEGRATE', delay: 900 },
+  { text: 'EMERGE', delay: 1200 },
 ];
 
 function ClipboardDisplay({ isActive }: { isActive: boolean }) {
