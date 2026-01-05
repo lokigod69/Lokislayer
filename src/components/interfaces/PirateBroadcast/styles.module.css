@@ -17,13 +17,11 @@
 .scanlines {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.15) 1px,
-    transparent 1px,
-    transparent 2px
-  );
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px);
   pointer-events: none;
   z-index: 100;
 }
@@ -164,6 +162,8 @@
     inset 0 -3px 10px rgba(0, 0, 0, 0.4),
     inset 0 3px 10px rgba(255, 255, 255, 0.05);
   transition: box-shadow 0.3s ease;
+  touch-action: none;
+  /* Prevent scroll while dragging dial on touch */
 }
 
 .dial:hover {
@@ -262,8 +262,15 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
 }
 
 .stationName {
@@ -384,8 +391,15 @@
 }
 
 @keyframes signalFlicker {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .staticBars {
@@ -415,10 +429,26 @@
 }
 
 @keyframes dotBlink {
-  0%, 25% { content: '.'; }
-  25%, 50% { content: '..'; }
-  50%, 75% { content: '...'; }
-  75%, 100% { content: ''; }
+
+  0%,
+  25% {
+    content: '.';
+  }
+
+  25%,
+  50% {
+    content: '..';
+  }
+
+  50%,
+  75% {
+    content: '...';
+  }
+
+  75%,
+  100% {
+    content: '';
+  }
 }
 
 /* Station hint */

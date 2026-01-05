@@ -69,23 +69,38 @@
 .bootProgressBar {
   height: 100%;
   width: 0;
-  background: linear-gradient(
-    90deg,
-    #2563eb 0%,
-    #60a5fa 50%,
-    #2563eb 100%
-  );
+  background: linear-gradient(90deg,
+      #2563eb 0%,
+      #60a5fa 50%,
+      #2563eb 100%);
   border-radius: 8px;
   animation: bootLoading 2.5s ease-out forwards;
 }
 
 @keyframes bootLoading {
-  0% { width: 0; }
-  20% { width: 15%; }
-  40% { width: 35%; }
-  60% { width: 55%; }
-  80% { width: 85%; }
-  100% { width: 100%; }
+  0% {
+    width: 0;
+  }
+
+  20% {
+    width: 15%;
+  }
+
+  40% {
+    width: 35%;
+  }
+
+  60% {
+    width: 55%;
+  }
+
+  80% {
+    width: 85%;
+  }
+
+  100% {
+    width: 100%;
+  }
 }
 
 .bootCopyright {
@@ -104,15 +119,13 @@
   /* Use the actual Windows XP Bliss wallpaper if available */
   background: url('/windowsxp.jpg') center center / cover no-repeat,
     /* Fallback gradient if image doesn't load */
-    linear-gradient(
-      180deg,
+    linear-gradient(180deg,
       #4a90d9 0%,
       #87ceeb 15%,
       #a8e4a0 55%,
       #6db33f 70%,
       #4a9f3f 85%,
-      #3d8b34 100%
-    );
+      #3d8b34 100%);
   background-color: #3d8b34;
   overflow: hidden;
 }
@@ -192,15 +205,13 @@
   left: 0;
   right: 0;
   height: 30px;
-  background: linear-gradient(
-    180deg,
-    #245edb 0%,
-    #3c8cf4 8%,
-    #1c4cc4 20%,
-    #1542a8 50%,
-    #0f3b94 80%,
-    #0a2d70 100%
-  );
+  background: linear-gradient(180deg,
+      #245edb 0%,
+      #3c8cf4 8%,
+      #1c4cc4 20%,
+      #1542a8 50%,
+      #0f3b94 80%,
+      #0a2d70 100%);
   display: flex;
   align-items: center;
   padding: 0 2px;
@@ -215,14 +226,12 @@
   gap: 4px;
   padding: 0 12px;
   height: 28px;
-  background: linear-gradient(
-    180deg,
-    #54d954 0%,
-    #3cb43c 15%,
-    #2a9a2a 50%,
-    #1f7a1f 85%,
-    #156b15 100%
-  );
+  background: linear-gradient(180deg,
+      #54d954 0%,
+      #3cb43c 15%,
+      #2a9a2a 50%,
+      #1f7a1f 85%,
+      #156b15 100%);
   border: none;
   border-radius: 0 8px 8px 0;
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -261,12 +270,10 @@
 .taskbarDivider {
   width: 1px;
   height: 22px;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(180deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      transparent 100%);
   margin: 0 6px;
 }
 
@@ -283,12 +290,10 @@
   max-width: 180px;
   height: 22px;
   padding: 0 10px;
-  background: linear-gradient(
-    180deg,
-    #3c8cf4 0%,
-    #1c6cd4 50%,
-    #1454b4 100%
-  );
+  background: linear-gradient(180deg,
+      #3c8cf4 0%,
+      #1c6cd4 50%,
+      #1454b4 100%);
   border: none;
   border-radius: 3px;
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -305,12 +310,10 @@
 }
 
 .taskbarWindowActive {
-  background: linear-gradient(
-    180deg,
-    #5cacf4 0%,
-    #3c9cf4 50%,
-    #2484d4 100%
-  );
+  background: linear-gradient(180deg,
+      #5cacf4 0%,
+      #3c9cf4 50%,
+      #2484d4 100%);
   box-shadow:
     inset -1px -1px 2px rgba(0, 0, 0, 0.3),
     inset 1px 1px 2px rgba(0, 0, 0, 0.1);
@@ -323,12 +326,10 @@
   gap: 4px;
   padding: 0 8px;
   height: 100%;
-  background: linear-gradient(
-    180deg,
-    #1454b4 0%,
-    #0f4094 50%,
-    #0a2d70 100%
-  );
+  background: linear-gradient(180deg,
+      #1454b4 0%,
+      #0f4094 50%,
+      #0a2d70 100%);
   border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -359,11 +360,9 @@
   align-items: center;
   gap: 12px;
   padding: 10px 12px;
-  background: linear-gradient(
-    180deg,
-    #245edb 0%,
-    #1c4cc4 100%
-  );
+  background: linear-gradient(180deg,
+      #245edb 0%,
+      #1c4cc4 100%);
   color: #fff;
 }
 
@@ -437,11 +436,9 @@
 
 .startMenuRight {
   width: 190px;
-  background: linear-gradient(
-    180deg,
-    #4b9cd8 0%,
-    #3a88c4 100%
-  );
+  background: linear-gradient(180deg,
+      #4b9cd8 0%,
+      #3a88c4 100%);
   padding: 8px 0;
 }
 
@@ -493,11 +490,9 @@
   justify-content: flex-end;
   gap: 6px;
   padding: 8px 12px;
-  background: linear-gradient(
-    180deg,
-    #3a88c4 0%,
-    #2a78b4 100%
-  );
+  background: linear-gradient(180deg,
+      #3a88c4 0%,
+      #2a78b4 100%);
   border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
@@ -506,12 +501,10 @@
   align-items: center;
   gap: 6px;
   padding: 4px 12px;
-  background: linear-gradient(
-    180deg,
-    #5cacf4 0%,
-    #3c8cf4 50%,
-    #2474d4 100%
-  );
+  background: linear-gradient(180deg,
+      #5cacf4 0%,
+      #3c8cf4 50%,
+      #2474d4 100%);
   border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -555,15 +548,13 @@
   display: flex;
   align-items: center;
   padding: 4px 6px;
-  background: linear-gradient(
-    180deg,
-    #0a246a 0%,
-    #0f3b94 8%,
-    #1454b4 20%,
-    #1c6cd4 60%,
-    #1454b4 80%,
-    #0a246a 100%
-  );
+  background: linear-gradient(180deg,
+      #0a246a 0%,
+      #0f3b94 8%,
+      #1454b4 20%,
+      #1c6cd4 60%,
+      #1454b4 80%,
+      #0a246a 100%);
   cursor: default;
 }
 
@@ -589,12 +580,10 @@
 .modalButton {
   width: 21px;
   height: 21px;
-  background: linear-gradient(
-    180deg,
-    #3c8cf4 0%,
-    #1c6cd4 50%,
-    #1454b4 100%
-  );
+  background: linear-gradient(180deg,
+      #3c8cf4 0%,
+      #1c6cd4 50%,
+      #1454b4 100%);
   border: 1px solid rgba(0, 0, 0, 0.3);
   border-radius: 3px;
   display: flex;
@@ -613,12 +602,10 @@
 }
 
 .modalButtonClose {
-  background: linear-gradient(
-    180deg,
-    #dc6442 0%,
-    #c44f2f 50%,
-    #a83e22 100%
-  );
+  background: linear-gradient(180deg,
+      #dc6442 0%,
+      #c44f2f 50%,
+      #a83e22 100%);
 }
 
 .modalContent {
@@ -678,12 +665,10 @@
 
 .xpButton {
   padding: 6px 24px;
-  background: linear-gradient(
-    180deg,
-    #fff 0%,
-    #ece9d8 50%,
-    #d4d0c4 100%
-  );
+  background: linear-gradient(180deg,
+      #fff 0%,
+      #ece9d8 50%,
+      #d4d0c4 100%);
   border: 1px solid #7a7a7a;
   border-radius: 3px;
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -706,12 +691,10 @@
 }
 
 .xpButtonPrimary {
-  background: linear-gradient(
-    180deg,
-    #a5cffa 0%,
-    #7ab9f4 50%,
-    #5ba4ef 100%
-  );
+  background: linear-gradient(180deg,
+      #a5cffa 0%,
+      #7ab9f4 50%,
+      #5ba4ef 100%);
   color: #000;
   border-color: #3c7fb1;
 }
@@ -811,6 +794,7 @@
 
 /* ========== Mobile Adjustments ========== */
 @media (max-width: 768px) {
+
   .desktop::before,
   .desktop::after {
     display: none;
@@ -847,5 +831,43 @@
     width: 95%;
     max-height: 80vh;
     overflow-y: auto;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px) {
+  .icon {
+    width: 60px;
+  }
+
+  .iconImage {
+    width: 36px;
+    height: 36px;
+    font-size: 28px;
+  }
+
+  .iconLabel {
+    font-size: 9px;
+  }
+
+  .taskbar {
+    height: 26px;
+  }
+
+  .startButton {
+    padding: 0 8px;
+    font-size: 10px;
+    height: 24px;
+  }
+
+  .taskbarWindow {
+    min-width: 80px;
+    max-width: 120px;
+    font-size: 10px;
+    height: 20px;
+  }
+
+  .clock {
+    font-size: 10px;
   }
 }
