@@ -156,7 +156,7 @@ export default function DiceLanding() {
 
           // Navigate after result has been displayed
           setTimeout(() => {
-            setInterface(finalNumber);
+            setInterface(finalNumber, 'dice');  // Came from dice roll
           }, 1500);
         }, 600);
       }
@@ -164,11 +164,11 @@ export default function DiceLanding() {
   }, [isRolling, setInterface]);
 
   const handleSkip = useCallback(() => {
-    setInterface(-1);
+    setInterface(-1);  // Goes to selection, no source needed (not entering an interface)
   }, [setInterface]);
 
   const handleDevSelect = useCallback((num: number) => {
-    setInterface(num);
+    setInterface(num, 'dice');  // Came from dice page
   }, [setInterface]);
 
   // Welcome modal handlers

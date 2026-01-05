@@ -369,7 +369,7 @@ export default function EntryLobby() {
               key={iface.id}
               iface={iface}
               index={index}
-              onClick={() => setInterface(iface.id)}
+              onClick={() => setInterface(iface.id, 'selection')}
             />
           ))}
         </motion.div>
