@@ -167,9 +167,7 @@ export default function DiceLanding() {
     setInterface(-1);  // Goes to selection, no source needed (not entering an interface)
   }, [setInterface]);
 
-  const handleDevSelect = useCallback((num: number) => {
-    setInterface(num, 'dice');  // Came from dice page
-  }, [setInterface]);
+
 
   // Welcome modal handlers
   const handleWelcomeTakeTour = useCallback(() => {
@@ -327,26 +325,7 @@ export default function DiceLanding() {
           Skip → Choose Interface
         </motion.button>
 
-        {/* Dev mode buttons */}
-        <motion.div
-          className={styles.devMode}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <span className={styles.devLabel}>Dev:</span>
-          <div className={styles.devButtons}>
-            {[1, 2, 3, 4, 5, 6].map((num) => (
-              <button
-                key={num}
-                className={styles.devButton}
-                onClick={() => handleDevSelect(num)}
-              >
-                {num}
-              </button>
-            ))}
-          </div>
-        </motion.div>
+
       </div>
 
       {/* Welcome Modal - shows on first visit */}
