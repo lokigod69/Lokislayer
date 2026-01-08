@@ -55,15 +55,20 @@
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
+
   25% {
     transform: translate(30px, -30px) scale(1.05);
   }
+
   50% {
     transform: translate(-20px, 20px) scale(0.95);
   }
+
   75% {
     transform: translate(-30px, -20px) scale(1.02);
   }
@@ -137,10 +142,13 @@
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.6;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.3;
     transform: scale(1.1);
@@ -172,6 +180,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -267,11 +276,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--node-color, #8b5cf6) 20%, transparent) 0%,
-    color-mix(in srgb, var(--node-color, #8b5cf6) 10%, transparent) 100%
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--node-color, #8b5cf6) 20%, transparent) 0%,
+      color-mix(in srgb, var(--node-color, #8b5cf6) 10%, transparent) 100%);
   border: 1px solid color-mix(in srgb, var(--node-color, #8b5cf6) 50%, transparent);
   box-shadow:
     0 0 30px color-mix(in srgb, var(--node-color, #8b5cf6) 30%, transparent),
@@ -342,11 +349,9 @@
   max-width: 380px;
   width: 100%;
   padding: 40px 32px;
-  background: linear-gradient(
-    145deg,
-    rgba(15, 15, 30, 0.95) 0%,
-    rgba(10, 10, 20, 0.98) 100%
-  );
+  background: linear-gradient(145deg,
+      rgba(15, 15, 30, 0.95) 0%,
+      rgba(10, 10, 20, 0.98) 100%);
   border: 1px solid color-mix(in srgb, var(--modal-color, #8b5cf6) 30%, transparent);
   border-radius: 20px;
   text-align: center;
@@ -363,11 +368,9 @@
   width: 200%;
   height: 100%;
   transform: translateX(-50%);
-  background: radial-gradient(
-    ellipse at center,
-    color-mix(in srgb, var(--modal-color, #8b5cf6) 15%, transparent) 0%,
-    transparent 60%
-  );
+  background: radial-gradient(ellipse at center,
+      color-mix(in srgb, var(--modal-color, #8b5cf6) 15%, transparent) 0%,
+      transparent 60%);
   pointer-events: none;
 }
 
@@ -435,11 +438,9 @@
 
 .visitBtn {
   padding: 12px 28px;
-  background: linear-gradient(
-    135deg,
-    var(--modal-color, #8b5cf6) 0%,
-    color-mix(in srgb, var(--modal-color, #8b5cf6) 70%, #6366f1) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--modal-color, #8b5cf6) 0%,
+      color-mix(in srgb, var(--modal-color, #8b5cf6) 70%, #6366f1) 100%);
   border: none;
   border-radius: 12px;
   color: white;
@@ -455,44 +456,76 @@
   box-shadow: 0 8px 30px color-mix(in srgb, var(--modal-color, #8b5cf6) 50%, transparent);
 }
 
-/* Mobile adjustments */
+/* Mobile adjustments - make nodes and text BIGGER for readability */
 @media (max-width: 768px) {
+  .title {
+    font-size: 0.85rem;
+    top: 16px;
+  }
+
   .hubNode {
+    width: 140px;
+    height: 140px;
+  }
+
+  .hubGlow {
+    inset: -50px;
+  }
+
+  .hubCore {
     width: 100px;
     height: 100px;
   }
 
-  .hubCore {
-    width: 65px;
-    height: 65px;
+  .hubIcon {
+    font-size: 40px;
   }
 
-  .hubIcon {
-    font-size: 26px;
+  .hubLabel {
+    font-size: 14px;
+    font-weight: 600;
+    bottom: -35px;
+    letter-spacing: 0.15em;
   }
 
   .projectNode {
+    width: 110px;
+    height: 110px;
+  }
+
+  .nodeGlow {
+    inset: -40px;
+  }
+
+  .nodeCore {
     width: 75px;
     height: 75px;
   }
 
-  .nodeCore {
-    width: 50px;
-    height: 50px;
-  }
-
   .nodeIcon {
-    font-size: 18px;
+    font-size: 28px;
   }
 
   .nodeLabel {
+    font-size: 13px;
+    font-weight: 500;
+    bottom: -28px;
+  }
+
+  .nodeRing::before {
+    width: 8px;
+    height: 8px;
+  }
+
+  .statusBadge {
     font-size: 9px;
-    bottom: -20px;
+    padding: 4px 10px;
   }
 
   .instructions {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     padding: 0 20px;
+    bottom: 16px;
   }
 
   .modal {
@@ -500,10 +533,20 @@
   }
 
   .modalIcon {
-    font-size: 40px;
+    font-size: 44px;
   }
 
   .modalTitle {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
+  }
+
+  .modalDescription {
+    font-size: 0.95rem;
+  }
+
+  .cancelBtn,
+  .visitBtn {
+    padding: 14px 24px;
+    font-size: 1rem;
   }
 }

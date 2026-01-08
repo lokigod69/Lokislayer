@@ -100,12 +100,23 @@
 }
 
 @keyframes rotate {
-  100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.7; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
 }
 
 .hotspotInner {
@@ -391,21 +402,60 @@
     font-size: 15px;
   }
 
+  .hotspotLabel {
+    font-size: 10px;
+  }
+}
+
+/* Mobile tooltip - centered overlay for both breakpoints */
+@media (max-width: 768px) {
   .tooltip {
-    width: 180px;
-    padding: 12px;
-    bottom: calc(100% + 15px);
+    position: fixed;
+    left: 50% !important;
+    right: auto !important;
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    width: calc(100vw - 40px);
+    max-width: 300px;
+    padding: 20px;
+    background: #1a1410;
+    border: 2px solid #604830;
+    box-shadow: 0 0 0 100vmax rgba(0, 0, 0, 0.85),
+      0 10px 40px rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+  }
+
+  /* Remove all arrow indicators on mobile since we're centered */
+  .tooltip::before,
+  .tooltip::after,
+  .tooltipTop::before,
+  .tooltipTop::after,
+  .tooltipBottom::before,
+  .tooltipBottom::after,
+  .tooltipLeft::before,
+  .tooltipLeft::after,
+  .tooltipRight::before,
+  .tooltipRight::after {
+    display: none !important;
   }
 
   .tooltipTitle {
-    font-size: 14px;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .tooltipBodyPart {
+    text-align: center;
   }
 
   .tooltipDescription {
-    font-size: 11px;
+    font-size: 13px;
+    text-align: center;
   }
 
-  .hotspotLabel {
-    font-size: 10px;
+  .tooltipButton {
+    font-size: 14px;
+    padding: 12px;
   }
 }
