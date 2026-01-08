@@ -1,15 +1,12 @@
 // src/components/core/DiceLanding/index.tsx
 // Clean 3D dice landing - bigger dice, simpler text
 
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../../../store/useStore';
 import { getRandomInterfaceId, getInterfaceById } from '../../../config/interfaces';
-import WelcomeModal from '../WelcomeModal';
 import WaveGrid from '../WaveGrid';
 import styles from './styles.module.css';
-
-const WELCOME_SEEN_KEY = 'lokislayer-welcome-seen';
 
 // Dice face dot patterns (1-6)
 const dotPatterns: Record<number, number[][]> = {
@@ -90,15 +87,6 @@ export default function DiceLanding() {
   const [rolledNumber, setRolledNumber] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [rollPosition, setRollPosition] = useState({ x: 0, y: 0 });
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
-
-  // Check if user has seen welcome modal before
-  useEffect(() => {
-    const hasSeenWelcome = localStorage.getItem(WELCOME_SEEN_KEY);
-    if (!hasSeenWelcome) {
-      setShowWelcomeModal(true);
-    }
-  }, []);
 
   const handleRoll = useCallback(() => {
     if (isRolling) return;
@@ -168,23 +156,6 @@ export default function DiceLanding() {
   }, [setInterface]);
 
 
-
-  // Welcome modal handlers
-  const handleWelcomeTakeTour = useCallback(() => {
-    localStorage.setItem(WELCOME_SEEN_KEY, 'true');
-    setShowWelcomeModal(false);
-    // Small delay then roll the dice
-    setTimeout(() => {
-      handleRoll();
-    }, 300);
-  }, [handleRoll]);
-
-  const handleWelcomeSkip = useCallback(() => {
-    localStorage.setItem(WELCOME_SEEN_KEY, 'true');
-    setShowWelcomeModal(false);
-    // Go to interface picker
-    setInterface(-1);
-  }, [setInterface]);
 
   // Angled rotation to show dice as 3D cube (edge facing viewer)
   // When currentFace is null (idle), show angled view; otherwise show the specific face
@@ -327,13 +298,6 @@ export default function DiceLanding() {
 
 
       </div>
-
-      {/* Welcome Modal - shows on first visit */}
-      <WelcomeModal
-        isOpen={showWelcomeModal}
-        onTakeTour={handleWelcomeTakeTour}
-        onSkip={handleWelcomeSkip}
-      />
     </div>
   );
 }
