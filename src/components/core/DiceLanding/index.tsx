@@ -173,15 +173,25 @@ export default function DiceLanding() {
 
       {/* Content */}
       <div className={styles.content}>
-        {/* Title - positioned higher */}
+        {/* Main Title - THE PORTAL */}
         <motion.h1
           className={styles.title}
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         >
-          Roll Your Fate
+          The Portal
         </motion.h1>
+
+        {/* Subtitle */}
+        <motion.p
+          className={styles.subtitle}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+        >
+          Roll Your Fate
+        </motion.p>
 
         {/* 3D Dice - bigger and more prominent */}
         <motion.div
