@@ -1,4 +1,5 @@
 /* Anatomical Map - Da Vinci Style Dark Mode */
+/* Redesigned: Body at top, fixed detail panel at bottom */
 
 .container {
   position: relative;
@@ -8,8 +9,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   overflow: hidden;
+  padding-top: 2rem;
 }
 
 /* Subtle texture overlay */
@@ -29,30 +31,22 @@
   pointer-events: none;
 }
 
-/* Legacy - keep for compatibility */
-.parchmentOverlay {
-  display: none;
-}
-
-.inkSplatters {
-  display: none;
-}
-
-/* Figure wrapper */
+/* Figure wrapper - positioned in upper portion */
 .figureWrapper {
   position: relative;
   z-index: 10;
+  flex-shrink: 0;
 }
 
-/* Body container - scaled up 20% */
+/* Body container - sized to leave room for panel */
 .bodyContainer {
   position: relative;
-  width: 96vmin;
-  height: 108vmin;
-  max-width: 720px;
-  max-height: 900px;
-  min-width: 384px;
-  min-height: 480px;
+  width: 75vw;
+  height: 60vh;
+  max-width: 500px;
+  max-height: 450px;
+  min-width: 280px;
+  min-height: 280px;
 }
 
 /* Body figure SVG */
@@ -70,13 +64,18 @@
   z-index: 20;
 }
 
-/* Hotspot - no transform here to avoid conflicts */
+/* Hotspot button */
 .hotspot {
   cursor: pointer;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .hotspot::before {
@@ -120,20 +119,20 @@
 }
 
 .hotspotInner {
-  width: 54px;
-  height: 54px;
-  background: rgba(40, 32, 24, 0.9);
+  width: 48px;
+  height: 48px;
+  background: rgba(40, 32, 24, 0.95);
   border: 2px solid #c0a080;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 24px;
   transition: all 0.3s ease;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
-/* Flip icon horizontally (used for ear to show left ear) */
+/* Flip icon horizontally (used for ear) */
 .flippedIcon {
   display: inline-block;
   transform: scaleX(-1);
@@ -149,201 +148,10 @@
   border-color: #d08060;
 }
 
-/* Hotspot label */
-.hotspotLabel {
-  position: absolute;
-  top: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 10px;
-  background: rgba(40, 32, 24, 0.95);
-  color: #c0a080;
-  font-family: 'Times New Roman', serif;
-  font-size: 11px;
-  font-style: italic;
-  white-space: nowrap;
-  border-radius: 4px;
-  border: 1px solid #604830;
-  pointer-events: none;
-}
-
-/* Tooltip base styles */
-.tooltip {
-  position: absolute;
-  width: 220px;
-  padding: 16px;
-  background: #2a2218;
-  border: 2px solid #604830;
-  border-radius: 6px;
-  box-shadow:
-    4px 4px 0 rgba(0, 0, 0, 0.3),
-    0 10px 30px rgba(0, 0, 0, 0.5);
-  z-index: 100;
-  font-family: 'Times New Roman', serif;
-}
-
-/* Tooltip position: Top (default for brain) */
-.tooltipTop {
-  bottom: calc(100% + 20px);
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.tooltipTop::before {
-  content: '';
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 12px solid transparent;
-  border-top-color: #604830;
-}
-
-.tooltipTop::after {
-  content: '';
-  position: absolute;
-  bottom: -9px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 10px solid transparent;
-  border-top-color: #2a2218;
-}
-
-/* Tooltip position: Bottom (for mouth, heart, hands) */
-.tooltipBottom {
-  top: calc(100% + 20px);
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.tooltipBottom::before {
-  content: '';
-  position: absolute;
-  top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 12px solid transparent;
-  border-bottom-color: #604830;
-}
-
-.tooltipBottom::after {
-  content: '';
-  position: absolute;
-  top: -9px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 10px solid transparent;
-  border-bottom-color: #2a2218;
-}
-
-/* Tooltip position: Left (for ear) */
-.tooltipLeft {
-  right: calc(100% + 20px);
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.tooltipLeft::before {
-  content: '';
-  position: absolute;
-  right: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 12px solid transparent;
-  border-left-color: #604830;
-}
-
-.tooltipLeft::after {
-  content: '';
-  position: absolute;
-  right: -9px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 10px solid transparent;
-  border-left-color: #2a2218;
-}
-
-/* Tooltip position: Right (for eye) */
-.tooltipRight {
-  left: calc(100% + 20px);
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.tooltipRight::before {
-  content: '';
-  position: absolute;
-  left: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 12px solid transparent;
-  border-right-color: #604830;
-}
-
-.tooltipRight::after {
-  content: '';
-  position: absolute;
-  left: -9px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 10px solid transparent;
-  border-right-color: #2a2218;
-}
-
-.tooltipBodyPart {
-  font-size: 11px;
-  color: #c0a080;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-.tooltipTitle {
-  font-size: 18px;
-  font-weight: bold;
-  color: #e0d0c0;
-  margin-bottom: 8px;
-  font-style: italic;
-}
-
-.tooltipDescription {
-  font-size: 13px;
-  color: #a09080;
-  line-height: 1.5;
-  margin-bottom: 12px;
-}
-
-.tooltipButton {
-  width: 100%;
-  padding: 10px;
-  background: #604830;
-  border: none;
-  color: #e0d0c0;
-  font-family: 'Times New Roman', serif;
-  font-size: 13px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s;
-  border-radius: 4px;
-}
-
-.tooltipButton:hover {
-  background: #705840;
-  transform: translateY(-1px);
-}
-
-.tooltipButton:disabled {
-  background: #3a3028;
-  color: #706050;
-  cursor: not-allowed;
-  transform: none;
-}
-
 /* Instructions */
 .instructions {
   position: absolute;
-  bottom: 24px;
+  bottom: 20%;
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Times New Roman', serif;
@@ -354,129 +162,218 @@
   opacity: 0.8;
 }
 
-/* Mobile adjustments */
+/* ====== FIXED BOTTOM DETAIL PANEL ====== */
+.detailPanel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(180deg, #2a2218 0%, #1a1410 100%);
+  border-top: 2px solid #604830;
+  padding: 20px;
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 20px));
+  z-index: 1000;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.closeButton {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  background: rgba(96, 72, 48, 0.5);
+  border: 1px solid #604830;
+  border-radius: 50%;
+  color: #c0a080;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  background: rgba(96, 72, 48, 0.8);
+  color: #e0d0c0;
+}
+
+.panelContent {
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.panelBodyPart {
+  font-family: 'Times New Roman', serif;
+  font-size: 11px;
+  color: #c0a080;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.panelTitle {
+  font-family: 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #e0d0c0;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.panelDescription {
+  font-family: 'Times New Roman', serif;
+  font-size: 14px;
+  color: #a09080;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.panelButton {
+  width: 100%;
+  max-width: 280px;
+  padding: 14px 24px;
+  background: linear-gradient(180deg, #705840 0%, #604830 100%);
+  border: none;
+  color: #e0d0c0;
+  font-family: 'Times New Roman', serif;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 6px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.panelButton:hover:not(:disabled) {
+  background: linear-gradient(180deg, #806850 0%, #705840 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.panelButton:disabled {
+  background: #3a3028;
+  color: #706050;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ====== MOBILE ADJUSTMENTS ====== */
 @media (max-width: 768px) {
+  .container {
+    padding-top: 1rem;
+  }
+
   .bodyContainer {
-    width: 85vmin;
-    height: 95vmin;
-    min-width: 280px;
-    min-height: 350px;
+    width: 85vw;
+    height: 55vh;
+    max-width: 380px;
+    max-height: 380px;
+    min-width: 260px;
+    min-height: 260px;
   }
 
   .hotspotInner {
-    width: 38px;
-    height: 38px;
-    font-size: 18px;
-  }
-
-  .tooltip {
-    width: 200px;
-    padding: 14px;
-  }
-
-  .tooltipTitle {
-    font-size: 16px;
-  }
-
-  .tooltipDescription {
-    font-size: 12px;
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
   }
 
   .instructions {
     font-size: 12px;
-    bottom: 16px;
+    bottom: 25%;
+  }
+
+  .detailPanel {
+    padding: 16px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  }
+
+  .panelTitle {
+    font-size: 20px;
+  }
+
+  .panelDescription {
+    font-size: 13px;
+  }
+
+  .panelButton {
+    padding: 12px 20px;
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding-top: 0.5rem;
+  }
+
   .bodyContainer {
-    width: 90vmin;
-    height: 100vmin;
-    min-width: 260px;
-    min-height: 320px;
+    width: 90vw;
+    height: 50vh;
+    max-width: 320px;
+    max-height: 320px;
+    min-width: 240px;
+    min-height: 240px;
   }
 
   .hotspotInner {
-    width: 32px;
-    height: 32px;
-    font-size: 15px;
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
   }
 
-  .hotspotLabel {
+  .hotspot::before {
+    inset: -6px;
+  }
+
+  .instructions {
+    font-size: 11px;
+    bottom: 28%;
+  }
+
+  .closeButton {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+    top: 10px;
+    right: 12px;
+  }
+
+  .panelBodyPart {
     font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .panelTitle {
+    font-size: 18px;
+  }
+
+  .panelDescription {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .panelButton {
+    padding: 12px 16px;
+    font-size: 13px;
   }
 }
 
-/* Mobile tooltip - centered overlay for both breakpoints */
-@media (max-width: 768px) {
-
-  /* Ensure hotspots don't create stacking context issues */
-  .hotspotWrapper {
-    z-index: 20;
-  }
-
-  /* When tooltip is shown, it goes above everything */
-  .tooltip {
-    position: fixed !important;
-    left: 50% !important;
-    right: auto !important;
-    top: 50% !important;
-    bottom: auto !important;
-    transform: translate(-50%, -50%) !important;
-    width: calc(100vw - 40px);
-    max-width: 300px;
-    padding: 20px;
-    background: #1a1410;
-    border: 2px solid #604830;
-    /* High z-index to be above everything */
-    z-index: 99999 !important;
-    /* Create isolation from parent stacking contexts */
-    isolation: isolate;
-  }
-
-  /* Full-screen backdrop behind the tooltip */
-  .tooltip::before {
-    content: '' !important;
-    display: block !important;
-    position: fixed !important;
-    top: -100vh !important;
-    left: -100vw !important;
-    width: 300vw !important;
-    height: 300vh !important;
-    background: rgba(0, 0, 0, 0.9) !important;
-    z-index: -1 !important;
-    border: none !important;
-    transform: none !important;
-  }
-
-  /* Remove all arrow indicators on mobile since we're centered */
-  .tooltip::after,
-  .tooltipTop::after,
-  .tooltipBottom::before,
-  .tooltipBottom::after,
-  .tooltipLeft::before,
-  .tooltipLeft::after,
-  .tooltipRight::before,
-  .tooltipRight::after {
-    display: none !important;
-  }
-
-  .tooltipTitle {
-    font-size: 18px;
-    text-align: center;
-  }
-
-  .tooltipBodyPart {
-    text-align: center;
-  }
-
-  .tooltipDescription {
-    font-size: 13px;
-    text-align: center;
-  }
-
-  .tooltipButton {
-    font-size: 14px;
-    padding: 12px;
-  }
+/* Legacy tooltip styles - kept for reference but not used */
+.tooltip,
+.tooltipTop,
+.tooltipBottom,
+.tooltipLeft,
+.tooltipRight,
+.tooltipBodyPart,
+.tooltipTitle,
+.tooltipDescription,
+.tooltipButton,
+.hotspotLabel {
+  display: none;
 }

@@ -1,8 +1,8 @@
 // src/components/interfaces/AnatomicalMap/BodySVG.tsx
-// Da Vinci Vitruvian Man style illustration with larger head
+// Da Vinci Vitruvian Man style illustration - Hotspots only (no tooltips)
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { projects, Project } from '../../../config/projects';
 import styles from './styles.module.css';
 
@@ -16,12 +16,22 @@ const bodyPartIcons: Record<string, string> = {
   heart: '❤️',
 };
 
+// Body part labels
+const bodyPartLabels: Record<string, string> = {
+  ear: 'Ear',
+  brain: 'Brain',
+  mouth: 'Mouth',
+  hands: 'Hands',
+  eye: 'Eye',
+  heart: 'Heart',
+};
+
 interface BodySVGProps {
   selectedProject: string | null;
-  setSelectedProject: (id: string | null) => void;
+  onSelectProject: (projectId: string | null, bodyPart: string | null) => void;
 }
 
-export default function BodySVG({ selectedProject, setSelectedProject }: BodySVGProps) {
+export default function BodySVG({ selectedProject, onSelectProject }: BodySVGProps) {
   const [hoveredPart, setHoveredPart] = useState<string | null>(null);
 
   const getProjectForBodyPart = (bodyPart: string): Project | undefined => {
@@ -32,38 +42,24 @@ export default function BodySVG({ selectedProject, setSelectedProject }: BodySVG
     e.stopPropagation();
     const project = getProjectForBodyPart(bodyPart);
     if (project) {
-      setSelectedProject(selectedProject === project.id ? null : project.id);
-    }
-  };
-
-  const handleVisit = (e: React.MouseEvent, project: Project) => {
-    e.stopPropagation();
-    if (project.status === 'live') {
-      window.open(project.url, '_blank', 'noopener,noreferrer');
+      // Toggle selection - if already selected, deselect
+      if (selectedProject === project.id) {
+        onSelectProject(null, null);
+      } else {
+        onSelectProject(project.id, bodyPartLabels[bodyPart]);
+      }
     }
   };
 
   // Hotspot positions - adjusted for larger head (SVG viewBox 0 0 400 500)
-  // tooltipPosition determines which direction the tooltip appears
   const hotspots = [
-    { id: 'brain', x: 200, y: 40, label: 'Brain', tooltipPosition: 'top' as const },
-    { id: 'eye', x: 218, y: 80, label: 'Eye', tooltipPosition: 'right' as const },
-    { id: 'ear', x: 158, y: 90, label: 'Ear', tooltipPosition: 'left' as const },
-    { id: 'mouth', x: 200, y: 117, label: 'Mouth', tooltipPosition: 'bottom' as const },
-    { id: 'heart', x: 180, y: 220, label: 'Heart', tooltipPosition: 'bottom' as const },
-    { id: 'hands', x: 360, y: 245, label: 'Hands', tooltipPosition: 'bottom' as const },
+    { id: 'brain', x: 200, y: 40, label: 'Brain' },
+    { id: 'eye', x: 218, y: 80, label: 'Eye' },
+    { id: 'ear', x: 158, y: 90, label: 'Ear' },
+    { id: 'mouth', x: 200, y: 117, label: 'Mouth' },
+    { id: 'heart', x: 180, y: 220, label: 'Heart' },
+    { id: 'hands', x: 360, y: 245, label: 'Hands' },
   ];
-
-  // Get tooltip position class based on direction
-  const getTooltipPositionClass = (position: 'top' | 'bottom' | 'left' | 'right') => {
-    switch (position) {
-      case 'top': return styles.tooltipTop;
-      case 'bottom': return styles.tooltipBottom;
-      case 'left': return styles.tooltipLeft;
-      case 'right': return styles.tooltipRight;
-      default: return styles.tooltipTop;
-    }
-  };
 
   return (
     <div className={styles.bodyContainer}>
@@ -196,7 +192,7 @@ export default function BodySVG({ selectedProject, setSelectedProject }: BodySVG
         </g>
       </svg>
 
-      {/* Interactive hotspots */}
+      {/* Interactive hotspots - NO TOOLTIPS, just the buttons */}
       {hotspots.map((spot) => {
         const project = getProjectForBodyPart(spot.id);
         if (!project) return null;
@@ -213,7 +209,7 @@ export default function BodySVG({ selectedProject, setSelectedProject }: BodySVG
               top: `${(spot.y / 500) * 100}%`,
             }}
           >
-            <motion.div
+            <motion.button
               className={`${styles.hotspot} ${isSelected ? styles.hotspotSelected : ''}`}
               onMouseEnter={() => setHoveredPart(spot.id)}
               onMouseLeave={() => setHoveredPart(null)}
@@ -226,55 +222,14 @@ export default function BodySVG({ selectedProject, setSelectedProject }: BodySVG
                   : '0 0 10px rgba(192, 160, 128, 0.4)',
               }}
               transition={{ duration: 0.2 }}
+              aria-label={`Select ${spot.label}`}
             >
               <div className={styles.hotspotInner}>
                 <span className={spot.id === 'ear' ? styles.flippedIcon : ''}>
                   {bodyPartIcons[spot.id]}
                 </span>
               </div>
-            </motion.div>
-
-            {/* Label on hover */}
-            <AnimatePresence>
-              {isHovered && !isSelected && (
-                <motion.div
-                  className={styles.hotspotLabel}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 5 }}
-                >
-                  {spot.label}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Tooltip */}
-            <AnimatePresence>
-              {isSelected && (
-                <motion.div
-                  className={`${styles.tooltip} ${getTooltipPositionClass(spot.tooltipPosition)}`}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className={styles.tooltipBodyPart}>
-                    {spot.label}
-                  </div>
-                  <div className={styles.tooltipTitle}>{project.name}</div>
-                  <div className={styles.tooltipDescription}>
-                    {project.description}
-                  </div>
-                  <button
-                    className={styles.tooltipButton}
-                    onClick={(e) => handleVisit(e, project)}
-                    disabled={project.status !== 'live'}
-                  >
-                    {project.status === 'live' ? 'Enter Portal' : 'Coming Soon'}
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            </motion.button>
           </div>
         );
       })}
