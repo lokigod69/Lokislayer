@@ -137,13 +137,27 @@ export default function VendingMachine() {
     if (machineState !== 'ready' || !selectedProject) return;
     if (selectedProject.status === 'coming-soon') return;
 
+    // Store URL before any async operations (mobile browsers block window.open in callbacks)
+    const targetUrl = selectedProject.url;
+    const isLive = selectedProject.status === 'live';
+
     setMachineState('dispensing');
     setDispensedProject(selectedProject);
 
     // Navigate after showing dispensed item
     setTimeout(() => {
-      if (selectedProject.status === 'live') {
-        window.open(selectedProject.url, '_blank', 'noopener,noreferrer');
+      if (isLive && targetUrl) {
+        // Use window.location.href for mobile compatibility
+        // window.open can be blocked by mobile browsers in async callbacks
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          // For mobile: directly navigate (will leave the page)
+          window.location.href = targetUrl;
+        } else {
+          // For desktop: open in new tab
+          window.open(targetUrl, '_blank', 'noopener,noreferrer');
+        }
       }
       // Reset machine
       setSelectedSlot(null);
@@ -247,9 +261,8 @@ export default function VendingMachine() {
             return (
               <motion.button
                 key={slot}
-                className={`${styles.productSlot} ${isSelected ? styles.selected : ''} ${
-                  isReady ? styles.ready : ''
-                } ${isLoading ? styles.loading : ''} ${project.status === 'coming-soon' ? styles.comingSoon : ''}`}
+                className={`${styles.productSlot} ${isSelected ? styles.selected : ''} ${isReady ? styles.ready : ''
+                  } ${isLoading ? styles.loading : ''} ${project.status === 'coming-soon' ? styles.comingSoon : ''}`}
                 onClick={() => handleSlotClick(slot)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -285,9 +298,8 @@ export default function VendingMachine() {
         <div className={styles.controlPanel}>
           {/* Coin slot - interactive button */}
           <motion.button
-            className={`${styles.coinSlot} ${
-              machineState === 'selected' ? styles.coinSlotActive : ''
-            } ${machineState === 'coinDropping' ? styles.coinSlotDropping : ''}`}
+            className={`${styles.coinSlot} ${machineState === 'selected' ? styles.coinSlotActive : ''
+              } ${machineState === 'coinDropping' ? styles.coinSlotDropping : ''}`}
             onClick={handleInsertCoin}
             disabled={machineState !== 'selected'}
             whileHover={machineState === 'selected' ? { scale: 1.05 } : {}}
@@ -320,9 +332,8 @@ export default function VendingMachine() {
           {/* Action buttons */}
           <div className={styles.actionButtons}>
             <motion.button
-              className={`${styles.vendButton} ${
-                machineState !== 'ready' ? styles.vendDisabled : ''
-              } ${machineState === 'ready' ? styles.vendReady : ''}`}
+              className={`${styles.vendButton} ${machineState !== 'ready' ? styles.vendDisabled : ''
+                } ${machineState === 'ready' ? styles.vendReady : ''}`}
               onClick={handleVend}
               disabled={machineState !== 'ready' || selectedProject?.status === 'coming-soon'}
               whileHover={machineState === 'ready' ? { scale: 1.05 } : {}}
