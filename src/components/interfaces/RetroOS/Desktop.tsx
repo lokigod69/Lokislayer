@@ -221,9 +221,8 @@ function ProjectModal({
           <h2 className={styles.modalProjectName}>{project.name}</h2>
           <p className={styles.modalProjectDescription}>{project.description}</p>
           <div
-            className={`${styles.modalStatus} ${
-              project.status === 'live' ? styles.statusLive : styles.statusComingSoon
-            }`}
+            className={`${styles.modalStatus} ${project.status === 'live' ? styles.statusLive : styles.statusComingSoon
+              }`}
           >
             {project.status === 'live' ? '● Online' : '○ Coming Soon'}
           </div>
@@ -472,6 +471,18 @@ export default function Desktop() {
 
   return (
     <div className={styles.desktop} onClick={handleDesktopClick}>
+      {/* Back to Portal Button */}
+      <button
+        className={styles.backButton}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleShutDown();
+        }}
+        title="Back to Portal"
+      >
+        ← Back
+      </button>
+
       {/* Desktop Icons Area */}
       <div className={styles.desktopArea}>
         {projects.map((project) => (
@@ -545,10 +556,10 @@ export default function Desktop() {
           onClick={() => setShowStartMenu((prev) => !prev)}
         >
           <svg className={styles.windowsLogo} viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 12.4L35.7 7.6V42.1H0V12.4Z" fill="#F25022"/>
-            <path d="M40.2 6.9L87.8 0V42.1H40.2V6.9Z" fill="#7FBA00"/>
-            <path d="M0 45.9H35.7V80.4L0 75.6V45.9Z" fill="#00A4EF"/>
-            <path d="M40.2 45.9H87.8V88L40.2 81.1V45.9Z" fill="#FFB900"/>
+            <path d="M0 12.4L35.7 7.6V42.1H0V12.4Z" fill="#F25022" />
+            <path d="M40.2 6.9L87.8 0V42.1H40.2V6.9Z" fill="#7FBA00" />
+            <path d="M0 45.9H35.7V80.4L0 75.6V45.9Z" fill="#00A4EF" />
+            <path d="M40.2 45.9H87.8V88L40.2 81.1V45.9Z" fill="#FFB900" />
           </svg>
           Start
         </button>
