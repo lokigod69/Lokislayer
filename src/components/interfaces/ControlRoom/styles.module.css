@@ -191,8 +191,15 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .version {
@@ -285,13 +292,11 @@
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(
-    from -30deg,
-    rgba(34, 197, 94, 0.25) 0deg,
-    rgba(34, 197, 94, 0.1) 15deg,
-    transparent 30deg,
-    transparent 360deg
-  );
+  background: conic-gradient(from -30deg,
+      rgba(34, 197, 94, 0.25) 0deg,
+      rgba(34, 197, 94, 0.1) 15deg,
+      transparent 30deg,
+      transparent 360deg);
   transform-origin: center center;
   pointer-events: none;
 }
@@ -405,13 +410,11 @@
 .monitorScanlines {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.15),
-    rgba(0, 0, 0, 0.15) 1px,
-    transparent 1px,
-    transparent 2px
-  );
+  background: repeating-linear-gradient(0deg,
+      rgba(0, 0, 0, 0.15),
+      rgba(0, 0, 0, 0.15) 1px,
+      transparent 1px,
+      transparent 2px);
   pointer-events: none;
 }
 
@@ -483,7 +486,9 @@
 }
 
 @keyframes cursorBlink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* Typewriter carriage indicator */
@@ -568,19 +573,22 @@
 .tapeMoving {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    #3a3a3a 0px,
-    #3a3a3a 2px,
-    #4a3020 2px,
-    #4a3020 4px
-  );
+  background: repeating-linear-gradient(0deg,
+      #3a3a3a 0px,
+      #3a3a3a 2px,
+      #4a3020 2px,
+      #4a3020 4px);
   animation: tapeScroll 0.3s linear infinite;
 }
 
 @keyframes tapeScroll {
-  from { transform: translateY(0); }
-  to { transform: translateY(-4px); }
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-4px);
+  }
 }
 
 /* Audio waveform visualization */
@@ -717,28 +725,39 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 12px 16px;
+    padding: 8px 12px;
+    justify-content: flex-start;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .title {
-    font-size: 14px;
-    padding: 8px 0;
-    letter-spacing: 4px;
+    font-size: 13px;
+    padding: 6px 0;
+    letter-spacing: 3px;
+    flex-shrink: 0;
   }
 
   .console {
     max-width: 100%;
     max-height: none;
+    flex-shrink: 0;
+    gap: 8px;
   }
 
   .panelGrid {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-rows: repeat(3, minmax(120px, auto));
     gap: 8px;
+    flex: none;
   }
 
   .panel {
-    padding: 6px;
+    padding: 8px;
+    min-height: 120px;
+    max-height: none;
+    /* Prevent panels from stretching when one expands */
+    align-self: start;
   }
 
   .panelHeader {
@@ -747,16 +766,85 @@
   }
 
   .panelLabel {
-    font-size: 7px;
+    font-size: 8px;
+  }
+
+  .led {
+    width: 5px;
+    height: 5px;
+  }
+
+  .instrumentArea {
+    min-height: 70px;
+    max-height: 80px;
+  }
+
+  .projectInfo {
+    margin-top: 8px;
+    padding-top: 8px;
+  }
+
+  .projectName {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .launchBtn {
+    padding: 8px 16px;
+    font-size: 10px;
+  }
+
+  .statusBar {
+    padding: 6px 0 0;
+    font-size: 8px;
+    flex-shrink: 0;
   }
 
   .reel {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
   }
 
   .reelsContainer {
-    gap: 6px;
+    gap: 4px;
+  }
+
+  .tapeWaveform {
+    height: 16px;
+    max-width: 80px;
+  }
+
+  .tapeVu {
+    height: 6px;
+    max-width: 80px;
+  }
+
+  .monitorDial {
+    width: 20px;
+    height: 20px;
+  }
+
+  .dialLabel {
+    font-size: 5px;
+  }
+
+  .typewriterPaper {
+    padding: 8px 12px;
+    min-height: 30px;
+  }
+
+  .typewriterText {
+    font-size: 10px;
+  }
+
+  .typewriterCarriage {
+    width: 70%;
+    height: 2px;
+  }
+
+  .carriagePosition {
+    width: 5px;
+    height: 6px;
   }
 
   .instructions {
@@ -766,25 +854,103 @@
 
 @media (max-width: 480px) {
   .container {
-    padding: 10px 12px;
+    padding: 6px 8px;
   }
 
   .title {
-    font-size: 12px;
-    letter-spacing: 3px;
-    padding: 6px 0;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 4px 0;
+  }
+
+  .console {
+    gap: 6px;
   }
 
   .panelGrid {
     gap: 6px;
+    grid-template-rows: repeat(3, minmax(110px, auto));
   }
 
   .panel {
-    padding: 5px;
+    padding: 6px;
+    min-height: 110px;
+  }
+
+  .panelLabel {
+    font-size: 7px;
+  }
+
+  .instrumentArea {
+    min-height: 60px;
+    max-height: 70px;
+  }
+
+  .projectInfo {
+    margin-top: 6px;
+    padding-top: 6px;
+  }
+
+  .projectName {
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+
+  .launchBtn {
+    padding: 6px 12px;
+    font-size: 9px;
+  }
+
+  .statusBar {
+    font-size: 7px;
+    padding: 4px 0 0;
   }
 
   .reel {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .tapeWaveform {
+    height: 14px;
+    max-width: 60px;
+  }
+
+  .tapeVu {
+    height: 5px;
+    max-width: 60px;
+  }
+
+  .checkItem {
+    font-size: 7px;
+  }
+
+  .checkbox {
+    font-size: 8px;
+    width: 8px;
+  }
+
+  .clipboardBoard {
+    max-width: 70px;
+    max-height: 90px;
+    padding: 4px;
+  }
+
+  .clipboardPaper {
+    padding: 4px 3px;
+    gap: 2px;
+  }
+
+  .oscLabel {
+    font-size: 6px;
+    bottom: 2px;
+    right: 4px;
+  }
+}
+
+/* Ensure panels with expanded project info don't affect siblings */
+@media (max-width: 768px) {
+  .panelActive {
+    z-index: 10;
   }
 }
